@@ -545,7 +545,7 @@
                       {%- endcapture -%}
                       {%- if _sfv_ok -%}
                         <label for="cfb-fs-{{ _sname | handle }}" class="cfb-tile-label{% if _sfv.active %} cfb-active{% endif %}">
-                          <input type="checkbox" id="cfb-fs-{{ _sname | handle }}" class="sr-only" name="{{ _sfv.param_name }}" value="{{ _sfv.value }}" form="FacetFiltersForm"{% if _sfv.active %} checked{% endif %}>
+                          <input type="checkbox" id="cfb-fs-{{ _sname | handle }}" class="sr-only" name="{{ _sfv.param_name }}" value="{{ _sfv.value }}" form="FacetFiltersForm"{% if _sfv.active %} checked{% endif %} @change="onSubmit()">
                           <span class="cfb-tile-img-wrap" data-shape="{{ _sname | downcase }}">{{ _svg }}</span>
                           <span class="cfb-tile-name">{{ _sname }}</span>
                         </label>
@@ -1399,6 +1399,14 @@
               assign cfb_pr_cur_min   = cfb_pr_abs_min
               assign cfb_pr_cur_max   = cfb_pr_abs_max
             endif
+            assign cfb_pr_input_min = ''
+            unless cfb_pr_cur_min == cfb_pr_abs_min
+              assign cfb_pr_input_min = cfb_pr_cur_min
+            endunless
+            assign cfb_pr_input_max = ''
+            unless cfb_pr_cur_max == cfb_pr_abs_max
+              assign cfb_pr_input_max = cfb_pr_cur_max
+            endunless
           -%}
           <div class="cfb-price-slider"
             data-abs-min="{{ cfb_pr_abs_min }}"
@@ -1408,6 +1416,8 @@
             data-param-min="{{ cfb_pr_param_min }}"
             data-param-max="{{ cfb_pr_param_max }}"
           >
+            <input type="number" class="sr-only cfb-price-input cfb-price-input--min" name="{{ cfb_pr_param_min }}" value="{{ cfb_pr_input_min }}" form="FacetFiltersForm" aria-hidden="true" tabindex="-1" @change="onSubmit()">
+            <input type="number" class="sr-only cfb-price-input cfb-price-input--max" name="{{ cfb_pr_param_max }}" value="{{ cfb_pr_input_max }}" form="FacetFiltersForm" aria-hidden="true" tabindex="-1" @change="onSubmit()">
             <div class="cfb-price-track cfb-price-track--live">
               <div class="cfb-price-fill"></div>
               <button type="button" class="cfb-price-thumb cfb-price-thumb--min" aria-label="Minimum price" role="slider"></button>
@@ -1457,7 +1467,8 @@
                         form="FacetFiltersForm"
                         {% if cfb_quick_found.active %}checked{% endif %}
                         {% if cfb_quick_found.count == 0 and cfb_quick_found.active == false %}disabled{% endif %}
-                                             >
+                        @change="onSubmit()"
+                      >
                       {{ cfb_qv | escape }}
                     </label>
                   {%- else -%}
@@ -1514,23 +1525,6 @@
     });
   }
 
-  function cfbToggleParam(param, value) {
-    var url = new URL(window.location.href);
-    var existing = url.searchParams.getAll(param);
-    var found = existing.indexOf(value) !== -1;
-    url.searchParams.delete(param);
-    if (found) {
-      existing.filter(function(v) { return v !== value; }).forEach(function(v) {
-        url.searchParams.append(param, v);
-      });
-    } else {
-      existing.forEach(function(v) { url.searchParams.append(param, v); });
-      url.searchParams.append(param, value);
-    }
-    url.searchParams.delete('page');
-    window.location.href = url.toString();
-  }
-
   function bindBoard(board) {
     syncActiveClasses(board);
 
@@ -1548,34 +1542,23 @@
       }
     });
 
-    board.querySelectorAll('[data-cfb-filter]').forEach(function(btn) {
-      if (btn.dataset.cfbFilterBound) return;
-      btn.dataset.cfbFilterBound = '1';
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        var param = btn.dataset.cfbFilter;
-        var value = btn.dataset.cfbValue;
-        if (!param || value === undefined) return;
-        cfbToggleParam(param, value);
-      });
-    });
-
     board.querySelectorAll('[data-cfb-clear]').forEach(function(btn) {
       if (btn.dataset.cfbClearBound) return;
       btn.dataset.cfbClearBound = '1';
       btn.addEventListener('click', function(e) {
         e.preventDefault();
         var type = btn.dataset.cfbClear || '';
-        var url  = new URL(window.location.href);
-        var keys = [];
-        url.searchParams.forEach(function(_, k) { keys.push(k); });
-        keys.forEach(function(k) {
-          if (type === 'stone' && /stone[_-]?type/i.test(k)) {
-            url.searchParams.delete(k);
+        var changed = false;
+        document.querySelectorAll('input[type="checkbox"][name]').forEach(function(cb) {
+          var n = cb.name || '';
+          if (type === 'stone' && /stone[_-]?type/i.test(n) && cb.checked) {
+            cb.checked = false;
+            var lbl = cb.closest('label');
+            if (lbl) lbl.classList.remove('cfb-active', 'is-active');
+            changed = true;
           }
         });
-        url.searchParams.delete('page');
-        window.location.href = url.toString();
+        if (changed) cfbSubmit();
       });
     });
   }
@@ -1598,6 +1581,8 @@
     var fill     = widget.querySelector('.cfb-price-fill');
     var thumbMin = widget.querySelector('.cfb-price-thumb--min');
     var thumbMax = widget.querySelector('.cfb-price-thumb--max');
+    var inputMin = widget.querySelector('.cfb-price-input--min');
+    var inputMax = widget.querySelector('.cfb-price-input--max');
     var lblMin   = widget.querySelector('.cfb-pval--min');
     var lblMax   = widget.querySelector('.cfb-pval--max');
 
@@ -1618,13 +1603,10 @@
     }
 
     function submitPrice() {
-      var url = new URL(window.location.href);
-      url.searchParams.delete(pMin);
-      url.searchParams.delete(pMax);
-      if (curMin > absMin) url.searchParams.append(pMin, String(Math.round(curMin)));
-      if (curMax < absMax) url.searchParams.append(pMax, String(Math.round(curMax)));
-      url.searchParams.delete('page');
-      window.location.href = url.toString();
+      /* Whole dollars only — write to hidden inputs then trigger Alpine onSubmit (no reload). */
+      if (inputMin) inputMin.value = curMin > absMin ? String(Math.round(curMin)) : '';
+      if (inputMax) inputMax.value = curMax < absMax ? String(Math.round(curMax)) : '';
+      cfbSubmit();
     }
 
     render();
