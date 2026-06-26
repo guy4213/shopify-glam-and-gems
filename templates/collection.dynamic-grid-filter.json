@@ -1,0 +1,300 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "main-collection-banner",
+      "blocks": {
+        "breadcrumbs": {
+          "type": "breadcrumbs",
+          "settings": {
+            "show_breadcrumbs_border": false,
+            "full_width_breadcrumb": true,
+            "desktop_content_alignment": "text-center",
+            "mobile_content_alignment": "text-center",
+            "background_color_light": "rgba(0,0,0,0)",
+            "text_color_light": "rgba(0,0,0,0)",
+            "textlink_color_light": "rgba(0,0,0,0)",
+            "background_color_dark": "rgba(0,0,0,0)",
+            "text_color_dark": "rgba(0,0,0,0)",
+            "textlink_color_dark": "rgba(0,0,0,0)"
+          }
+        },
+        "description_pyzyVg": {
+          "type": "description",
+          "settings": {
+            "number_of_lines_shown": "none",
+            "read_more_label": "Read more",
+            "see_less_label": "See less",
+            "full_width": false,
+            "desktop_content_alignment": "text-left",
+            "mobile_content_alignment": "text-left",
+            "background_color_light": "rgba(0,0,0,0)",
+            "text_color_light": "rgba(0,0,0,0)",
+            "background_color_dark": "rgba(0,0,0,0)",
+            "text_color_dark": "rgba(0,0,0,0)",
+            "padding_top": 56,
+            "padding_bottom": 36
+          }
+        }
+      },
+      "block_order": [
+        "breadcrumbs",
+        "description_pyzyVg"
+      ],
+      "settings": {
+        "show_collection_image": false,
+        "image_overlay_opacity": 20,
+        "show_collection_name": true,
+        "title_position": "text-center",
+        "size_title": 100,
+        "heading_tag": "h1",
+        "full_width_title": true,
+        "desktop_height": "450px",
+        "full_width": true,
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "mobile_height": "300px",
+        "full_width_mobile": true,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0
+      }
+    },
+    "media_gallery_6AGNkb": {
+      "type": "media-gallery",
+      "blocks": {
+        "media_qngLMB": {
+          "type": "media",
+          "settings": {
+            "image_link": "",
+            "open_new_window": false,
+            "show_sound_control": false,
+            "video_url": "",
+            "enable_video_autoplay": true,
+            "video_alt_text": "",
+            "enable_content_overlay": true,
+            "content_position": "bottom",
+            "overlay_opacity": 60,
+            "number_of_columns": 1,
+            "number_of_row": 1,
+            "icon": "none",
+            "another_icon": "",
+            "custom_icon": "",
+            "icon_size": 45,
+            "sub_title": "",
+            "title": "Media heading",
+            "highlight_type": "underline",
+            "title_size": 100,
+            "text": "<p>Tell your brand's story through images</p>",
+            "text_size": 130,
+            "text_align": "left",
+            "media_position": "top",
+            "button_label": "",
+            "button_link": "",
+            "open_new_window_button": false,
+            "show_button_style": "primary",
+            "color_overlay": "rgba(0,0,0,0)",
+            "title_color": "rgba(0,0,0,0)",
+            "text_color": "rgba(0,0,0,0)",
+            "color_heading_highlight_light": "rgba(0,0,0,0)",
+            "background_button": "rgba(0,0,0,0)",
+            "color_button": "rgba(0,0,0,0)",
+            "background_button_hover": "rgba(0,0,0,0)",
+            "color_button_hover": "rgba(0,0,0,0)",
+            "color_button_secondary": "rgba(0,0,0,0)",
+            "secondary_button_text": "rgba(0,0,0,0)",
+            "colors_text_link": "rgba(0,0,0,0)"
+          }
+        },
+        "media_VUGADa": {
+          "type": "media",
+          "settings": {
+            "image_link": "",
+            "open_new_window": false,
+            "show_sound_control": false,
+            "video_url": "",
+            "enable_video_autoplay": true,
+            "video_alt_text": "",
+            "enable_content_overlay": true,
+            "content_position": "bottom",
+            "overlay_opacity": 60,
+            "number_of_columns": 1,
+            "number_of_row": 1,
+            "icon": "none",
+            "another_icon": "",
+            "custom_icon": "",
+            "icon_size": 45,
+            "sub_title": "",
+            "title": "Media heading",
+            "highlight_type": "underline",
+            "title_size": 100,
+            "text": "<p>Tell your brand's story through images</p>",
+            "text_size": 130,
+            "text_align": "left",
+            "media_position": "top",
+            "button_label": "",
+            "button_link": "",
+            "open_new_window_button": false,
+            "show_button_style": "primary",
+            "color_overlay": "rgba(0,0,0,0)",
+            "title_color": "rgba(0,0,0,0)",
+            "text_color": "rgba(0,0,0,0)",
+            "color_heading_highlight_light": "rgba(0,0,0,0)",
+            "background_button": "rgba(0,0,0,0)",
+            "color_button": "rgba(0,0,0,0)",
+            "background_button_hover": "rgba(0,0,0,0)",
+            "color_button_hover": "rgba(0,0,0,0)",
+            "color_button_secondary": "rgba(0,0,0,0)",
+            "secondary_button_text": "rgba(0,0,0,0)",
+            "colors_text_link": "rgba(0,0,0,0)"
+          }
+        }
+      },
+      "block_order": [
+        "media_qngLMB",
+        "media_VUGADa"
+      ],
+      "name": "t:sections.media-gallery.name",
+      "settings": {
+        "heading": "",
+        "highlight_type": "underline",
+        "heading_size": 100,
+        "heading_tag": "h2",
+        "heading_alignment": "center",
+        "subheading": "",
+        "text": "",
+        "background_color_light": "rgba(0,0,0,0)",
+        "heading_color_light": "rgba(0,0,0,0)",
+        "heading_highlight_color_light": "rgba(0,0,0,0)",
+        "text_color_light": "rgba(0,0,0,0)",
+        "background_color_dark": "rgba(0,0,0,0)",
+        "heading_color_dark": "rgba(0,0,0,0)",
+        "heading_highlight_color_dark": "rgba(0,0,0,0)",
+        "text_color_dark": "rgba(0,0,0,0)",
+        "swiper_on_mobile": false,
+        "enable_arrow_mobile": false,
+        "auto_play": false,
+        "change_slides_speed": 5,
+        "max_columns": 2,
+        "spacing": 20,
+        "height_desktop": 390,
+        "keep_ratio_on_different_width": false,
+        "show_section_divider": false,
+        "full_width": false,
+        "padding_full_width": false,
+        "edge_style": "adapt",
+        "padding_top": 48,
+        "padding_bottom": 32,
+        "min_columns_mobile": "1",
+        "spacing_mobile": 10,
+        "height_mobile": 250,
+        "show_section_divider_mobile": false,
+        "full_width_mobile": false,
+        "edge_style_mobile": "adapt",
+        "padding_top_mobile": 24,
+        "padding_bottom_mobile": 16
+      }
+    },
+    "product-grid": {
+      "type": "main-collection-product-grid",
+      "blocks": {
+        "promotion_block_HdKwnr": {
+          "type": "promotion_block",
+          "settings": {
+            "subheading": "",
+            "heading": "Promotion block",
+            "highlight_type": "underline",
+            "title_size": 80,
+            "content": "<p>Tell your brand's story through images</p>",
+            "text_size": 100,
+            "show_sound_control": false,
+            "video_url": "",
+            "enable_video_autoplay": false,
+            "video_alt_text": "",
+            "image_overlay_opacity": 10,
+            "position": 6,
+            "button_label": "",
+            "button_link": "",
+            "open_new_window": false,
+            "show_button_style": "primary",
+            "alignment": "center",
+            "content_position": "center",
+            "background_color_light": "rgba(0,0,0,0)",
+            "text_color_light": "rgba(0,0,0,0)",
+            "color_heading_highlight_light": "rgba(0,0,0,0)",
+            "background_color_dark": "rgba(0,0,0,0)",
+            "text_color_dark": "rgba(0,0,0,0)",
+            "color_heading_highlight_dark": "rgba(0,0,0,0)",
+            "color_button": "rgba(0,0,0,0)",
+            "color_text_button": "rgba(0,0,0,0)",
+            "color_button_hover": "rgba(0,0,0,0)",
+            "color_text_button_hover": "rgba(0,0,0,0)",
+            "color_button_secondary": "rgba(0,0,0,0)",
+            "secondary_button_text": "rgba(0,0,0,0)",
+            "colors_text_link": "rgba(0,0,0,0)",
+            "number_of_columns": 1,
+            "number_of_row": 1,
+            "number_of_columns_mobile": "1",
+            "number_of_row_mobile": "1"
+          }
+        }
+      },
+      "block_order": [
+        "promotion_block_HdKwnr"
+      ],
+      "settings": {
+        "enable_filtering": true,
+        "filter_type": "aside",
+        "default_hide_filtering": false,
+        "expand_filter": true,
+        "sticky_filtering": false,
+        "filter_edge_style": "adapt",
+        "enable_collection_count": true,
+        "enable_sorting": true,
+        "products_per_page": "8;14",
+        "products_per_row_on_desktop": 3,
+        "products_per_row_on_mobile": "2",
+        "pagination": "click_to_load",
+        "paginate_type": "circle",
+        "show_vendor": false,
+        "show_rating": true,
+        "show_highlighted_features": true,
+        "show_highlighted_attributes": true,
+        "show_quickview": true,
+        "show_description": true,
+        "enable_advanced_filter": true,
+        "key_value": "Advanced filter 4",
+        "hide_unavaiable_filter": false,
+        "columns_desktop_1": 4,
+        "desktop_image_width_1": 150,
+        "columns_desktop_2": 4,
+        "desktop_image_width_2": 150,
+        "enable_desktop_slider": false,
+        "image_ratio_filter": "round",
+        "advanced_filter_image_ratio": "square",
+        "enable_micro_schema": false,
+        "full_width": true,
+        "spacing_col": 8,
+        "spacing_row": 40,
+        "padding_top": 0,
+        "padding_bottom": 100,
+        "spacing_col_mobile": 4,
+        "spacing_row_mobile": 20,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 48
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "media_gallery_6AGNkb",
+    "product-grid"
+  ]
+}

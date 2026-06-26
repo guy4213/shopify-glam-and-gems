@@ -1,0 +1,253 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-article",
+      "blocks": {
+        "breadcrumbs": {
+          "type": "breadcrumbs",
+          "settings": {
+            "show_breadcrumbs_border": true,
+            "full_width_breadcrumb": true,
+            "desktop_content_alignment": "text-center",
+            "mobile_content_alignment": "text-center",
+            "background_color_light": "rgba(0,0,0,0)",
+            "text_color_light": "rgba(0,0,0,0)",
+            "textlink_color_light": "rgba(0,0,0,0)",
+            "background_color_dark": "rgba(0,0,0,0)",
+            "text_color_dark": "rgba(0,0,0,0)",
+            "textlink_color_dark": "rgba(0,0,0,0)"
+          }
+        },
+        "featured_image": {
+          "type": "featured_image",
+          "settings": {
+            "desktop_height": "550px",
+            "full_width": true,
+            "mobile_height": "400px",
+            "full_width_mobile": true
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {
+            "heading_tag": "h1",
+            "blog_show_author": true,
+            "blog_show_date": true,
+            "content_alignment": "text-left",
+            "title_size": 100
+          }
+        },
+        "content": {
+          "type": "content",
+          "settings": {
+            "text_size": 100
+          }
+        },
+        "button": {
+          "type": "button",
+          "settings": {
+            "show_back_to_blog": true,
+            "blog_show_tags": true,
+            "blog_show_share_social": true
+          }
+        }
+      },
+      "block_order": [
+        "breadcrumbs",
+        "featured_image",
+        "title",
+        "content",
+        "button"
+      ],
+      "settings": {
+        "blog_show_comment_counts": true,
+        "enable_microdata": false,
+        "top_padding": 0,
+        "bottom_padding": 100,
+        "page_width": 1400,
+        "enable_table_of_contents": true,
+        "table_of_contents_title": "Table of Contents",
+        "table_position": "left",
+        "open_tab": true,
+        "sticky_table_of_contents": true,
+        "list_style": "Ordered",
+        "social_sharing": false
+      }
+    },
+    "side_bar_ARhAWq": {
+      "type": "side-bar",
+      "blocks": {
+        "highlight_text_kHTCrj": {
+          "type": "highlight_text",
+          "settings": {
+            "title": "Side bar title",
+            "title_size": 80,
+            "text": "<p>Add further details to enrich your blog post page</p>",
+            "text_size": 100
+          }
+        },
+        "promotion_banner_Qwbhwj": {
+          "type": "promotion-banner",
+          "settings": {
+            "image_height": 300,
+            "overlay_opacity": 10,
+            "subheading": "",
+            "heading": "Promotion banner",
+            "highlight_type": "underline",
+            "heading_size": 80,
+            "content": "<p>Describe a promotion, make announcements about the promotion available in your store.</p>",
+            "text_size": 100,
+            "button_label": "",
+            "button_link": "",
+            "open_new_window_button": false,
+            "show_button_style": "primary",
+            "content_alignment": "left",
+            "content_position": "bottom",
+            "color_text": "rgba(0,0,0,0)",
+            "color_heading_highlight_light": "rgba(0,0,0,0)",
+            "color_button": "rgba(0,0,0,0)",
+            "color_text_button": "rgba(0,0,0,0)",
+            "color_button_hover": "rgba(0,0,0,0)",
+            "color_text_button_hover": "rgba(0,0,0,0)",
+            "color_button_secondary": "rgba(0,0,0,0)",
+            "secondary_button_text": "rgba(0,0,0,0)",
+            "colors_text_link": "rgba(0,0,0,0)"
+          }
+        }
+      },
+      "block_order": [
+        "highlight_text_kHTCrj",
+        "promotion_banner_Qwbhwj"
+      ],
+      "name": "t:sections.side-bar.name",
+      "settings": {
+        "side_bar_position": "left",
+        "enable_sticky_side_bar": true
+      }
+    },
+    "multicolumn_pazhmf": {
+      "type": "multicolumn",
+      "blocks": {
+        "column_kMpCAx": {
+          "type": "column",
+          "settings": {
+            "icon": "truck",
+            "another_icon": "",
+            "custom_icon": "",
+            "title": "Column",
+            "highlight_type": "underline",
+            "title_link": "",
+            "open_new_window": false,
+            "heading_size": 100,
+            "text": "<p>Add details on availability, style, or even provide a review.</p>"
+          }
+        },
+        "column_7zV3eC": {
+          "type": "column",
+          "settings": {
+            "icon": "truck",
+            "another_icon": "",
+            "custom_icon": "",
+            "title": "Column",
+            "highlight_type": "underline",
+            "title_link": "",
+            "open_new_window": false,
+            "heading_size": 100,
+            "text": "<p>Add details on availability, style, or even provide a review.</p>"
+          }
+        },
+        "column_xkfa99": {
+          "type": "column",
+          "settings": {
+            "icon": "truck",
+            "another_icon": "",
+            "custom_icon": "",
+            "title": "Column",
+            "highlight_type": "underline",
+            "title_link": "",
+            "open_new_window": false,
+            "heading_size": 100,
+            "text": "<p>Add details on availability, style, or even provide a review.</p>"
+          }
+        },
+        "column_p9mEid": {
+          "type": "column",
+          "settings": {
+            "icon": "truck",
+            "another_icon": "",
+            "custom_icon": "",
+            "title": "Column",
+            "highlight_type": "underline",
+            "title_link": "",
+            "open_new_window": false,
+            "heading_size": 100,
+            "text": "<p>Add details on availability, style, or even provide a review.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "column_kMpCAx",
+        "column_7zV3eC",
+        "column_xkfa99",
+        "column_p9mEid"
+      ],
+      "settings": {
+        "title": "",
+        "highlight_type": "underline",
+        "heading_size": 100,
+        "heading_tag": "h2",
+        "secondary_background": "section",
+        "border_column": "line_vertical",
+        "column_content_alignment": "start",
+        "icon_position": "above",
+        "icon_size": 36,
+        "enable_desktop_slider": false,
+        "swiper_on_mobile": true,
+        "enable_arrow_mobile": false,
+        "auto_play": true,
+        "change_bar_every": 3,
+        "background_color_light": "rgba(0,0,0,0)",
+        "heading_light": "rgba(0,0,0,0)",
+        "text_light": "rgba(0,0,0,0)",
+        "color_heading_highlight_light": "rgba(0,0,0,0)",
+        "line_border_light": "rgba(0,0,0,0)",
+        "color_icon_light": "#c2a27a",
+        "background_color_dark": "#2e1c13",
+        "heading_dark": "rgba(0,0,0,0)",
+        "text_dark": "rgba(0,0,0,0)",
+        "color_heading_highlight_dark": "rgba(0,0,0,0)",
+        "line_border_dark": "rgba(0,0,0,0)",
+        "color_icon_dark": "#c2a27a",
+        "column_layout_desktop": "lg:w-1/4",
+        "section_height_desktop": "md:py-0",
+        "spacing_desktop": 40,
+        "full_width": false,
+        "padding_full_width": false,
+        "show_section_divider": true,
+        "padding_top": 56,
+        "padding_bottom": 56,
+        "column_layout_mobile": "w-full",
+        "section_height_mobile": "py-0",
+        "spacing_mobile": 0,
+        "full_width_mobile": true,
+        "show_section_divider_mobile": true,
+        "padding_top_mobile": 28,
+        "padding_bottom_mobile": 28
+      }
+    }
+  },
+  "order": [
+    "main",
+    "side_bar_ARhAWq",
+    "multicolumn_pazhmf"
+  ]
+}

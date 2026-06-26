@@ -1,0 +1,174 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-blog",
+      "settings": {
+        "heading_tag": "h1",
+        "show_all_tags": true,
+        "post_per_page": "11",
+        "columns_desktop": 3,
+        "columns_first_row": 2,
+        "pagination": "pagination",
+        "paginate_type": "underline",
+        "subtext": "",
+        "alignment": "left",
+        "full_width": true,
+        "full_width_mobile": true,
+        "show_breadcrumbs": true,
+        "show_breadcrumbs_border": true,
+        "full_width_breadcrumb": false,
+        "desktop_content_alignment": "text-center",
+        "mobile_content_alignment": "text-center",
+        "background_color_light": "rgba(0,0,0,0)",
+        "text_color_light": "rgba(0,0,0,0)",
+        "textlink_color_light": "rgba(0,0,0,0)",
+        "background_color_dark": "rgba(0,0,0,0)",
+        "text_color_dark": "rgba(0,0,0,0)",
+        "textlink_color_dark": "rgba(0,0,0,0)",
+        "content_alignment": "left",
+        "show_image": true,
+        "columns_mobile": "2",
+        "image_ratio": "75",
+        "item_secondary_background": true,
+        "show_author": false,
+        "show_name": true,
+        "show_date": true,
+        "show_excerpt": true,
+        "show_tag": true,
+        "show_comment_counts": true,
+        "show_read_more": true,
+        "button_read_more_label": "READ NOW",
+        "spacing_col": 28,
+        "spacing_row": 64,
+        "padding_top": 0,
+        "padding_bottom": 100,
+        "spacing_row_mobile": 32,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 60
+      }
+    },
+    "multicolumn_qXyw4K": {
+      "type": "multicolumn",
+      "blocks": {
+        "column_BejFdW": {
+          "type": "column",
+          "settings": {
+            "icon": "truck",
+            "another_icon": "",
+            "custom_icon": "",
+            "title": "Column",
+            "highlight_type": "underline",
+            "title_link": "",
+            "open_new_window": false,
+            "heading_size": 100,
+            "text": "<p>Add details on availability, style, or even provide a review.</p>"
+          }
+        },
+        "column_ETGVmz": {
+          "type": "column",
+          "settings": {
+            "icon": "truck",
+            "another_icon": "",
+            "custom_icon": "",
+            "title": "Column",
+            "highlight_type": "underline",
+            "title_link": "",
+            "open_new_window": false,
+            "heading_size": 100,
+            "text": "<p>Add details on availability, style, or even provide a review.</p>"
+          }
+        },
+        "column_7VMNHH": {
+          "type": "column",
+          "settings": {
+            "icon": "truck",
+            "another_icon": "",
+            "custom_icon": "",
+            "title": "Column",
+            "highlight_type": "underline",
+            "title_link": "",
+            "open_new_window": false,
+            "heading_size": 100,
+            "text": "<p>Add details on availability, style, or even provide a review.</p>"
+          }
+        },
+        "column_NWmnJ9": {
+          "type": "column",
+          "settings": {
+            "icon": "truck",
+            "another_icon": "",
+            "custom_icon": "",
+            "title": "Column",
+            "highlight_type": "underline",
+            "title_link": "",
+            "open_new_window": false,
+            "heading_size": 100,
+            "text": "<p>Add details on availability, style, or even provide a review.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "column_BejFdW",
+        "column_ETGVmz",
+        "column_7VMNHH",
+        "column_NWmnJ9"
+      ],
+      "settings": {
+        "title": "",
+        "highlight_type": "underline",
+        "heading_size": 100,
+        "heading_tag": "h2",
+        "secondary_background": "section",
+        "border_column": "line_vertical",
+        "column_content_alignment": "start",
+        "icon_position": "above",
+        "icon_size": 36,
+        "enable_desktop_slider": false,
+        "swiper_on_mobile": true,
+        "enable_arrow_mobile": false,
+        "auto_play": true,
+        "change_bar_every": 3,
+        "background_color_light": "rgba(0,0,0,0)",
+        "heading_light": "rgba(0,0,0,0)",
+        "text_light": "rgba(0,0,0,0)",
+        "color_heading_highlight_light": "rgba(0,0,0,0)",
+        "line_border_light": "rgba(0,0,0,0)",
+        "color_icon_light": "#c2a27a",
+        "background_color_dark": "#2e1c13",
+        "heading_dark": "rgba(0,0,0,0)",
+        "text_dark": "rgba(0,0,0,0)",
+        "color_heading_highlight_dark": "rgba(0,0,0,0)",
+        "line_border_dark": "rgba(0,0,0,0)",
+        "color_icon_dark": "#c2a27a",
+        "column_layout_desktop": "lg:w-1/4",
+        "section_height_desktop": "md:py-0",
+        "spacing_desktop": 40,
+        "full_width": false,
+        "padding_full_width": false,
+        "show_section_divider": true,
+        "padding_top": 56,
+        "padding_bottom": 56,
+        "column_layout_mobile": "w-full",
+        "section_height_mobile": "py-0",
+        "spacing_mobile": 0,
+        "full_width_mobile": true,
+        "show_section_divider_mobile": true,
+        "padding_top_mobile": 28,
+        "padding_bottom_mobile": 28
+      }
+    }
+  },
+  "order": [
+    "main",
+    "multicolumn_qXyw4K"
+  ]
+}

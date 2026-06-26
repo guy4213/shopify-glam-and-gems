@@ -1,0 +1,506 @@
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% comment %} חישוב אוטומטי של כמות התמונות שהועלו בפועל {% endcomment %}
+{% assign filled_images_count = 0 %}
+{% for i in (1..15) %}
+  {% assign image_key = 'image_' | append: i %}
+  {% if block.settings[image_key] != blank %}
+    {% assign filled_images_count = filled_images_count | plus: 1 %}
+  {% endif %}
+{% endfor %}
+
+{% comment %} אם לא הועלו תמונות בכלל, נציג 5 פלייסהולדרים כברירת מחדל {% endcomment %}
+{% if filled_images_count == 0 %}
+  {% assign total_slides_to_render = 5 %}
+{% else %}
+  {% assign total_slides_to_render = filled_images_count %}
+{% endif %}
+
+{% style %}
+  .ai-couples-carousel-{{ ai_gen_id }} {
+    display: block;
+    background-color: {{ block.settings.background_color }};
+    padding: 60px 20px;
+    width: 100%;
+  }
+
+  .ai-couples-carousel__container-{{ ai_gen_id }} {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .ai-couples-carousel__title-{{ ai_gen_id }} {
+    text-align: center;
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.title_color }};
+    margin: 0 0 40px;
+  }
+
+  .ai-couples-carousel__slider-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    margin-bottom: 30px;
+  }
+
+  .ai-couples-carousel__slider-{{ ai_gen_id }} {
+    display: flex;
+    gap: 20px;
+    overflow: hidden;
+    padding: 20px 0;
+  }
+
+  .ai-couples-carousel__track-{{ ai_gen_id }} {
+    display: flex;
+    gap: 20px;
+    transition: transform 0.5s ease;
+  }
+
+  .ai-couples-carousel__slide-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    {% assign _desktop_gap = block.settings.items_desktop | minus: 1 | times: 20 %}
+    width: calc((100% - {{ _desktop_gap }}px) / {{ block.settings.items_desktop }});
+    transition: all 0.5s ease;
+  }
+
+  .ai-couples-carousel__slide-{{ ai_gen_id }}.center {
+    transform: scale(1.2);
+  }
+
+  .ai-couples-carousel__image-wrapper-{{ ai_gen_id }} {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .ai-couples-carousel__image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-couples-carousel__placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .ai-couples-carousel__placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  .ai-couples-carousel__empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .ai-couples-carousel__arrow-{{ ai_gen_id }} {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: {{ block.settings.arrow_background }};
+    border: 1px solid {{ block.settings.arrow_color }};
+    color: {{ block.settings.arrow_color }};
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    transition: all 0.3s ease;
+  }
+
+  .ai-couples-carousel__arrow-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.arrow_color }};
+    color: {{ block.settings.arrow_background }};
+  }
+
+  .ai-couples-carousel__arrow-{{ ai_gen_id }}:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .ai-couples-carousel__arrow--prev-{{ ai_gen_id }} {
+    left: -20px;
+  }
+
+  .ai-couples-carousel__arrow--next-{{ ai_gen_id }} {
+    right: -20px;
+  }
+
+  .ai-couples-carousel__thumbnails-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .ai-couples-carousel__thumbnail-{{ ai_gen_id }} {
+    width: 60px;
+    height: 60px;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+  }
+
+  .ai-couples-carousel__thumbnail-{{ ai_gen_id }}.active {
+    border-color: {{ block.settings.arrow_color }};
+    opacity: 1;
+  }
+
+  .ai-couples-carousel__thumbnail-{{ ai_gen_id }}:hover {
+    opacity: 1;
+  }
+
+  .ai-couples-carousel__thumbnail-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media screen and (max-width: 989px) {
+    .ai-couples-carousel__slide-{{ ai_gen_id }} {
+      {% assign _tablet_gap = block.settings.items_tablet | minus: 1 | times: 20 %}
+      width: calc((100% - {{ _tablet_gap }}px) / {{ block.settings.items_tablet }});
+    }
+
+    .ai-couples-carousel__arrow-{{ ai_gen_id }} {
+      width: 35px;
+      height: 35px;
+    }
+
+    .ai-couples-carousel__arrow--prev-{{ ai_gen_id }} {
+      left: -10px;
+    }
+
+    .ai-couples-carousel__arrow--next-{{ ai_gen_id }} {
+      right: -10px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-couples-carousel__slide-{{ ai_gen_id }} {
+      {% assign _mobile_gap = block.settings.items_mobile | minus: 1 | times: 20 %}
+      width: calc((100% - {{ _mobile_gap }}px) / {{ block.settings.items_mobile }});
+    }
+
+    .ai-couples-carousel__title-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.title_size }}px * 0.8);
+      margin-bottom: 30px;
+    }
+
+    .ai-couples-carousel__thumbnail-{{ ai_gen_id }} {
+      width: 50px;
+      height: 50px;
+    }
+  }
+{% endstyle %}
+
+<couples-carousel-{{ ai_gen_id }} class="ai-couples-carousel-{{ ai_gen_id }}" data-total-slides="{{ total_slides_to_render }}" {{ block.shopify_attributes }}>
+  <div class="ai-couples-carousel__container-{{ ai_gen_id }}">
+    {% if block.settings.title != blank %}
+      <h2 class="ai-couples-carousel__title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+    {% endif %}
+
+    <div class="ai-couples-carousel__slider-wrapper-{{ ai_gen_id }}">
+      <button
+        class="ai-couples-carousel__arrow-{{ ai_gen_id }} ai-couples-carousel__arrow--prev-{{ ai_gen_id }}"
+        aria-label="Previous slide"
+        data-direction="prev"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="ai-couples-carousel__slider-{{ ai_gen_id }}">
+        <div class="ai-couples-carousel__track-{{ ai_gen_id }}">
+          {% for i in (1..total_slides_to_render) %}
+            {% liquid
+              assign image_key = 'image_' | append: i
+              assign image = block.settings[image_key]
+            %}
+            <div class="ai-couples-carousel__slide-{{ ai_gen_id }}" data-slide-index="{{ forloop.index0 }}">
+              <div class="ai-couples-carousel__image-wrapper-{{ ai_gen_id }}">
+                {% if image %}
+                  <img
+                    src="{{ image | image_url: width: 600 }}"
+                    alt="{{ image.alt | escape }}"
+                    class="ai-couples-carousel__image-{{ ai_gen_id }}"
+                    loading="lazy"
+                    width="600"
+                    height="800"
+                  >
+                {% else %}
+                  <div class="ai-couples-carousel__placeholder-{{ ai_gen_id }}">
+                    {{ 'image' | placeholder_svg_tag }}
+                    <div class="ai-couples-carousel__empty-state-{{ ai_gen_id }}">
+                      Add image {{ i }}
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <button
+        class="ai-couples-carousel__arrow-{{ ai_gen_id }} ai-couples-carousel__arrow--next-{{ ai_gen_id }}"
+        aria-label="Next slide"
+        data-direction="next"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <div class="ai-couples-carousel__thumbnails-{{ ai_gen_id }}">
+      {% for i in (1..total_slides_to_render) %}
+        {% liquid
+          assign image_key = 'image_' | append: i
+          assign image = block.settings[image_key]
+        %}
+        <div class="ai-couples-carousel__thumbnail-{{ ai_gen_id }}" data-thumbnail-index="{{ forloop.index0 }}">
+          {% if image %}
+            <img
+              src="{{ image | image_url: width: 120 }}"
+              alt="{{ image.alt | escape }}"
+              class="ai-couples-carousel__thumbnail-image-{{ ai_gen_id }}"
+              loading="lazy"
+              width="60"
+              height="60"
+            >
+          {% else %}
+            <div class="ai-couples-carousel__placeholder-{{ ai_gen_id }}">
+              {{ 'image' | placeholder_svg_tag }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</couples-carousel-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    if (customElements.get('couples-carousel-{{ ai_gen_id }}')) return;
+
+    class CouplesCarousel{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.currentIndex = 0;
+        this.totalSlides = parseInt(this.getAttribute('data-total-slides')) || 5;
+      }
+
+      connectedCallback() {
+        this.track = this.querySelector('.ai-couples-carousel__track-{{ ai_gen_id }}');
+        this.slides = this.querySelectorAll('.ai-couples-carousel__slide-{{ ai_gen_id }}');
+        this.prevButton = this.querySelector('.ai-couples-carousel__arrow--prev-{{ ai_gen_id }}');
+        this.nextButton = this.querySelector('.ai-couples-carousel__arrow--next-{{ ai_gen_id }}');
+        this.thumbnails = this.querySelectorAll('.ai-couples-carousel__thumbnail-{{ ai_gen_id }}');
+        
+        if (!this.slides.length) return;
+
+        this.setupEventListeners();
+        this.updateCarousel();
+      }
+
+      setupEventListeners() {
+        this.prevButton.addEventListener('click', () => this.navigate('prev'));
+        this.nextButton.addEventListener('click', () => this.navigate('next'));
+
+        this.thumbnails.forEach((thumbnail, index) => {
+          thumbnail.addEventListener('click', () => {
+            // אם המשתמש לוחץ על טאמבנייל שנמצא ב-4 התמונות האחרונות,
+            // ננעל את הגלילה על המיקום המקסימלי כדי למנוע חלל ריק.
+            const maxAllowedIndex = Math.max(0, this.totalSlides - this.getVisibleSlidesCount());
+            this.currentIndex = Math.min(index, maxAllowedIndex);
+            this.updateCarousel();
+            
+            // נשמור על סימון הטאמבנייל הנכון כפעיל, גם אם הגלילה עצמה נעצרה
+            this.thumbnails.forEach((t, i) => t.classList.toggle('active', i === index));
+          });
+        });
+      }
+
+      getVisibleSlidesCount() {
+        if (window.innerWidth <= 749) return {{ block.settings.items_mobile }};
+        if (window.innerWidth <= 989) return {{ block.settings.items_tablet }};
+        return {{ block.settings.items_desktop }};
+      }
+
+      navigate(direction) {
+        const visibleSlides = this.getVisibleSlidesCount();
+        // האינדקס המקסימלי המותר לגלילה (סך הכל פחות התמונות שרואים בפריים)
+        const maxAllowedIndex = Math.max(0, this.totalSlides - visibleSlides);
+
+        if (direction === 'prev') {
+          this.currentIndex = Math.max(0, this.currentIndex - 1);
+        } else {
+          this.currentIndex = Math.min(maxAllowedIndex, this.currentIndex + 1);
+        }
+        this.updateCarousel();
+      }
+
+      updateCarousel() {
+        const slideWidth = this.slides[0].offsetWidth;
+        const gap = 20;
+        const offset = this.currentIndex * (slideWidth + gap);
+        
+        this.track.style.transform = `translateX(-${offset}px)`;
+
+        // הוספת קלאס לפוקוס על התמונה הנוכחית
+        this.slides.forEach((slide, index) => {
+          if (index === this.currentIndex) {
+            slide.classList.add('center');
+          } else {
+            slide.classList.remove('center');
+          }
+        });
+
+        // עדכון סטטוס אקטיבי לטאמבניילס (רק אם לא עודכן ידנית בלחיצה)
+        const activeThumbnail = this.querySelector('.ai-couples-carousel__thumbnail-{{ ai_gen_id }}.active');
+        if (!activeThumbnail || parseInt(activeThumbnail.getAttribute('data-thumbnail-index')) <= this.currentIndex) {
+          this.thumbnails.forEach((thumbnail, index) => {
+            thumbnail.classList.toggle('active', index === this.currentIndex);
+          });
+        }
+
+        const visibleSlides = this.getVisibleSlidesCount();
+        const maxAllowedIndex = Math.max(0, this.totalSlides - visibleSlides);
+
+        // כפתורי הניווט יינעלו בהתאם לגבולות התמונות המוצגות בפריים
+        this.prevButton.disabled = this.currentIndex === 0;
+        this.nextButton.disabled = this.currentIndex >= maxAllowedIndex;
+      }
+    }
+
+    customElements.define('couples-carousel-{{ ai_gen_id }}', CouplesCarousel{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Meet our couples",
+  "tag": null,
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "Meet Our Couples"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#FAF8F5"
+    },
+    {
+      "type": "header",
+      "content": "Navigation arrows"
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrow color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "arrow_background",
+      "label": "Arrow background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Items per frame"
+    },
+    {
+      "type": "range",
+      "id": "items_desktop",
+      "label": "Desktop (> 989px)",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "items_tablet",
+      "label": "Tablet (≤ 989px)",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "items_mobile",
+      "label": "Mobile (≤ 749px)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Images (Max 15)"
+    },
+    { "type": "image_picker", "id": "image_1", "label": "Image 1" },
+    { "type": "image_picker", "id": "image_2", "label": "Image 2" },
+    { "type": "image_picker", "id": "image_3", "label": "Image 3" },
+    { "type": "image_picker", "id": "image_4", "label": "Image 4" },
+    { "type": "image_picker", "id": "image_5", "label": "Image 5" },
+    { "type": "image_picker", "id": "image_6", "label": "Image 6" },
+    { "type": "image_picker", "id": "image_7", "label": "Image 7" },
+    { "type": "image_picker", "id": "image_8", "label": "Image 8" },
+    { "type": "image_picker", "id": "image_9", "label": "Image 9" },
+    { "type": "image_picker", "id": "image_10", "label": "Image 10" },
+    { "type": "image_picker", "id": "image_11", "label": "Image 11" },
+    { "type": "image_picker", "id": "image_12", "label": "Image 12" },
+    { "type": "image_picker", "id": "image_13", "label": "Image 13" },
+    { "type": "image_picker", "id": "image_14", "label": "Image 14" },
+    { "type": "image_picker", "id": "image_15", "label": "Image 15" }
+  ],
+  "presets": [
+    {
+      "name": "Meet our couples"
+    }
+  ]
+}
+{% endschema %}

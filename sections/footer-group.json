@@ -1,0 +1,79 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.footer.name",
+  "type": "footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "col-support": {
+          "type": "menu",
+          "settings": {
+            "title": "Customer Support",
+            "link_1_text": "Customer Service",
+            "link_1_url": "/pages/customer-service",
+            "link_2_text": "Track My Order",
+            "link_2_url": "/pages/track-order",
+            "link_3_text": "Payment Options",
+            "link_3_url": "/pages/payment-options",
+            "link_4_text": "Warranty",
+            "link_4_url": "/pages/warranty",
+            "link_5_text": "Shipping & Returns",
+            "link_5_url": "/pages/shipping-returns",
+            "link_6_text": "FAQs",
+            "link_6_url": "/pages/faqs"
+          }
+        },
+        "col-about": {
+          "type": "menu",
+          "settings": {
+            "title": "About",
+            "link_1_text": "Our Story",
+            "link_1_url": "/pages/our-story",
+            "link_2_text": "Our Clients",
+            "link_2_url": "/pages/our-clients",
+            "link_3_text": "Terms & Conditions",
+            "link_3_url": "/pages/terms",
+            "link_4_text": "Privacy Policy",
+            "link_4_url": "/pages/privacy-policy",
+            "link_5_text": "",
+            "link_5_url": "",
+            "link_6_text": "",
+            "link_6_url": ""
+          }
+        },
+        "col-contact": {
+          "type": "contact_info",
+          "settings": {
+            "title": "Contact Us",
+            "consultation_text": "Book a Private Consultation",
+            "consultation_url": "/pages/consultation",
+            "phone_text": "+1 (610) 244 1861",
+            "phone_url": "tel:+16102441861",
+            "email_text": "cs@glamandgems.com",
+            "email_url": "mailto:cs@glamandgems.com",
+            "address_text": "1220 Broadway RM 801A, New York, NY 10001",
+            "address_url": "https://maps.google.com/?q=1220+Broadway+New+York+NY+10001"
+          }
+        }
+      },
+      "block_order": [
+        "col-support",
+        "col-about",
+        "col-contact"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

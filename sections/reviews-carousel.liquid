@@ -1,0 +1,667 @@
+{%- style -%}
+  #reviews-carousel-{{ section.id }} .reviews-carousel__card-inner {
+    background-color: {{ section.settings.card_background_color }};
+  }
+  #reviews-carousel-{{ section.id }} {
+    --items-desktop: {{ section.settings.items_desktop }};
+    --items-tablet: {{ section.settings.items_tablet }};
+    --items-mobile: {{ section.settings.items_mobile }};
+  }
+{%- endstyle -%}
+
+<section
+  class="reviews-carousel"
+  id="reviews-carousel-{{ section.id }}"
+  style="background-color: {{ section.settings.background_color }};"
+>
+  <div class="reviews-carousel__container">
+
+    {% if section.settings.heading != blank %}
+      <h2 class="reviews-carousel__heading">{{ section.settings.heading | escape }}</h2>
+    {% endif %}
+
+    {% if section.settings.subheading != blank %}
+      <p class="reviews-carousel__subheading">{{ section.settings.subheading | escape }}</p>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class="reviews-carousel__outer">
+        <button
+          class="reviews-carousel__btn reviews-carousel__btn--prev"
+          aria-label="Previous reviews"
+          data-prev
+          type="button"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+
+        <div class="reviews-carousel__viewport" data-viewport>
+          <div class="reviews-carousel__track" data-track>
+            {% for block in section.blocks %}
+              <article class="reviews-carousel__card" {{ block.shopify_attributes }}>
+                <div class="reviews-carousel__card-inner">
+
+                  <div class="reviews-carousel__card-img-wrap">
+                    {% if block.settings.image != blank %}
+                      {{
+                        block.settings.image
+                        | image_url: width: 480
+                        | image_tag:
+                          loading: 'lazy',
+                          class: 'reviews-carousel__card-img',
+                          alt: block.settings.reviewer_name | escape
+                      }}
+                    {% else %}
+                      {{ 'image' | placeholder_svg_tag: 'reviews-carousel__card-img reviews-carousel__card-img--placeholder' }}
+                    {% endif %}
+                  </div>
+
+                  <div class="reviews-carousel__card-content">
+                    <div
+                      class="reviews-carousel__stars"
+                      role="img"
+                      aria-label="{{ block.settings.star_rating }} out of 5 stars"
+                    >
+                      {% assign rating = block.settings.star_rating %}
+                      {% for i in (1..5) %}
+                        <span
+                          class="reviews-carousel__star{% if i <= rating %} reviews-carousel__star--on{% endif %}"
+                          aria-hidden="true"
+                        >★</span>
+                      {% endfor %}
+                    </div>
+
+                    {% if block.settings.review_text != blank %}
+                      <p class="reviews-carousel__text">{{ block.settings.review_text | escape }}</p>
+                    {% endif %}
+
+                    {% if block.settings.reviewer_name != blank %}
+                      <div class="reviews-carousel__reviewer">
+                        <span class="reviews-carousel__reviewer-name">{{ block.settings.reviewer_name | escape }}</span>
+                        <span class="reviews-carousel__check" aria-label="Verified purchase" title="Verified purchase">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="#3dba6f" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z"/></svg>
+                        </span>
+                      </div>
+                    {% endif %}
+                  </div>
+
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        </div>
+
+        <button
+          class="reviews-carousel__btn reviews-carousel__btn--next"
+          aria-label="Next reviews"
+          data-next
+          type="button"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+
+      <div class="reviews-carousel__dots" data-dots aria-hidden="true"></div>
+
+    {% else %}
+      <p class="reviews-carousel__empty">Add review cards using the theme editor.</p>
+    {% endif %}
+
+  </div>
+</section>
+
+<style>
+/* ===== Reviews Carousel ===== */
+.reviews-carousel {
+  padding: 72px 24px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.reviews-carousel *,
+.reviews-carousel *::before,
+.reviews-carousel *::after {
+  box-sizing: border-box;
+}
+
+.reviews-carousel__container {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.reviews-carousel__heading {
+  text-align: center;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 10px;
+  line-height: 1.2;
+}
+
+.reviews-carousel__subheading {
+  text-align: center;
+  color: #7a5c63;
+  font-size: 1rem;
+  margin: 0 0 44px;
+}
+
+.reviews-carousel__empty {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+}
+
+/* ── Layout ── */
+.reviews-carousel__outer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Arrow buttons ── */
+.reviews-carousel__btn {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid #c9697e;
+  background: #fff;
+  color: #c9697e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.15s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.reviews-carousel__btn:hover:not(:disabled) {
+  background: #c9697e;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.reviews-carousel__btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Viewport / Track ── */
+.reviews-carousel__viewport {
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+.reviews-carousel__track {
+  display: flex;
+  transition: transform 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+/* ── Cards ── */
+.reviews-carousel__card {
+  flex: 0 0 calc(100% / var(--items-desktop, 2));
+  padding: 0 10px;
+}
+
+.reviews-carousel__card-inner {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 6px 28px rgba(180, 100, 120, 0.10), 0 2px 8px rgba(0,0,0,0.05);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.reviews-carousel__card-inner:hover {
+  box-shadow: 0 12px 40px rgba(180, 100, 120, 0.16), 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-3px);
+}
+
+/* ── Card image ── */
+.reviews-carousel__card-img-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #f7eef0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reviews-carousel__card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.reviews-carousel__card-img--placeholder {
+  width: 60%;
+  height: auto;
+  opacity: 0.35;
+}
+
+/* ── Card content ── */
+.reviews-carousel__card-content {
+  padding: 18px 20px 22px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Stars ── */
+.reviews-carousel__stars {
+  display: flex;
+  gap: 1px;
+}
+
+.reviews-carousel__star {
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #dfc8ce;
+}
+
+.reviews-carousel__star--on {
+  color: #f5a623;
+}
+
+/* ── Review text ── */
+.reviews-carousel__text {
+  font-size: 0.875rem;
+  color: #555;
+  line-height: 1.65;
+  font-weight: bold;
+  margin: 0;
+  flex: 1;
+}
+
+/* ── Reviewer row ── */
+.reviews-carousel__reviewer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #f3e8ea;
+}
+
+.reviews-carousel__reviewer-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1a1a1a;
+  letter-spacing: 0.01em;
+}
+
+.reviews-carousel__check {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── Dot indicators ── */
+.reviews-carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 30px;
+}
+
+.reviews-carousel__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #d4a8b3;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.reviews-carousel__dot--active {
+  background: #c9697e;
+  transform: scale(1.4);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+  .reviews-carousel__card {
+    flex: 0 0 calc(100% / var(--items-tablet, 2));
+  }
+}
+
+@media (max-width: 768px) {
+  .reviews-carousel {
+    padding: 52px 16px;
+  }
+
+  .reviews-carousel__card {
+    flex: 0 0 calc(100% / var(--items-mobile, 1));
+  }
+
+  .reviews-carousel__btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .reviews-carousel__outer {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 520px) {
+  .reviews-carousel {
+    padding: 40px 10px;
+  }
+
+  .reviews-carousel__card {
+    flex: 0 0 calc(100% / var(--items-mobile, 1));
+  }
+
+  .reviews-carousel__btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .reviews-carousel__outer {
+    gap: 4px;
+  }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  var SECTION_ID = 'reviews-carousel-{{ section.id }}';
+
+  function getVisible() {
+    var w = window.innerWidth;
+    if (w <= 768)  return {{ section.settings.items_mobile }};
+    if (w <= 1024) return {{ section.settings.items_tablet }};
+    return {{ section.settings.items_desktop }};
+  }
+
+  function initCarousel(id) {
+    var section  = document.getElementById(id);
+    if (!section) return;
+
+    var viewport = section.querySelector('[data-viewport]');
+    var track    = section.querySelector('[data-track]');
+    var prevBtn  = section.querySelector('[data-prev]');
+    var nextBtn  = section.querySelector('[data-next]');
+    var dotsWrap = section.querySelector('[data-dots]');
+
+    if (!viewport || !track) return;
+
+    var cards      = Array.from(track.children);
+    var total      = cards.length;
+    var currentIdx = 0;
+
+    /* ── Dots ── */
+    function buildDots() {
+      if (!dotsWrap) return;
+      dotsWrap.innerHTML = '';
+      var visible  = getVisible();
+      var dotCount = Math.max(1, total - visible + 1);
+      for (var i = 0; i < dotCount; i++) {
+        var dot = document.createElement('button');
+        dot.className    = 'reviews-carousel__dot';
+        dot.type         = 'button';
+        dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+        (function (idx) {
+          dot.addEventListener('click', function () { goTo(idx); });
+        })(i);
+        dotsWrap.appendChild(dot);
+      }
+    }
+
+    function updateDots() {
+      if (!dotsWrap) return;
+      var dots = dotsWrap.querySelectorAll('.reviews-carousel__dot');
+      dots.forEach(function (d, i) {
+        d.classList.toggle('reviews-carousel__dot--active', i === currentIdx);
+      });
+    }
+
+    /* ── Navigation ── */
+    function getMaxIdx() {
+      return Math.max(0, total - getVisible());
+    }
+
+    function updateButtons() {
+      if (prevBtn) prevBtn.disabled = currentIdx <= 0;
+      if (nextBtn) nextBtn.disabled = currentIdx >= getMaxIdx();
+    }
+
+    function goTo(idx) {
+      currentIdx = Math.min(Math.max(idx, 0), getMaxIdx());
+      var cardWidth = viewport.offsetWidth / getVisible();
+      track.style.transform = 'translateX(-' + (currentIdx * cardWidth) + 'px)';
+      updateButtons();
+      updateDots();
+    }
+
+    /* ── Arrow clicks ── */
+    if (prevBtn) prevBtn.addEventListener('click', function () { goTo(currentIdx - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { goTo(currentIdx + 1); });
+
+    /* ── Touch / swipe ── */
+    var touchStartX = 0;
+    var touchStartY = 0;
+    var swiping     = false;
+
+    viewport.addEventListener('touchstart', function (e) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      swiping     = true;
+    }, { passive: true });
+
+    viewport.addEventListener('touchmove', function (e) {
+      if (!swiping) return;
+      var dx = e.touches[0].clientX - touchStartX;
+      var dy = e.touches[0].clientY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy) + 5) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    viewport.addEventListener('touchend', function (e) {
+      if (!swiping) return;
+      swiping   = false;
+      var dx    = e.changedTouches[0].clientX - touchStartX;
+      var threshold = 48;
+      if (dx < -threshold) { goTo(currentIdx + 1); }
+      else if (dx > threshold) { goTo(currentIdx - 1); }
+    }, { passive: true });
+
+    /* ── Keyboard ── */
+    viewport.setAttribute('tabindex', '0');
+    viewport.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); goTo(currentIdx - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); goTo(currentIdx + 1); }
+    });
+
+    /* ── Resize ── */
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        buildDots();
+        goTo(Math.min(currentIdx, getMaxIdx()));
+      }, 150);
+    });
+
+    /* ── Init ── */
+    buildDots();
+    goTo(0);
+  }
+
+  /* Bootstrap */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { initCarousel(SECTION_ID); });
+  } else {
+    initCarousel(SECTION_ID);
+  }
+
+  /* Re-init on Shopify theme editor section reload */
+  document.addEventListener('shopify:section:load', function (e) {
+    if (e.detail && e.detail.sectionId === '{{ section.id }}') {
+      initCarousel(SECTION_ID);
+    }
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Reviews Carousel",
+  "tag": "section",
+  "class": "section-reviews-carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What Our Customers Say"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Real reviews from real customers"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section Background Color",
+      "default": "#fce8ec"
+    },
+    {
+      "type": "color",
+      "id": "card_background_color",
+      "label": "Card Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Items per frame"
+    },
+    {
+      "type": "range",
+      "id": "items_desktop",
+      "label": "Desktop (> 1024px)",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "items_tablet",
+      "label": "Tablet (≤ 1024px)",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "items_mobile",
+      "label": "Mobile (≤ 768px)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Customer / Product Image"
+        },
+        {
+          "type": "range",
+          "id": "star_rating",
+          "label": "Star Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "reviewer_name",
+          "label": "Reviewer Name",
+          "default": "Happy Customer"
+        },
+        {
+          "type": "textarea",
+          "id": "review_text",
+          "label": "Review Text",
+          "default": "Absolutely loved this product! The quality is incredible and it arrived faster than expected."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews Carousel",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Sarah M.",
+            "star_rating": 5,
+            "review_text": "Absolutely obsessed with my new jewelry! The quality is stunning and shipping was so fast."
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Jessica L.",
+            "star_rating": 5,
+            "review_text": "I bought this as a gift and she loved it. Will definitely be ordering again!"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Amy R.",
+            "star_rating": 4,
+            "review_text": "Beautiful piece. Exactly as described and packaged so elegantly."
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Nicole K.",
+            "star_rating": 5,
+            "review_text": "The craftsmanship is incredible. I wear it every day and get so many compliments!"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Olivia T.",
+            "star_rating": 5,
+            "review_text": "Exceeded my expectations. The colors are even more vibrant in person!"
+          }
+        }
+      ]
+    }
+  ],
+  "max_blocks": 20
+}
+{% endschema %}

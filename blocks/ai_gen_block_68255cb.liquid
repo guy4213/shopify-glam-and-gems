@@ -1,0 +1,436 @@
+{% doc %}
+  @prompt
+    Create a section with 2 side-by-side images split equally (50% each), each image taking full height&full width. On top of each image, at the bottom center, there is a button/label with white background and dark text (like "Shop Engagement Rings" and "Shop Jewelry"). The button appears overlaid on the image itself, positioned at the bottom center of each image. The section should look like a split-screen hero with two images side by side and a clickable label button on each image. Each image and button text should be customizable from the theme editor. On mobile, show only a single image with both buttons overlaid at the bottom.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-split-hero-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    position: relative;
+  }
+
+  .ai-split-hero-container-{{ ai_gen_id }} {
+    display: flex;
+    width: 100%;
+    height: {{ block.settings.section_height }}px;
+  }
+
+  .ai-split-hero-item-{{ ai_gen_id }} {
+    position: relative;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .ai-split-hero-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ai-split-hero-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-split-hero-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-split-hero-button-wrapper-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: {{ block.settings.button_bottom_spacing }}px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+  }
+
+  .ai-split-hero-button-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: {{ block.settings.button_padding_vertical }}px {{ block.settings.button_padding_horizontal }}px;
+    background-color: {{ block.settings.button_background_color }};
+    color: {{ block.settings.button_text_color }};
+    text-decoration: none;
+    font-size: {{ block.settings.button_font_size }}px;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .ai-split-hero-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_background_color }};
+    color: {{ block.settings.button_hover_text_color }};
+  }
+
+  /* Mobile layout */
+  .ai-split-hero-mobile-{{ ai_gen_id }} {
+    display: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-split-hero-mobile-img-{{ ai_gen_id }} {
+    width: 100%;
+    height: {{ block.settings.mobile_image_height }}px;
+    display: block;
+  }
+
+  .ai-split-hero-mobile-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: {{ block.settings.mobile_image_height }}px;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-split-hero-mobile-buttons-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: {{ block.settings.mobile_button_bottom_spacing }}px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    gap: {{ block.settings.mobile_button_gap }}px;
+    flex-wrap: wrap;
+    z-index: 2;
+    white-space: nowrap;
+  }
+
+  .ai-split-hero-mobile-buttons-{{ ai_gen_id }} .ai-split-hero-button-{{ ai_gen_id }} {
+    width: {{ block.settings.mobile_button_width }}px;
+    text-align: center;
+    white-space: normal;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-split-hero-container-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .ai-split-hero-mobile-{{ ai_gen_id }} {
+      display: block;
+    }
+  }
+{% endstyle %}
+
+<split-hero-{{ ai_gen_id }} class="ai-split-hero-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+
+  <!-- Desktop: two side-by-side images -->
+  <div class="ai-split-hero-container-{{ ai_gen_id }}">
+    <div class="ai-split-hero-item-{{ ai_gen_id }}">
+      {% if block.settings.image_left %}
+        <img
+          src="{{ block.settings.image_left | image_url: width: 1200 }}"
+          alt="{{ block.settings.image_left.alt | escape }}"
+          loading="lazy"
+          width="{{ block.settings.image_left.width }}"
+          height="{{ block.settings.image_left.height }}"
+          class="ai-split-hero-image-{{ ai_gen_id }}"
+        >
+      {% else %}
+        <div class="ai-split-hero-placeholder-{{ ai_gen_id }}">
+          {{ 'hero-apparel-1' | placeholder_svg_tag }}
+        </div>
+      {% endif %}
+
+      <div class="ai-split-hero-button-wrapper-{{ ai_gen_id }}">
+        <a href="{{ block.settings.button_link_left }}" class="ai-split-hero-button-{{ ai_gen_id }}">
+          {{ block.settings.button_text_left }}
+        </a>
+      </div>
+    </div>
+
+    <div class="ai-split-hero-item-{{ ai_gen_id }}">
+      {% if block.settings.image_right %}
+        <img
+          src="{{ block.settings.image_right | image_url: width: 1200 }}"
+          alt="{{ block.settings.image_right.alt | escape }}"
+          loading="lazy"
+          width="{{ block.settings.image_right.width }}"
+          height="{{ block.settings.image_right.height }}"
+          class="ai-split-hero-image-{{ ai_gen_id }}"
+        >
+      {% else %}
+        <div class="ai-split-hero-placeholder-{{ ai_gen_id }}">
+          {{ 'hero-apparel-1' | placeholder_svg_tag }}
+        </div>
+      {% endif %}
+
+      <div class="ai-split-hero-button-wrapper-{{ ai_gen_id }}">
+        <a href="{{ block.settings.button_link_right }}" class="ai-split-hero-button-{{ ai_gen_id }}">
+          {{ block.settings.button_text_right }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile: single image with both buttons overlaid -->
+  <div class="ai-split-hero-mobile-{{ ai_gen_id }}">
+    {% if block.settings.mobile_image != blank %}
+      {% assign mobile_img = block.settings.mobile_image %}
+    {% elsif block.settings.image_left != blank %}
+      {% assign mobile_img = block.settings.image_left %}
+    {% else %}
+      {% assign mobile_img = nil %}
+    {% endif %}
+
+    {% assign mobile_scale = block.settings.mobile_image_scale | divided_by: 100.0 %}
+
+    {% if mobile_img %}
+      <img
+        src="{{ mobile_img | image_url: width: 800 }}"
+        alt="{{ mobile_img.alt | escape }}"
+        loading="lazy"
+        width="{{ mobile_img.width }}"
+        height="{{ mobile_img.height }}"
+        class="ai-split-hero-mobile-img-{{ ai_gen_id }}"
+        style="transform: scale({{ mobile_scale }}); transform-origin: center center;"
+      >
+    {% else %}
+      <div class="ai-split-hero-mobile-placeholder-{{ ai_gen_id }}">
+        {{ 'hero-apparel-1' | placeholder_svg_tag }}
+      </div>
+    {% endif %}
+
+    <div class="ai-split-hero-mobile-buttons-{{ ai_gen_id }}">
+      <a href="{{ block.settings.button_link_left }}" class="ai-split-hero-button-{{ ai_gen_id }}">
+        {{ block.settings.button_text_left }}
+      </a>
+      <a href="{{ block.settings.button_link_right }}" class="ai-split-hero-button-{{ ai_gen_id }}">
+        {{ block.settings.button_text_right }}
+      </a>
+    </div>
+  </div>
+
+</split-hero-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class SplitHero{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.style.display = 'block';
+      }
+    }
+
+    customElements.define('split-hero-{{ ai_gen_id }}', SplitHero{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Split hero",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "min": 300,
+      "max": 800,
+      "step": 50,
+      "unit": "px",
+      "label": "Desktop height",
+      "default": 600
+    },
+    {
+      "type": "header",
+      "content": "Left image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_left",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "button_text_left",
+      "label": "Button text",
+      "default": "Shop Engagement Rings"
+    },
+    {
+      "type": "url",
+      "id": "button_link_left",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Right image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_right",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "button_text_right",
+      "label": "Button text",
+      "default": "Shop Jewelry"
+    },
+    {
+      "type": "url",
+      "id": "button_link_right",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image (leave blank to use left image)"
+    },
+    {
+      "type": "range",
+      "id": "mobile_image_scale",
+      "min": 50,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "label": "Image zoom",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "mobile_image_height",
+      "min": 200,
+      "max": 700,
+      "step": 50,
+      "unit": "px",
+      "label": "Mobile image height",
+      "default": 450
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_width",
+      "min": 80,
+      "max": 280,
+      "step": 10,
+      "unit": "px",
+      "label": "Button width",
+      "default": 150
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_bottom_spacing",
+      "min": 10,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Buttons distance from bottom",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_gap",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "label": "Gap between buttons",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Button style"
+    },
+    {
+      "type": "range",
+      "id": "button_bottom_spacing",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom spacing (desktop only)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Vertical padding",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Background color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background_color",
+      "label": "Hover background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Hover text color",
+      "default": "#FFFFFF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Split hero"
+    }
+  ]
+}
+{% endschema %}

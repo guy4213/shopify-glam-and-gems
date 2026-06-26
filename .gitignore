@@ -1,0 +1,43 @@
+# Secrets — NEVER commit
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+*.pem
+*.key
+
+# Cloudflare Workers
+.wrangler/
+.mf/
+.miniflare/
+dist/
+node_modules/
+
+# Shopify CLI
+.shopify/
+.theme-check.yml.local
+
+# Claude Code — machine-local settings (may contain secrets in command history)
+.claude/settings.local.json
+.qodo/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local notes / scratch
+notes.txt

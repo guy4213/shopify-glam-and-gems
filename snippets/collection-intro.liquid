@@ -1,0 +1,16 @@
+{%- liquid
+  assign cl_subtitle = collection.metafields.custom.subtitle | strip
+  assign cl_intro    = collection.metafields.custom.intro_text | strip
+-%}
+{%- if cl_subtitle != blank or cl_intro != blank -%}
+  <div class="w-full collection-intro pt-6 pb-6 md:pt-9 md:pb-9">
+    <div class="x-pgw page-width mr-auto ml-auto pl-5 pr-5">
+      {%- if cl_subtitle != blank -%}
+        <p class="h4 leading-tight mb-3">{{ cl_subtitle | escape }}</p>
+      {%- endif -%}
+      {%- if cl_intro != blank -%}
+        <div class="p-break-words text-[rgb(var(--colors-text))]">{{ cl_intro | escape | newline_to_br }}</div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}

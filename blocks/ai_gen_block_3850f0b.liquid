@@ -1,0 +1,426 @@
+{% doc %}
+  @prompt
+    Create a custom section that displays 10 images in a single row, with a text label/caption displayed underneath each image (outside and below the image, not overlaid on it). Each image and its text should be customizable from the theme editor. The section should be called "Diamond Shapes" and the layout should be responsive but optimized to show all 10 items in one row on desktop., תוסיף לי פה רק כותרת כמו שכתוב Diamond Shapes
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .gg-section-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 40px 0;
+    background-color: {{ block.settings.background_color }};
+    box-sizing: border-box;
+  }
+  .gg-container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  .gg-heading-{{ ai_gen_id }} {
+    text-align: {{ block.settings.heading_alignment }};
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 {{ block.settings.heading_spacing }}px;
+  }
+  .gg-carousel-{{ ai_gen_id }} {
+    position: relative;
+    padding: 0 56px;
+  }
+  .gg-track-{{ ai_gen_id }} {
+    overflow: hidden;
+  }
+  .gg-inner-{{ ai_gen_id }} {
+    display: flex;
+    gap: {{ block.settings.gap }}px;
+    transition: transform 0.4s ease;
+  }
+  .gg-item-{{ ai_gen_id }} {
+    flex: 0 0 calc((100% - {{ block.settings.gap }}px * ({{ block.settings.items_per_view | default: 3 }} - 1)) / {{ block.settings.items_per_view | default: 3 }});
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: {{ block.settings.caption_spacing }}px;
+  }
+  .gg-img-wrap-{{ ai_gen_id }} {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: {{ block.settings.border_radius }}px;
+    background: #FFFEF3;
+  }
+  .gg-img-wrap-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .gg-arrow-{{ ai_gen_id }} {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: none;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+    padding: 0;
+  }
+  .gg-arrow-{{ ai_gen_id }}:hover {
+    background: #f0f0f0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.22);
+  }
+  .gg-prev-{{ ai_gen_id }} { left: 0; }
+  .gg-next-{{ ai_gen_id }} { right: 0; }
+  @media screen and (max-width: 989px) {
+    .gg-heading-{{ ai_gen_id }} { font-size: {{ block.settings.heading_size | times: 0.8 }}px; }
+    .gg-item-{{ ai_gen_id }} {
+      flex: 0 0 calc((100% - {{ block.settings.gap }}px) / 2);
+    }
+  }
+  @media screen and (max-width: 749px) {
+    .gg-section-{{ ai_gen_id }} { padding: 30px 0; }
+    .gg-heading-{{ ai_gen_id }} { font-size: {{ block.settings.heading_size_mobile }}px; padding: 0 8px; }
+    .gg-carousel-{{ ai_gen_id }} { padding: 0; }
+    .gg-item-{{ ai_gen_id }} {
+      flex: 0 0 calc((100% - {{ block.settings.gap_mobile }}px * ({{ block.settings.columns_mobile | default: 2 }} - 1)) / {{ block.settings.columns_mobile | default: 2 }});
+    }
+    .gg-inner-{{ ai_gen_id }} { gap: {{ block.settings.gap_mobile }}px; }
+    .gg-track-{{ ai_gen_id }} {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .gg-track-{{ ai_gen_id }}::-webkit-scrollbar { display: none; }
+    .gg-inner-{{ ai_gen_id }} { transform: none !important; }
+    .gg-item-{{ ai_gen_id }} { scroll-snap-align: start; }
+  }
+{% endstyle %}
+
+<div class="gg-section-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="gg-container-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank %}
+      <h2 class="gg-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+    {% endif %}
+
+    {% liquid
+      assign ppv = block.settings.items_per_view | default: 3 | plus: 0
+      assign mob_ppv = block.settings.columns_mobile | default: 2 | plus: 0
+      assign gap_px = block.settings.gap | default: 20
+      assign mob_gap_px = block.settings.gap_mobile | default: 10
+    %}
+
+    <div class="gg-carousel-{{ ai_gen_id }}"
+      x-data="{
+        cur: 0,
+        get ppv() {
+          return window.innerWidth <= 749 ? {{ mob_ppv }} : (window.innerWidth <= 989 ? 2 : {{ ppv }});
+        },
+        get gap() {
+          return window.innerWidth <= 749 ? {{ mob_gap_px }} : {{ gap_px }};
+        },
+        get total() { return 10; },
+        get maxCur() { return Math.max(0, this.total - this.ppv); },
+        itemW() {
+          const el = this.$refs.inner.firstElementChild;
+          return el ? el.offsetWidth : 280;
+        },
+        slide() {
+          if (window.innerWidth > 749) {
+            this.$refs.inner.style.transform = 'translateX(calc(-' + this.cur + ' * (' + this.itemW() + 'px + ' + this.gap + 'px)))';
+          }
+        },
+        prev() { if(this.cur > 0){ this.cur--; this.slide(); } },
+        next() { if(this.cur < this.maxCur){ this.cur++; this.slide(); } }
+      }"
+    >
+      <div class="gg-track-{{ ai_gen_id }}">
+        <div class="gg-inner-{{ ai_gen_id }}" x-ref="inner">
+          {% for i in (1..10) %}
+            {% liquid
+              assign image_key   = 'image_'   | append: i
+              assign caption_key = 'caption_' | append: i
+              assign url_key     = 'url_'     | append: i
+              assign scale_key   = 'scale_'   | append: i
+              assign image       = block.settings[image_key]
+              assign caption     = block.settings[caption_key]
+              assign item_url    = block.settings[url_key]
+              assign img_scale   = block.settings[scale_key] | default: 100
+            %}
+            <div class="gg-item-{{ ai_gen_id }}">
+              <div class="gg-img-wrap-{{ ai_gen_id }}">
+                {% if image %}
+                  <img
+                    src="{{ image | image_url: width: 600 }}"
+                    alt="{{ image.alt | escape }}"
+                    loading="lazy"
+                    width="600" height="600"
+                    style="transform:scale({{ img_scale | divided_by: 100.0 }});transform-origin:center;"
+                  >
+                {% else %}
+                  <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#FFFEF3;">
+                    {{ 'image' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+              </div>
+              {% if caption != blank %}
+                <a
+                  {% if item_url != blank %}href="{{ item_url }}"{% else %}role="link" aria-disabled="true"{% endif %}
+                  class="button button-solid inline-block pl-4 pr-4 lg:pl-6 lg:pr-6 pt-2.5 pb-2.5 leading-normal md:pt-3 md:pb-3 cursor-pointer"
+                >
+                  <div class="flex justify-center">
+                    <span class="button-text is-focus-button:opacity-0">{{ caption }}</span>
+                  </div>
+                </a>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Diamond Shapes",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Diamond Shapes"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading size on mobile",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Space below heading",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 100,
+      "unit": "px",
+      "label": "Maximum width",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "items_per_view",
+      "min": 1,
+      "max": 16,
+      "step": 1,
+      "label": "Items visible (desktop)",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 5,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Gap between items",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "Gap on mobile",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Image border radius",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Caption"
+    },
+    {
+      "type": "range",
+      "id": "caption_spacing",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "Space above caption",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "caption_size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Caption size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "caption_size_mobile",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Caption size on mobile",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Caption color",
+      "default": "#525151"
+    },
+    { "type": "header", "content": "Image 1" },
+    { "type": "image_picker", "id": "image_1", "label": "Image" },
+    { "type": "text", "id": "caption_1", "label": "Caption" },
+    { "type": "url", "id": "url_1", "label": "Button link" },
+    { "type": "range", "id": "scale_1", "label": "Image scale", "min": 50, "max": 200, "step": 5, "unit": "%", "default": 100 },
+    { "type": "header", "content": "Image 2" },
+    { "type": "image_picker", "id": "image_2", "label": "Image" },
+    { "type": "text", "id": "caption_2", "label": "Caption" },
+    { "type": "url", "id": "url_2", "label": "Button link" },
+    { "type": "range", "id": "scale_2", "label": "Image scale", "min": 50, "max": 200, "step": 5, "unit": "%", "default": 100 },
+    { "type": "header", "content": "Image 3" },
+    { "type": "image_picker", "id": "image_3", "label": "Image" },
+    { "type": "text", "id": "caption_3", "label": "Caption" },
+    { "type": "url", "id": "url_3", "label": "Button link" },
+    { "type": "range", "id": "scale_3", "label": "Image scale", "min": 50, "max": 200, "step": 5, "unit": "%", "default": 100 },
+    { "type": "header", "content": "Image 4" },
+    { "type": "image_picker", "id": "image_4", "label": "Image" },
+    { "type": "text", "id": "caption_4", "label": "Caption" },
+    { "type": "url", "id": "url_4", "label": "Button link" },
+    { "type": "range", "id": "scale_4", "label": "Image scale", "min": 50, "max": 200, "step": 5, "unit": "%", "default": 100 },
+    { "type": "header", "content": "Image 5" },
+    { "type": "image_picker", "id": "image_5", "label": "Image" },
+    { "type": "text", "id": "caption_5", "label": "Caption" },
+    { "type": "url", "id": "url_5", "label": "Button link" },
+    { "type": "range", "id": "scale_5", "label": "Image scale", "min": 50, "max": 200, "step": 5, "unit": "%", "default": 100 },
+    { "type": "header", "content": "Image 6" },
+    { "type": "image_picker", "id": "image_6", "label": "Image" },
+    { "type": "text", "id": "caption_6", "label": "Caption" },
+    { "type": "url", "id": "url_6", "label": "Button link" },
+    { "type": "range", "id": "scale_6", "label": "Image scale", "min": 50, "max": 200, "step": 5, "unit": "%", "default": 100 },
+    { "type": "header", "content": "Image 7" },
+    { "type": "image_picker", "id": "image_7", "label": "Image" },
+    { "type": "text", "id": "caption_7", "label": "Caption" },
+    { "type": "url", "id": "url_7", "label": "Button link" },
+    { "type": "range", "id": "scale_7", "label": "Image scale", "min": 50, "max": 200, "step": 5, "unit": "%", "default": 100 },
+    { "type": "header", "content": "Image 8" },
+    { "type": "image_picker", "id": "image_8", "label": "Image" },
+    { "type": "text", "id": "caption_8", "label": "Caption" },
+    { "type": "url", "id": "url_8", "label": "Button link" },
+    { "type": "range", "id": "scale_8", "label": "Image scale", "min": 50, "max": 200, "step": 5, "unit": "%", "default": 100 },
+    { "type": "header", "content": "Image 9" },
+    { "type": "image_picker", "id": "image_9", "label": "Image" },
+    { "type": "text", "id": "caption_9", "label": "Caption" },
+    { "type": "url", "id": "url_9", "label": "Button link" },
+    { "type": "range", "id": "scale_9", "label": "Image scale", "min": 50, "max": 200, "step": 5, "unit": "%", "default": 100 },
+    { "type": "header", "content": "Image 10" },
+    { "type": "image_picker", "id": "image_10", "label": "Image" },
+    { "type": "text", "id": "caption_10", "label": "Caption" },
+    { "type": "url", "id": "url_10", "label": "Button link" },
+    { "type": "range", "id": "scale_10", "label": "Image scale", "min": 50, "max": 200, "step": 5, "unit": "%", "default": 100 }
+  ],
+  "presets": [
+    {
+      "name": "Diamond Shapes"
+    }
+  ]
+}
+{% endschema %}

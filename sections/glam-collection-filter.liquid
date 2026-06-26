@@ -1,0 +1,1020 @@
+{%- liquid
+  assign gcf_shapes = section.blocks | where: "type", "diamond_shape"
+  assign gcf_styles = section.blocks | where: "type", "ring_style"
+  assign gcf_metals = section.blocks | where: "type", "metal"
+  assign gcf_quicks = section.blocks | where: "type", "quick_filter"
+
+  comment
+    Find Shopify price filter (values are in cents)
+  endcomment
+  assign gcf_pf = nil
+  for f in collection.filters
+    if f.type == 'price_range'
+      assign gcf_pf = f
+      break
+    endif
+  endfor
+
+  assign gcf_abs_min = 0
+  assign gcf_abs_max = 1000000
+  assign gcf_cur_min = 0
+  assign gcf_cur_max = 1000000
+  assign gcf_has_pf  = false
+
+  if gcf_pf != nil
+    assign gcf_has_pf  = true
+    assign gcf_abs_min = gcf_pf.range_min | plus: 0
+    assign gcf_abs_max = gcf_pf.range_max | plus: 0
+    if gcf_pf.min_value.value != blank
+      assign gcf_cur_min = gcf_pf.min_value.value | plus: 0
+    else
+      assign gcf_cur_min = gcf_abs_min
+    endif
+    if gcf_pf.max_value.value != blank
+      assign gcf_cur_max = gcf_pf.max_value.value | plus: 0
+    else
+      assign gcf_cur_max = gcf_abs_max
+    endif
+  endif
+
+  comment
+    Pre-calculate slider thumb positions (%) for immediate visual rendering
+    Liquid integer math is fine here — JS takes over on page load
+  endcomment
+  assign _pr_lo_pct = 0
+  assign _pr_hi_pct = 100
+  assign _pr_fill_l = 0
+  assign _pr_fill_w = 100
+  assign _pr_range  = gcf_abs_max | minus: gcf_abs_min
+  if _pr_range > 0 and gcf_has_pf
+    assign _pr_lo_pct = gcf_cur_min | minus: gcf_abs_min | times: 100 | divided_by: _pr_range
+    assign _pr_hi_pct = gcf_cur_max | minus: gcf_abs_min | times: 100 | divided_by: _pr_range
+    assign _pr_fill_l = _pr_lo_pct
+    assign _pr_fill_w = _pr_hi_pct | minus: _pr_lo_pct
+  endif
+-%}
+
+<style>
+  /* ── Section wrapper ── */
+  .gcf {
+    background: rgb(var(--colors-background));
+    border-bottom: 1px solid rgba(var(--colors-text), 0.1);
+  }
+  .gcf__inner {
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* ── Shared heading ── */
+  .gcf__h {
+    margin: 0 0 0.7rem;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(var(--colors-text), 0.5);
+    line-height: 1;
+  }
+
+  /* ══════════════════════════════
+     TOP ROW — 50% | 50%
+  ══════════════════════════════ */
+  .gcf__top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid rgba(var(--colors-text), 0.08);
+  }
+  .gcf__top--single { grid-template-columns: 1fr; }
+
+  .gcf__cell {
+    padding: 1.25rem 1.5rem 1.25rem 0;
+  }
+  .gcf__cell + .gcf__cell {
+    padding: 1.25rem 0 1.25rem 1.5rem;
+    border-left: 1px solid rgba(var(--colors-text), 0.08);
+  }
+
+  /* Diamond shape tiles — horizontal scrollable row */
+  .gcf__tiles {
+    display: flex;
+    gap: 0.7rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  .gcf__tiles::-webkit-scrollbar { display: none; }
+
+  .gcf__tile {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .gcf__tile--preview { cursor: default; }
+  .gcf__tile--disabled { opacity: 0.25; pointer-events: none; }
+
+  .gcf__tile-ring {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(var(--colors-text), 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    flex-shrink: 0;
+  }
+  .gcf__tile-ring img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .gcf__tile-ring svg {
+    width: 30px; height: 30px;
+    color: rgba(var(--colors-text), 0.75);
+  }
+  .gcf__tile:hover .gcf__tile-ring {
+    border-color: rgba(var(--colors-text), 0.55);
+  }
+  .gcf__tile--active .gcf__tile-ring {
+    border-color: rgba(var(--colors-text), 1);
+    box-shadow: 0 0 0 1.5px rgba(var(--colors-text), 0.7);
+  }
+
+  .gcf__tile-name {
+    font-size: 0.63rem;
+    color: rgba(var(--colors-text), 0.82);
+    text-align: center;
+    line-height: 1.25;
+    max-width: 62px;
+  }
+  .gcf__tile--active .gcf__tile-name {
+    color: rgba(var(--colors-text), 1);
+    font-weight: 600;
+  }
+
+  /* Style chips */
+  .gcf__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .gcf__chip {
+    padding: 0.38rem 0.85rem;
+    border: 1px solid rgba(var(--colors-text), 0.22);
+    font-size: 0.78rem;
+    color: rgba(var(--colors-text), 0.82);
+    cursor: pointer;
+    white-space: nowrap;
+    line-height: 1.5;
+    transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .gcf__chip:hover {
+    border-color: rgba(var(--colors-text), 0.55);
+    color: rgba(var(--colors-text), 1);
+  }
+  .gcf__chip--active {
+    background: rgba(var(--colors-text), 0.07);
+    border-color: rgba(var(--colors-text), 0.85);
+    color: rgba(var(--colors-text), 1);
+  }
+  .gcf__chip--preview { cursor: default; }
+  .gcf__chip--disabled { opacity: 0.25; pointer-events: none; }
+
+  /* ══════════════════════════════
+     BOTTOM ROW — 30% | 40% | 30%
+  ══════════════════════════════ */
+  .gcf__bottom {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1fr;
+  }
+  .gcf__bcell {
+    padding: 1.1rem 1.5rem 1.25rem 0;
+  }
+  .gcf__bcell + .gcf__bcell {
+    padding: 1.1rem 0 1.25rem 1.5rem;
+    border-left: 1px solid rgba(var(--colors-text), 0.08);
+  }
+
+  /* Metal swatches */
+  .gcf__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.38rem;
+  }
+  .gcf__swatch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid rgba(var(--colors-text), 0.2);
+    font-size: 0.76rem;
+    color: rgba(var(--colors-text), 0.82);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .gcf__swatch:hover {
+    border-color: rgba(var(--colors-text), 0.55);
+    color: rgba(var(--colors-text), 1);
+  }
+  .gcf__swatch--active {
+    background: rgba(var(--colors-text), 0.06);
+    border-color: rgba(var(--colors-text), 0.85);
+    color: rgba(var(--colors-text), 1);
+  }
+  .gcf__swatch--preview { cursor: default; }
+  .gcf__swatch--disabled { opacity: 0.25; pointer-events: none; }
+  .gcf__swatch-dot {
+    width: 11px; height: 11px; border-radius: 50%;
+    border: 1px solid rgba(var(--colors-text), 0.18);
+    flex-shrink: 0;
+  }
+
+  /* ── Price range slider ── */
+  .gcf__price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+    font-size: 0.76rem;
+    font-weight: 500;
+    color: rgba(var(--colors-text), 0.82);
+    min-height: 1.1rem;
+  }
+
+  /* Hidden form inputs — zero-size, off-screen */
+  .gcf__pi {
+    position: absolute;
+    width: 0; height: 0;
+    opacity: 0; pointer-events: none;
+    border: 0; padding: 0; margin: 0;
+  }
+
+  /* Slider track */
+  .gcf__track {
+    position: relative;
+    height: 3px;
+    background: rgba(var(--colors-text), 0.14);
+    border-radius: 3px;
+    /* horizontal padding so thumbs don't clip at edges */
+    margin: 0 9px;
+    cursor: pointer;
+  }
+  .gcf__track--disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  .gcf__fill {
+    position: absolute;
+    height: 100%;
+    background: rgba(var(--colors-text), 0.65);
+    border-radius: 3px;
+    pointer-events: none;
+  }
+  .gcf__thumb {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgb(var(--colors-background));
+    border: 2px solid rgba(var(--colors-text), 0.8);
+    top: 50%;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    touch-action: none;
+    z-index: 2;
+    padding: 0; margin: 0;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: none; -webkit-appearance: none; outline: none;
+  }
+  .gcf__thumb:hover {
+    border-color: rgba(var(--colors-text), 1);
+    box-shadow: 0 0 0 4px rgba(var(--colors-text), 0.1);
+  }
+  .gcf__thumb.dragging {
+    cursor: grabbing;
+    border-color: rgba(var(--colors-text), 1);
+    box-shadow: 0 0 0 5px rgba(var(--colors-text), 0.14);
+  }
+
+  /* ── Quick filter 2×2 grid ── */
+  .gcf__quick {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.32rem;
+  }
+  .gcf__qbtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.35rem;
+    border: 1px solid rgba(var(--colors-text), 0.2);
+    font-size: 0.68rem;
+    color: rgba(var(--colors-text), 0.82);
+    text-align: center;
+    cursor: pointer;
+    line-height: 1.3;
+    min-height: 2.1rem;
+    transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .gcf__qbtn:hover {
+    border-color: rgba(var(--colors-text), 0.55);
+    color: rgba(var(--colors-text), 1);
+  }
+  .gcf__qbtn--active {
+    background: rgba(var(--colors-text), 0.07);
+    border-color: rgba(var(--colors-text), 0.85);
+    color: rgba(var(--colors-text), 1);
+  }
+  .gcf__qbtn--preview { cursor: default; }
+  .gcf__qbtn--disabled { opacity: 0.25; pointer-events: none; }
+
+  /* ── Mobile ── */
+  @media (max-width: 767px) {
+    .gcf__top  { grid-template-columns: 1fr; }
+    .gcf__cell + .gcf__cell {
+      border-left: none;
+      border-top: 1px solid rgba(var(--colors-text), 0.08);
+      padding-left: 0;
+    }
+    .gcf__bottom { grid-template-columns: 1fr; }
+    .gcf__bcell + .gcf__bcell {
+      border-left: none;
+      border-top: 1px solid rgba(var(--colors-text), 0.08);
+      padding-left: 0;
+    }
+  }
+</style>
+
+<div class="gcf" id="GcfRoot-{{ section.id }}">
+  <div class="gcf__inner">
+
+    {%- comment -%}━━━ TOP ROW ━━━{%- endcomment -%}
+    {%- if gcf_shapes.size > 0 or gcf_styles.size > 0 -%}
+      <div class="gcf__top{% if gcf_shapes.size == 0 or gcf_styles.size == 0 %} gcf__top--single{% endif %}">
+
+        {%- if gcf_shapes.size > 0 -%}
+          <div class="gcf__cell">
+            <p class="gcf__h">{{ section.settings.heading_shapes | escape }}</p>
+            <div class="gcf__tiles">
+              {%- for block in gcf_shapes -%}
+                {%- liquid
+                  assign _lbl = block.settings.label | strip
+                  assign _img = block.settings.image
+                  assign _val = block.settings.filter_value | strip
+                  assign _fv  = nil
+                  for f in collection.filters
+                    if f.type != 'price_range'
+                      for fv in f.values
+                        if fv.value == _val or fv.label == _val
+                          assign _fv = fv
+                          break
+                        endif
+                      endfor
+                    endif
+                    if _fv != nil
+                      break
+                    endif
+                  endfor
+                  assign _act = false
+                  assign _dis = false
+                  if _fv != nil
+                    if _fv.active
+                      assign _act = true
+                    endif
+                    if _fv.count == 0 and _fv.active == false
+                      assign _dis = true
+                    endif
+                  endif
+                  assign _lc = _lbl | downcase
+                -%}
+                {%- capture _svg -%}
+                  {%- case _lc -%}
+                    {%- when 'round' -%}<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="1.5"/></svg>
+                    {%- when 'oval' -%}<svg viewBox="0 0 32 32" fill="none"><ellipse cx="16" cy="16" rx="11" ry="7.5" stroke="currentColor" stroke-width="1.5"/></svg>
+                    {%- when 'princess' -%}<svg viewBox="0 0 32 32" fill="none"><rect x="5" y="5" width="22" height="22" stroke="currentColor" stroke-width="1.5"/></svg>
+                    {%- when 'cushion' -%}<svg viewBox="0 0 32 32" fill="none"><rect x="5" y="5" width="22" height="22" rx="5" stroke="currentColor" stroke-width="1.5"/></svg>
+                    {%- when 'emerald' -%}<svg viewBox="0 0 32 32" fill="none"><path d="M8 5h16l3 3v16l-3 3H8l-3-3V8Z" stroke="currentColor" stroke-width="1.5"/></svg>
+                    {%- when 'radiant' -%}<svg viewBox="0 0 32 32" fill="none"><path d="M7 5h18l2 3v16l-2 3H7l-2-3V8Z" stroke="currentColor" stroke-width="1.5"/></svg>
+                    {%- when 'pear' -%}<svg viewBox="0 0 32 32" fill="none"><path d="M16 27C10 21 6 15 6 11a10 10 0 0120 0c0 4-4 10-10 16Z" stroke="currentColor" stroke-width="1.5"/></svg>
+                    {%- when 'marquise' -%}<svg viewBox="0 0 32 32" fill="none"><path d="M16 5C22 11 28 14 28 16s-6 5-12 11C10 21 4 18 4 16s6-5 12-11Z" stroke="currentColor" stroke-width="1.5"/></svg>
+                    {%- when 'asscher' -%}<svg viewBox="0 0 32 32" fill="none"><path d="M10 5h12l5 5v12l-5 5H10L5 22V10Z" stroke="currentColor" stroke-width="1.5"/></svg>
+                    {%- when 'heart' -%}<svg viewBox="0 0 32 32" fill="none"><path d="M16 26C8 20 4 14 4 10c0-3 2-5 6-5 2.5 0 4.5 1.5 6 3 1.5-1.5 3.5-3 6-3 4 0 6 2 6 5 0 4-4 10-12 16Z" stroke="currentColor" stroke-width="1.5"/></svg>
+                    {%- else -%}<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="1.5"/></svg>
+                  {%- endcase -%}
+                {%- endcapture -%}
+
+                {%- if _fv != nil and _dis == false -%}
+                  <label for="gcf-s-{{ block.id }}" class="gcf__tile{% if _act %} gcf__tile--active{% endif %}">
+                    <input type="checkbox" id="gcf-s-{{ block.id }}" class="gcf__cb" name="{{ _fv.param_name }}" value="{{ _fv.value }}" form="FacetFiltersForm" {% if _act %}checked{% endif %}>
+                    <span class="gcf__tile-ring">
+                      {%- if _img != blank -%}{{ _img | image_url: width: 120 | image_tag: loading: 'lazy', alt: _lbl }}{%- else -%}{{ _svg }}{%- endif -%}
+                    </span>
+                    <span class="gcf__tile-name">{{ _lbl | escape }}</span>
+                  </label>
+                {%- else -%}
+                  <span class="gcf__tile gcf__tile--preview{% if _dis %} gcf__tile--disabled{% endif %}" aria-hidden="true">
+                    <span class="gcf__tile-ring">
+                      {%- if _img != blank -%}{{ _img | image_url: width: 120 | image_tag: loading: 'lazy', alt: '' }}{%- else -%}{{ _svg }}{%- endif -%}
+                    </span>
+                    <span class="gcf__tile-name">{{ _lbl | escape }}</span>
+                  </span>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- if gcf_styles.size > 0 -%}
+          <div class="gcf__cell">
+            <p class="gcf__h">{{ section.settings.heading_styles | escape }}</p>
+            <div class="gcf__chips">
+              {%- for block in gcf_styles -%}
+                {%- liquid
+                  assign _lbl = block.settings.label | strip
+                  assign _img = block.settings.image
+                  assign _val = block.settings.filter_value | strip
+                  assign _fv  = nil
+                  for f in collection.filters
+                    if f.type != 'price_range'
+                      for fv in f.values
+                        if fv.value == _val or fv.label == _val
+                          assign _fv = fv
+                          break
+                        endif
+                      endfor
+                    endif
+                    if _fv != nil
+                      break
+                    endif
+                  endfor
+                  assign _act = false
+                  assign _dis = false
+                  if _fv != nil
+                    if _fv.active
+                      assign _act = true
+                    endif
+                    if _fv.count == 0 and _fv.active == false
+                      assign _dis = true
+                    endif
+                  endif
+                -%}
+                {%- if _fv != nil and _dis == false -%}
+                  {%- if _img != blank -%}
+                    <label for="gcf-st-{{ block.id }}" class="gcf__tile{% if _act %} gcf__tile--active{% endif %}">
+                      <input type="checkbox" id="gcf-st-{{ block.id }}" class="gcf__cb" name="{{ _fv.param_name }}" value="{{ _fv.value }}" form="FacetFiltersForm" {% if _act %}checked{% endif %}>
+                      <span class="gcf__tile-ring">{{ _img | image_url: width: 100 | image_tag: loading: 'lazy', alt: _lbl }}</span>
+                      <span class="gcf__tile-name">{{ _lbl | escape }}</span>
+                    </label>
+                  {%- else -%}
+                    <label for="gcf-st-{{ block.id }}" class="gcf__chip{% if _act %} gcf__chip--active{% endif %}">
+                      <input type="checkbox" id="gcf-st-{{ block.id }}" class="gcf__cb" name="{{ _fv.param_name }}" value="{{ _fv.value }}" form="FacetFiltersForm" {% if _act %}checked{% endif %}>
+                      {{ _lbl | escape }}
+                    </label>
+                  {%- endif -%}
+                {%- else -%}
+                  <span class="gcf__chip gcf__chip--preview{% if _dis %} gcf__chip--disabled{% endif %}" aria-hidden="true">{{ _lbl | escape }}</span>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+      </div>
+    {%- endif -%}
+
+    {%- comment -%}━━━ BOTTOM ROW (always 3 columns: Metal | Price | Quick) ━━━{%- endcomment -%}
+    <div class="gcf__bottom">
+
+      {%- comment -%}── Metal ──{%- endcomment -%}
+      <div class="gcf__bcell">
+        <p class="gcf__h">{{ section.settings.heading_metal | escape }}</p>
+        <div class="gcf__swatches">
+          {%- for block in gcf_metals -%}
+            {%- liquid
+              assign _lbl   = block.settings.label | strip
+              assign _color = block.settings.swatch_color
+              assign _val   = block.settings.filter_value | strip
+              assign _fv    = nil
+              for f in collection.filters
+                if f.type != 'price_range'
+                  for fv in f.values
+                    if fv.value == _val or fv.label == _val
+                      assign _fv = fv
+                      break
+                    endif
+                  endfor
+                endif
+                if _fv != nil
+                  break
+                endif
+              endfor
+              assign _act = false
+              assign _dis = false
+              if _fv != nil
+                if _fv.active
+                  assign _act = true
+                endif
+                if _fv.count == 0 and _fv.active == false
+                  assign _dis = true
+                endif
+              endif
+            -%}
+            {%- if _fv != nil and _dis == false -%}
+              <label for="gcf-m-{{ block.id }}" class="gcf__swatch{% if _act %} gcf__swatch--active{% endif %}">
+                <input type="checkbox" id="gcf-m-{{ block.id }}" class="gcf__cb" name="{{ _fv.param_name }}" value="{{ _fv.value }}" form="FacetFiltersForm" {% if _act %}checked{% endif %}>
+                {%- if _color != blank -%}<span class="gcf__swatch-dot" style="background:{{ _color }}"></span>{%- endif -%}
+                {{ _lbl | escape }}
+              </label>
+            {%- else -%}
+              <span class="gcf__swatch gcf__swatch--preview{% if _dis %} gcf__swatch--disabled{% endif %}" aria-hidden="true">
+                {%- if _color != blank -%}<span class="gcf__swatch-dot" style="background:{{ _color }}"></span>{%- endif -%}
+                {{ _lbl | escape }}
+              </span>
+            {%- endif -%}
+          {%- endfor -%}
+          {%- if gcf_metals.size == 0 -%}
+            <span class="gcf__swatch gcf__swatch--preview" aria-hidden="true"><span class="gcf__swatch-dot" style="background:#E8E8E8"></span>White Gold</span>
+            <span class="gcf__swatch gcf__swatch--preview" aria-hidden="true"><span class="gcf__swatch-dot" style="background:#D4AF37"></span>Yellow Gold</span>
+            <span class="gcf__swatch gcf__swatch--preview" aria-hidden="true"><span class="gcf__swatch-dot" style="background:#B76E79"></span>Rose Gold</span>
+            <span class="gcf__swatch gcf__swatch--preview" aria-hidden="true"><span class="gcf__swatch-dot" style="background:#C5C7CE"></span>Platinum</span>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- comment -%}── Price ──{%- endcomment -%}
+      <div class="gcf__bcell">
+        <p class="gcf__h">{{ section.settings.heading_price | escape }}</p>
+
+        {%- comment -%}
+          Pre-render price labels from Liquid so they're immediately visible.
+          JS will update these values as the slider is dragged.
+        {%- endcomment -%}
+        {%- if gcf_has_pf -%}
+          {%- assign _lbl_min = gcf_cur_min | money_without_trailing_zeros -%}
+          {%- assign _lbl_max = gcf_cur_max | money_without_trailing_zeros -%}
+        {%- else -%}
+          {%- assign _lbl_min = '$0' -%}
+          {%- assign _lbl_max = '$—' -%}
+        {%- endif -%}
+
+        <div class="gcf__price-row">
+          <span class="gcf__pv gcf__pv--min">{{ _lbl_min }}</span>
+          <span class="gcf__pv gcf__pv--max">{{ _lbl_max }}</span>
+        </div>
+
+        {%- comment -%}Hidden inputs attached to FacetFiltersForm{%- endcomment -%}
+        {%- if gcf_has_pf -%}
+          <input type="number" class="gcf__pi" name="{{ gcf_pf.min_value.param_name }}" value="{{ gcf_pf.min_value.value | default: '' }}" form="FacetFiltersForm" aria-hidden="true" tabindex="-1">
+          <input type="number" class="gcf__pi" name="{{ gcf_pf.max_value.param_name }}" value="{{ gcf_pf.max_value.value | default: '' }}" form="FacetFiltersForm" aria-hidden="true" tabindex="-1">
+        {%- endif -%}
+
+        <div class="gcf__track{% unless gcf_has_pf %} gcf__track--disabled{% endunless %}"
+          data-abs-min="{{ gcf_abs_min }}"
+          data-abs-max="{{ gcf_abs_max }}"
+          data-cur-min="{{ gcf_cur_min }}"
+          data-cur-max="{{ gcf_cur_max }}"
+          {%- if gcf_has_pf -%}
+            data-param-min="{{ gcf_pf.min_value.param_name }}"
+            data-param-max="{{ gcf_pf.max_value.param_name }}"
+          {%- endif -%}
+        >
+          {%- comment -%}
+            Pre-rendered positions via Liquid so the slider is immediately visible.
+            Numbers are 0-100 integer percentages.
+          {%- endcomment -%}
+          <div class="gcf__fill" style="left:{{ _pr_fill_l }}%;width:{{ _pr_fill_w }}%"></div>
+          <button type="button" class="gcf__thumb gcf__thumb--lo" style="left:{{ _pr_lo_pct }}%" aria-label="Minimum price" role="slider"{% unless gcf_has_pf %} disabled{% endunless %}></button>
+          <button type="button" class="gcf__thumb gcf__thumb--hi" style="left:{{ _pr_hi_pct }}%" aria-label="Maximum price" role="slider"{% unless gcf_has_pf %} disabled{% endunless %}></button>
+        </div>
+      </div>
+
+      {%- comment -%}── Quick Filters ──{%- endcomment -%}
+      <div class="gcf__bcell">
+        <p class="gcf__h">{{ section.settings.heading_quick | escape }}</p>
+        <div class="gcf__quick">
+          {%- for block in gcf_quicks -%}
+            {%- liquid
+              assign _lbl = block.settings.label | strip
+              assign _val = block.settings.filter_value | strip
+              assign _fv  = nil
+              for f in collection.filters
+                if f.type != 'price_range'
+                  for fv in f.values
+                    if fv.value == _val or fv.label == _val
+                      assign _fv = fv
+                      break
+                    endif
+                  endfor
+                endif
+                if _fv != nil
+                  break
+                endif
+              endfor
+              assign _act = false
+              assign _dis = false
+              if _fv != nil
+                if _fv.active
+                  assign _act = true
+                endif
+                if _fv.count == 0 and _fv.active == false
+                  assign _dis = true
+                endif
+              endif
+            -%}
+            {%- if _fv != nil and _dis == false -%}
+              <label for="gcf-q-{{ block.id }}" class="gcf__qbtn{% if _act %} gcf__qbtn--active{% endif %}">
+                <input type="checkbox" id="gcf-q-{{ block.id }}" class="gcf__cb" name="{{ _fv.param_name }}" value="{{ _fv.value }}" form="FacetFiltersForm" {% if _act %}checked{% endif %}>
+                {{ _lbl | escape }}
+              </label>
+            {%- else -%}
+              <span class="gcf__qbtn gcf__qbtn--preview{% if _dis %} gcf__qbtn--disabled{% endif %}" aria-hidden="true">{{ _lbl | escape }}</span>
+            {%- endif -%}
+          {%- endfor -%}
+          {%- comment -%}Placeholder buttons when no blocks are configured{%- endcomment -%}
+          {%- if gcf_quicks.size == 0 -%}
+            <span class="gcf__qbtn gcf__qbtn--preview" aria-hidden="true">Ready To Ship</span>
+            <span class="gcf__qbtn gcf__qbtn--preview" aria-hidden="true">On Sale</span>
+            <span class="gcf__qbtn gcf__qbtn--preview" aria-hidden="true">New Arrivals</span>
+            <span class="gcf__qbtn gcf__qbtn--preview" aria-hidden="true">Best Sellers</span>
+          {%- endif -%}
+        </div>
+      </div>
+
+    </div><!-- /gcf__bottom -->
+
+  </div><!-- /gcf__inner -->
+</div><!-- /gcf -->
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── Trigger the theme's AJAX filter ── */
+  function gcfSubmit() {
+    var form = document.getElementById('FacetFiltersForm');
+    if (!form) return;
+
+    /* Try Alpine.js onSubmit (works for themes using xFiltersAndSortby) */
+    if (window.Alpine) {
+      var xEl = document.querySelector('[x-data*="xFiltersAndSortby"]');
+      if (xEl) {
+        try {
+          var d = Alpine.$data(xEl);
+          if (typeof d.onSubmit === 'function') { d.onSubmit(); return; }
+        } catch (e) {}
+      }
+    }
+
+    /* Fallback: rebuild URL from form data and navigate */
+    var url = new URL(window.location.href);
+    var del = [];
+    url.searchParams.forEach(function(v, k) { if (k.indexOf('filter.') === 0) del.push(k); });
+    del.forEach(function(k) { url.searchParams.delete(k); });
+    (new FormData(form)).forEach(function(val, key) {
+      if (key.indexOf('filter.') === 0 && val !== '') url.searchParams.append(key, val);
+    });
+    url.searchParams.delete('page');
+    window.location.href = url.toString();
+  }
+
+  /* ── Checkbox change → submit ── */
+  function bindCheckboxes(root) {
+    root.querySelectorAll('.gcf__cb').forEach(function(cb) {
+      cb.removeEventListener('change', gcfSubmit);
+      cb.addEventListener('change', gcfSubmit);
+    });
+  }
+
+  /* ── Dual-range price slider ── */
+  function initSlider(track) {
+    var absMin = parseInt(track.dataset.absMin, 10);
+    var absMax = parseInt(track.dataset.absMax, 10);
+    var curMin = parseInt(track.dataset.curMin, 10);
+    var curMax = parseInt(track.dataset.curMax, 10);
+    var pMin   = track.dataset.paramMin;
+    var pMax   = track.dataset.paramMax;
+
+    if (isNaN(absMin)) absMin = 0;
+    if (isNaN(absMax) || absMax <= absMin) absMax = absMin + 1;
+    if (isNaN(curMin) || curMin < absMin) curMin = absMin;
+    if (isNaN(curMax) || curMax > absMax) curMax = absMax;
+
+    var fill    = track.querySelector('.gcf__fill');
+    var thumbLo = track.querySelector('.gcf__thumb--lo');
+    var thumbHi = track.querySelector('.gcf__thumb--hi');
+
+    /* Find price display labels and hidden inputs in the parent cell */
+    var cell    = track.closest('.gcf__bcell');
+    var lblMin  = cell && cell.querySelector('.gcf__pv--min');
+    var lblMax  = cell && cell.querySelector('.gcf__pv--max');
+    var inputLo = pMin ? document.querySelector('[name="' + pMin + '"].gcf__pi') : null;
+    var inputHi = pMax ? document.querySelector('[name="' + pMax + '"].gcf__pi') : null;
+
+    var gap = Math.max(1, Math.round((absMax - absMin) * 0.005));
+
+    function fmtMoney(cents) {
+      var dollars = Math.round(cents / 100);
+      return '$' + dollars.toLocaleString('en-US');
+    }
+
+    function toPct(v) {
+      return ((v - absMin) / (absMax - absMin)) * 100;
+    }
+    function fromPct(p) {
+      return absMin + (p / 100) * (absMax - absMin);
+    }
+
+    function render() {
+      var lo = toPct(curMin);
+      var hi = toPct(curMax);
+      thumbLo.style.left = lo + '%';
+      thumbHi.style.left = hi + '%';
+      fill.style.left    = lo + '%';
+      fill.style.width   = (hi - lo) + '%';
+      if (lblMin) lblMin.textContent = fmtMoney(curMin);
+      if (lblMax) lblMax.textContent = fmtMoney(curMax);
+    }
+
+    function sync() {
+      if (inputLo) inputLo.value = curMin > absMin ? curMin : '';
+      if (inputHi) inputHi.value = curMax < absMax ? curMax : '';
+    }
+
+    /* Update display immediately (overwriting the Liquid pre-render with JS-formatted values) */
+    render();
+    sync();
+
+    function makeDraggable(thumb, isLo) {
+      var active = false;
+
+      function getVal(e) {
+        var rect  = track.getBoundingClientRect();
+        var cx    = e.touches ? e.touches[0].clientX : e.clientX;
+        var ratio = Math.min(1, Math.max(0, (cx - rect.left) / rect.width));
+        return fromPct(ratio * 100);
+      }
+
+      function start(e) {
+        active = true;
+        thumb.classList.add('dragging');
+        e.preventDefault();
+        document.addEventListener('mousemove', move);
+        document.addEventListener('mouseup',   end);
+        document.addEventListener('touchmove', move, { passive: false });
+        document.addEventListener('touchend',  end);
+      }
+      function move(e) {
+        if (!active) return;
+        if (e.cancelable) e.preventDefault();
+        var v = getVal(e);
+        if (isLo) curMin = Math.max(absMin, Math.min(v, curMax - gap));
+        else      curMax = Math.min(absMax, Math.max(v, curMin + gap));
+        render();
+      }
+      function end() {
+        if (!active) return;
+        active = false;
+        thumb.classList.remove('dragging');
+        document.removeEventListener('mousemove', move);
+        document.removeEventListener('mouseup',   end);
+        document.removeEventListener('touchmove', move);
+        document.removeEventListener('touchend',  end);
+        sync();
+        gcfSubmit();
+      }
+
+      thumb.addEventListener('mousedown',  start);
+      thumb.addEventListener('touchstart', start, { passive: false });
+
+      thumb.addEventListener('keydown', function(e) {
+        var step = Math.max(100, Math.round((absMax - absMin) * 0.01));
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+          if (isLo) curMin = Math.max(absMin, curMin - step);
+          else      curMax = Math.max(curMin + gap, curMax - step);
+          render(); sync(); gcfSubmit();
+        } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+          if (isLo) curMin = Math.min(curMax - gap, curMin + step);
+          else      curMax = Math.min(absMax, curMax + step);
+          render(); sync(); gcfSubmit();
+        }
+      });
+    }
+
+    /* Click on the track itself to jump the closest thumb */
+    track.addEventListener('click', function(e) {
+      if (e.target === thumbLo || e.target === thumbHi) return;
+      var r  = track.getBoundingClientRect();
+      var v  = fromPct(((e.clientX - r.left) / r.width) * 100);
+      if (Math.abs(v - curMin) <= Math.abs(v - curMax))
+        curMin = Math.max(absMin, Math.min(v, curMax - gap));
+      else
+        curMax = Math.min(absMax, Math.max(v, curMin + gap));
+      render(); sync(); gcfSubmit();
+    });
+
+    makeDraggable(thumbLo, true);
+    makeDraggable(thumbHi, false);
+  }
+
+  /* ── Boot ── */
+  function boot() {
+    var root = document.getElementById('GcfRoot-{{ section.id }}');
+    if (!root) return;
+    bindCheckboxes(root);
+    var track = root.querySelector('.gcf__track:not(.gcf__track--disabled)');
+    if (track && !track.dataset.gcfInit) {
+      track.dataset.gcfInit = '1';
+      initSlider(track);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  document.addEventListener('shopify:section:load', function(e) {
+    if (e.detail && e.detail.sectionId === '{{ section.id }}') boot();
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Glam Collection Filter",
+  "class": "glam-collection-filter-section",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading_shapes",
+      "label": "Diamond Shape heading",
+      "default": "Diamond Shape"
+    },
+    {
+      "type": "text",
+      "id": "heading_styles",
+      "label": "Style heading",
+      "default": "Style"
+    },
+    {
+      "type": "text",
+      "id": "heading_metal",
+      "label": "Metal heading",
+      "default": "Metal"
+    },
+    {
+      "type": "text",
+      "id": "heading_price",
+      "label": "Price heading",
+      "default": "Price"
+    },
+    {
+      "type": "text",
+      "id": "heading_quick",
+      "label": "Quick Filters heading",
+      "default": "Quick Filters"
+    },
+    {
+      "type": "paragraph",
+      "content": "Set each block's Filter Value to exactly match the tag or option value used in your Shopify storefront filters. Check your collection URL after clicking a filter to see the exact value (e.g. ?filter.p.tag=Round)."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "diamond_shape",
+      "name": "Diamond Shape",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Shape image",
+          "info": "Leave blank for a built-in SVG icon. Recommended: 120×120 px transparent PNG."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Round"
+        },
+        {
+          "type": "text",
+          "id": "filter_value",
+          "label": "Filter value (case-sensitive)",
+          "default": "Round"
+        }
+      ]
+    },
+    {
+      "type": "ring_style",
+      "name": "Ring Style",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Style image",
+          "info": "Optional. Shows as image tile if set, text chip if blank."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Solitaire"
+        },
+        {
+          "type": "text",
+          "id": "filter_value",
+          "label": "Filter value (case-sensitive)",
+          "default": "Solitaire"
+        }
+      ]
+    },
+    {
+      "type": "metal",
+      "name": "Metal Option",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "White Gold"
+        },
+        {
+          "type": "color",
+          "id": "swatch_color",
+          "label": "Swatch colour",
+          "default": "#E8E8E8"
+        },
+        {
+          "type": "text",
+          "id": "filter_value",
+          "label": "Filter value (case-sensitive)",
+          "default": "White Gold"
+        }
+      ]
+    },
+    {
+      "type": "quick_filter",
+      "name": "Quick Filter",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Button label",
+          "default": "On Sale"
+        },
+        {
+          "type": "text",
+          "id": "filter_value",
+          "label": "Filter value / tag (case-sensitive)",
+          "default": "On Sale"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Glam Collection Filter",
+      "blocks": [
+        { "type": "diamond_shape", "settings": { "label": "Round",    "filter_value": "Round" } },
+        { "type": "diamond_shape", "settings": { "label": "Oval",     "filter_value": "Oval" } },
+        { "type": "diamond_shape", "settings": { "label": "Cushion",  "filter_value": "Cushion" } },
+        { "type": "diamond_shape", "settings": { "label": "Princess", "filter_value": "Princess" } },
+        { "type": "diamond_shape", "settings": { "label": "Emerald",  "filter_value": "Emerald" } },
+        { "type": "diamond_shape", "settings": { "label": "Radiant",  "filter_value": "Radiant" } },
+        { "type": "diamond_shape", "settings": { "label": "Pear",     "filter_value": "Pear" } },
+        { "type": "diamond_shape", "settings": { "label": "Marquise", "filter_value": "Marquise" } },
+        { "type": "diamond_shape", "settings": { "label": "Asscher",  "filter_value": "Asscher" } },
+        { "type": "ring_style", "settings": { "label": "Solitaire",   "filter_value": "Solitaire" } },
+        { "type": "ring_style", "settings": { "label": "Side Stones", "filter_value": "Side Stones" } },
+        { "type": "ring_style", "settings": { "label": "Halo",        "filter_value": "Halo" } },
+        { "type": "ring_style", "settings": { "label": "Pavé",        "filter_value": "Pave" } },
+        { "type": "ring_style", "settings": { "label": "Three Stone", "filter_value": "Three Stone" } },
+        { "type": "ring_style", "settings": { "label": "Eternity",    "filter_value": "Eternity" } },
+        { "type": "metal", "settings": { "label": "White Gold",  "swatch_color": "#E8E8E8", "filter_value": "White Gold" } },
+        { "type": "metal", "settings": { "label": "Yellow Gold", "swatch_color": "#D4AF37", "filter_value": "Yellow Gold" } },
+        { "type": "metal", "settings": { "label": "Rose Gold",   "swatch_color": "#B76E79", "filter_value": "Rose Gold" } },
+        { "type": "metal", "settings": { "label": "Platinum",    "swatch_color": "#C5C7CE", "filter_value": "Platinum" } },
+        { "type": "quick_filter", "settings": { "label": "Ready To Ship", "filter_value": "Ready To Ship" } },
+        { "type": "quick_filter", "settings": { "label": "On Sale",       "filter_value": "Sale" } },
+        { "type": "quick_filter", "settings": { "label": "New Arrivals",  "filter_value": "New Arrival" } },
+        { "type": "quick_filter", "settings": { "label": "Best Sellers",  "filter_value": "Best Seller" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
