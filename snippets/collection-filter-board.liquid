@@ -46,6 +46,9 @@
 {%- if cfb_has_labels or cfb_has_quick -%}
 
 <style>
+  /* ── Visually-hidden helper (defined locally — theme has no global .sr-only) ── */
+  .cfb-board .sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
+
   /* ── LAYOUT (unchanged) ── */
   .collection-filter-board.cfb-board { border-bottom: 1px solid #e8e8e8; margin-bottom: 0.5rem; }
   .cfb-board .cfb-inner { max-width: var(--page-width); margin: 0 auto; padding: 0 1.25rem; }
@@ -246,15 +249,39 @@
   .cfb-board .cfb-tile-label--rect.cfb-active .cfb-tile-name,
   .cfb-board .cfb-tile-label--rect.is-active .cfb-tile-name { color: #111 !important; font-weight: 700; }
 
+  /* ── Button reset — tiles & chips render as <button>; strip browser defaults ── */
+  .cfb-board button.cfb-tile-label {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    text-align: center;
+  }
+  .cfb-board button.cfb-chip-label {
+    font: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    margin: 0;
+  }
+
   /* ── STONE TYPE — cream "ALL" pill ── */
   .cfb-board .cfb-chip-label.cfb-stone-all {
     background: #fbf3df;
     border-color: #d8c282;
     color: #6b5418;
-    opacity: 1;
     font-weight: 600;
-    pointer-events: auto;
-    cursor: default !important;
+    cursor: pointer !important;
+  }
+  .cfb-board .cfb-chip-label.cfb-stone-all:hover {
+    background: #f6e7b9 !important;
+    border-color: #c79a2c !important;
+    color: #3f3209 !important;
   }
   .cfb-board .cfb-chip-label.cfb-stone-all.cfb-active {
     background: #f1deaa !important;
@@ -569,18 +596,22 @@
                         endif
                         assign _stlc = _stname | downcase
                       -%}
-                      {%- if _stfv_ok -%}
-                        <label for="cfb-fst-{{ _stname | handle }}" class="cfb-tile-label cfb-tile-label--rect{% if _stfv.active %} cfb-active{% endif %}">
-                          <input type="checkbox" id="cfb-fst-{{ _stname | handle }}" class="sr-only" name="{{ _stfv.param_name }}" value="{{ _stfv.value }}" form="FacetFiltersForm"{% if _stfv.active %} checked{% endif %}>
-                          <span class="cfb-tile-img-wrap">{%- render 'cfb-style-svg', name: _stlc -%}</span>
-                          <span class="cfb-tile-name">{{ _stname }}</span>
-                        </label>
-                      {%- else -%}
-                        <span class="cfb-tile-label cfb-tile-label--rect cfb-preview" aria-hidden="true">
-                          <span class="cfb-tile-img-wrap">{%- render 'cfb-style-svg', name: _stlc -%}</span>
-                          <span class="cfb-tile-name">{{ _stname }}</span>
-                        </span>
-                      {%- endif -%}
+                      {%- liquid
+                        if _stfv_ok
+                          assign _st_param = _stfv.param_name
+                          assign _st_value = _stfv.value
+                          assign _st_active = _stfv.active
+                        else
+                          assign _st_param = 'filter.p.m.custom.style_1'
+                          assign _st_value = _stname
+                          assign _st_active = false
+                        endif
+                      -%}
+                      <label for="cfb-fst-{{ _stname | handle }}" class="cfb-tile-label cfb-tile-label--rect{% if _st_active %} cfb-active{% endif %}">
+                        <input type="checkbox" id="cfb-fst-{{ _stname | handle }}" class="sr-only" name="{{ _st_param }}" value="{{ _st_value }}" form="FacetFiltersForm"{% if _st_active %} checked{% endif %} @change="onSubmit()">
+                        <span class="cfb-tile-img-wrap">{%- render 'cfb-style-svg', name: _stlc -%}</span>
+                        <span class="cfb-tile-name">{{ _stname }}</span>
+                      </label>
                     {%- endfor -%}
                   </div>
 
@@ -611,18 +642,22 @@
                         endif
                         assign _clc = _cname | downcase
                       -%}
-                      {%- if _cfv_ok -%}
-                        <label for="cfb-fcat-{{ _cname | handle }}" class="cfb-tile-label cfb-tile-label--rect{% if _cfv.active %} cfb-active{% endif %}">
-                          <input type="checkbox" id="cfb-fcat-{{ _cname | handle }}" class="sr-only" name="{{ _cfv.param_name }}" value="{{ _cfv.value }}" form="FacetFiltersForm"{% if _cfv.active %} checked{% endif %}>
-                          <span class="cfb-tile-img-wrap">{%- render 'cfb-category-svg', name: _clc -%}</span>
-                          <span class="cfb-tile-name">{{ _cname }}</span>
-                        </label>
-                      {%- else -%}
-                        <span class="cfb-tile-label cfb-tile-label--rect cfb-preview" aria-hidden="true">
-                          <span class="cfb-tile-img-wrap">{%- render 'cfb-category-svg', name: _clc -%}</span>
-                          <span class="cfb-tile-name">{{ _cname }}</span>
-                        </span>
-                      {%- endif -%}
+                      {%- liquid
+                        if _cfv_ok
+                          assign _c_param = _cfv.param_name
+                          assign _c_value = _cfv.value
+                          assign _c_active = _cfv.active
+                        else
+                          assign _c_param = 'filter.p.product_type'
+                          assign _c_value = _cname
+                          assign _c_active = false
+                        endif
+                      -%}
+                      <label for="cfb-fcat-{{ _cname | handle }}" class="cfb-tile-label cfb-tile-label--rect{% if _c_active %} cfb-active{% endif %}">
+                        <input type="checkbox" id="cfb-fcat-{{ _cname | handle }}" class="sr-only" name="{{ _c_param }}" value="{{ _c_value }}" form="FacetFiltersForm"{% if _c_active %} checked{% endif %} @change="onSubmit()">
+                        <span class="cfb-tile-img-wrap">{%- render 'cfb-category-svg', name: _clc -%}</span>
+                        <span class="cfb-tile-name">{{ _cname }}</span>
+                      </label>
                     {%- endfor -%}
                   </div>
 
@@ -645,7 +680,7 @@
                     endfor
                   -%}
                   <div class="cfb-chips">
-                    <span class="cfb-chip-label cfb-stone-all cfb-preview{% unless _stone_any_active %} cfb-active{% endunless %}{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true">ALL</span>
+                    <button type="button" class="cfb-chip-label cfb-stone-all{% unless _stone_any_active %} cfb-active{% endunless %}{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" data-cfb-clear="stone">ALL</button>
                     {%- for _sn in _stone_list -%}
                       {%- liquid
                         assign _snfv = nil
@@ -669,14 +704,21 @@
                           endif
                         endif
                       -%}
-                      {%- if _snfv_ok -%}
-                        <label for="cfb-fsn-{{ _sn | handle }}" class="cfb-chip-label{% if _snfv.active %} cfb-active{% endif %}{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}">
-                          <input type="checkbox" id="cfb-fsn-{{ _sn | handle }}" class="sr-only" name="{{ _snfv.param_name }}" value="{{ _snfv.value }}" form="FacetFiltersForm"{% if _snfv.active %} checked{% endif %}>
-                          {{ _sn | escape }}
-                        </label>
-                      {%- else -%}
-                        <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true">{{ _sn | escape }}</span>
-                      {%- endif -%}
+                      {%- liquid
+                        if _snfv_ok
+                          assign _sn_param = _snfv.param_name
+                          assign _sn_value = _snfv.value
+                          assign _sn_active = _snfv.active
+                        else
+                          assign _sn_param = 'filter.p.m.custom.stone_type'
+                          assign _sn_value = _sn
+                          assign _sn_active = false
+                        endif
+                      -%}
+                      <label for="cfb-fsn-{{ _sn | handle }}" class="cfb-chip-label{% if _sn_active %} cfb-active{% endif %}{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}">
+                        <input type="checkbox" id="cfb-fsn-{{ _sn | handle }}" class="sr-only" name="{{ _sn_param }}" value="{{ _sn_value }}" form="FacetFiltersForm"{% if _sn_active %} checked{% endif %} @change="onSubmit()">
+                        {{ _sn | escape }}
+                      </label>
                     {%- endfor -%}
                   </div>
 
@@ -897,10 +939,56 @@
                   {%- endfor -%}
                 </div>
               {%- elsif cfb_gl_lc contains 'stone' -%}
+                {%- liquid
+                  assign _stone_list_b = 'Lab-Grown Diamond|Moissanite' | split: '|'
+                  assign _stone_any_b = false
+                  for _sn in _stone_list_b
+                    for _sf in collection.filters
+                      if _sf.type != 'price_range'
+                        for _sfv in _sf.values
+                          if _sfv.label == _sn or _sfv.value == _sn
+                            if _sfv.active
+                              assign _stone_any_b = true
+                            endif
+                          endif
+                        endfor
+                      endif
+                    endfor
+                  endfor
+                -%}
                 <div class="cfb-chips">
-                  <span class="cfb-chip-label cfb-stone-all cfb-preview cfb-active{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true">ALL</span>
-                  <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true">Lab-Grown Diamond</span>
-                  <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true">Moissanite</span>
+                  <button type="button" class="cfb-chip-label cfb-stone-all{% unless _stone_any_b %} cfb-active{% endunless %}{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" data-cfb-clear="stone">ALL</button>
+                  {%- for _sn in _stone_list_b -%}
+                    {%- liquid
+                      assign _snfv_b = nil
+                      for _sf in collection.filters
+                        if _sf.type != 'price_range'
+                          for _sfval in _sf.values
+                            if _sfval.value == _sn or _sfval.label == _sn
+                              assign _snfv_b = _sfval
+                              break
+                            endif
+                          endfor
+                        endif
+                        if _snfv_b != nil
+                          break
+                        endif
+                      endfor
+                      if _snfv_b != nil
+                        assign _sn_param_b = _snfv_b.param_name
+                        assign _sn_value_b = _snfv_b.value
+                        assign _sn_active_b = _snfv_b.active
+                      else
+                        assign _sn_param_b = 'filter.p.m.custom.stone_type'
+                        assign _sn_value_b = _sn
+                        assign _sn_active_b = false
+                      endif
+                    -%}
+                    <label for="cfb-bsn-{{ _sn | handle }}" class="cfb-chip-label{% if _sn_active_b %} cfb-active{% endif %}{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}">
+                      <input type="checkbox" id="cfb-bsn-{{ _sn | handle }}" class="sr-only" name="{{ _sn_param_b }}" value="{{ _sn_value_b }}" form="FacetFiltersForm"{% if _sn_active_b %} checked{% endif %} @change="onSubmit()">
+                      {{ _sn | escape }}
+                    </label>
+                  {%- endfor -%}
                 </div>
               {%- elsif cfb_gl_lc contains 'style' -%}
                 <div class="cfb-chips">
@@ -1103,10 +1191,56 @@
                   {%- endfor -%}
                 </div>
               {%- elsif cfb_gl_lc contains 'stone' -%}
+                {%- liquid
+                  assign _stone_list_b = 'Lab-Grown Diamond|Moissanite' | split: '|'
+                  assign _stone_any_b = false
+                  for _sn in _stone_list_b
+                    for _sf in collection.filters
+                      if _sf.type != 'price_range'
+                        for _sfv in _sf.values
+                          if _sfv.label == _sn or _sfv.value == _sn
+                            if _sfv.active
+                              assign _stone_any_b = true
+                            endif
+                          endif
+                        endfor
+                      endif
+                    endfor
+                  endfor
+                -%}
                 <div class="cfb-chips">
-                  <span class="cfb-chip-label cfb-stone-all cfb-preview cfb-active{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true">ALL</span>
-                  <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true">Lab-Grown Diamond</span>
-                  <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true">Moissanite</span>
+                  <button type="button" class="cfb-chip-label cfb-stone-all{% unless _stone_any_b %} cfb-active{% endunless %}{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" data-cfb-clear="stone">ALL</button>
+                  {%- for _sn in _stone_list_b -%}
+                    {%- liquid
+                      assign _snfv_b = nil
+                      for _sf in collection.filters
+                        if _sf.type != 'price_range'
+                          for _sfval in _sf.values
+                            if _sfval.value == _sn or _sfval.label == _sn
+                              assign _snfv_b = _sfval
+                              break
+                            endif
+                          endfor
+                        endif
+                        if _snfv_b != nil
+                          break
+                        endif
+                      endfor
+                      if _snfv_b != nil
+                        assign _sn_param_b = _snfv_b.param_name
+                        assign _sn_value_b = _snfv_b.value
+                        assign _sn_active_b = _snfv_b.active
+                      else
+                        assign _sn_param_b = 'filter.p.m.custom.stone_type'
+                        assign _sn_value_b = _sn
+                        assign _sn_active_b = false
+                      endif
+                    -%}
+                    <label for="cfb-bsn-{{ _sn | handle }}" class="cfb-chip-label{% if _sn_active_b %} cfb-active{% endif %}{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}">
+                      <input type="checkbox" id="cfb-bsn-{{ _sn | handle }}" class="sr-only" name="{{ _sn_param_b }}" value="{{ _sn_value_b }}" form="FacetFiltersForm"{% if _sn_active_b %} checked{% endif %} @change="onSubmit()">
+                      {{ _sn | escape }}
+                    </label>
+                  {%- endfor -%}
                 </div>
               {%- elsif cfb_gl_lc contains 'style' -%}
                 <div class="cfb-chips">
@@ -1231,53 +1365,60 @@
                 break
               endif
             endfor
-            assign cfb_pr_abs_min = 0
-            assign cfb_pr_abs_max = 100000
-            assign cfb_pr_cur_min = 0
-            assign cfb_pr_cur_max = 100000
+
+            comment
+              Shopify reports range_min/max in cents — convert to whole dollars for the slider + URL.
+            endcomment
             if cfb_price_filter != nil
-              assign cfb_pr_abs_min = cfb_price_filter.range_min | plus: 0
-              assign cfb_pr_abs_max = cfb_price_filter.range_max | plus: 0
+              assign _raw_abs_min  = cfb_price_filter.range_min | plus: 0
+              assign _raw_abs_max  = cfb_price_filter.range_max | plus: 0
+              assign cfb_pr_abs_min = _raw_abs_min | divided_by: 100
+              assign cfb_pr_abs_max = _raw_abs_max | divided_by: 100
+              if _raw_abs_max != 0 and cfb_pr_abs_max == 0
+                assign cfb_pr_abs_max = 1
+              endif
+              assign cfb_pr_param_min = cfb_price_filter.min_value.param_name
+              assign cfb_pr_param_max = cfb_price_filter.max_value.param_name
               if cfb_price_filter.min_value.value != blank
-                assign cfb_pr_cur_min = cfb_price_filter.min_value.value | plus: 0
+                assign _raw_cur_min  = cfb_price_filter.min_value.value | plus: 0
+                assign cfb_pr_cur_min = _raw_cur_min | divided_by: 100
               else
                 assign cfb_pr_cur_min = cfb_pr_abs_min
               endif
               if cfb_price_filter.max_value.value != blank
-                assign cfb_pr_cur_max = cfb_price_filter.max_value.value | plus: 0
+                assign _raw_cur_max  = cfb_price_filter.max_value.value | plus: 0
+                assign cfb_pr_cur_max = _raw_cur_max | divided_by: 100
               else
                 assign cfb_pr_cur_max = cfb_pr_abs_max
               endif
+            else
+              assign cfb_pr_abs_min   = 0
+              assign cfb_pr_abs_max   = 5000
+              assign cfb_pr_param_min = 'filter.v.price.gte'
+              assign cfb_pr_param_max = 'filter.v.price.lte'
+              assign cfb_pr_cur_min   = cfb_pr_abs_min
+              assign cfb_pr_cur_max   = cfb_pr_abs_max
             endif
           -%}
-          {%- if cfb_price_filter != nil -%}
-            <div class="cfb-price-slider"
-              data-abs-min="{{ cfb_pr_abs_min }}"
-              data-abs-max="{{ cfb_pr_abs_max }}"
-              data-cur-min="{{ cfb_pr_cur_min }}"
-              data-cur-max="{{ cfb_pr_cur_max }}"
-              data-param-min="{{ cfb_price_filter.min_value.param_name }}"
-              data-param-max="{{ cfb_price_filter.max_value.param_name }}"
-            >
-              <input type="number" class="sr-only" name="{{ cfb_price_filter.min_value.param_name }}" value="{{ cfb_price_filter.min_value.value | default: '' }}" form="FacetFiltersForm" aria-hidden="true" tabindex="-1">
-              <input type="number" class="sr-only" name="{{ cfb_price_filter.max_value.param_name }}" value="{{ cfb_price_filter.max_value.value | default: '' }}" form="FacetFiltersForm" aria-hidden="true" tabindex="-1">
-              <div class="cfb-price-track cfb-price-track--live">
-                <div class="cfb-price-fill"></div>
-                <button type="button" class="cfb-price-thumb cfb-price-thumb--min" aria-label="Minimum price" role="slider"></button>
-                <button type="button" class="cfb-price-thumb cfb-price-thumb--max" aria-label="Maximum price" role="slider"></button>
-              </div>
-              <div class="cfb-price-display">
-                <span class="cfb-pval cfb-pval--min"></span>
-                <span>–</span>
-                <span class="cfb-pval cfb-pval--max"></span>
-              </div>
+          <div class="cfb-price-slider"
+            data-abs-min="{{ cfb_pr_abs_min }}"
+            data-abs-max="{{ cfb_pr_abs_max }}"
+            data-cur-min="{{ cfb_pr_cur_min }}"
+            data-cur-max="{{ cfb_pr_cur_max }}"
+            data-param-min="{{ cfb_pr_param_min }}"
+            data-param-max="{{ cfb_pr_param_max }}"
+          >
+            <div class="cfb-price-track cfb-price-track--live">
+              <div class="cfb-price-fill"></div>
+              <button type="button" class="cfb-price-thumb cfb-price-thumb--min" aria-label="Minimum price" role="slider"></button>
+              <button type="button" class="cfb-price-thumb cfb-price-thumb--max" aria-label="Maximum price" role="slider"></button>
             </div>
-          {%- else -%}
-            <div class="cfb-price-placeholder cfb-preview" aria-hidden="true">
-              <div class="cfb-price-track"></div>
-              <div class="cfb-price-labels"><span>$0</span><span>$999</span></div>
+            <div class="cfb-price-display">
+              <span class="cfb-pval cfb-pval--min"></span>
+              <span>–</span>
+              <span class="cfb-pval cfb-pval--max"></span>
             </div>
-          {%- endif -%}
+          </div>
         </div>
 
         {%- comment -%} Quick Filters — right-pinned, hidden when bottom row has 4+ columns {%- endcomment -%}
@@ -1373,29 +1514,79 @@
     });
   }
 
+  function cfbToggleParam(param, value) {
+    var url = new URL(window.location.href);
+    var existing = url.searchParams.getAll(param);
+    var found = existing.indexOf(value) !== -1;
+    url.searchParams.delete(param);
+    if (found) {
+      existing.filter(function(v) { return v !== value; }).forEach(function(v) {
+        url.searchParams.append(param, v);
+      });
+    } else {
+      existing.forEach(function(v) { url.searchParams.append(param, v); });
+      url.searchParams.append(param, value);
+    }
+    url.searchParams.delete('page');
+    window.location.href = url.toString();
+  }
+
   function bindBoard(board) {
     syncActiveClasses(board);
+
     board.addEventListener('change', function(e) {
       var el = e.target;
       if (el.tagName === 'INPUT' && el.type === 'checkbox') {
         var label = el.closest('label');
         if (label) {
-          if (el.checked) {
-            label.classList.add('is-active');
-          } else {
-            label.classList.remove('is-active');
-          }
+          if (el.checked) { label.classList.add('is-active'); }
+          else { label.classList.remove('is-active'); }
         }
         cfbSubmit();
       } else if (el.tagName === 'SELECT') {
         cfbSubmit();
       }
     });
+
+    board.querySelectorAll('[data-cfb-filter]').forEach(function(btn) {
+      if (btn.dataset.cfbFilterBound) return;
+      btn.dataset.cfbFilterBound = '1';
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        var param = btn.dataset.cfbFilter;
+        var value = btn.dataset.cfbValue;
+        if (!param || value === undefined) return;
+        cfbToggleParam(param, value);
+      });
+    });
+
+    board.querySelectorAll('[data-cfb-clear]').forEach(function(btn) {
+      if (btn.dataset.cfbClearBound) return;
+      btn.dataset.cfbClearBound = '1';
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        var type = btn.dataset.cfbClear || '';
+        var url  = new URL(window.location.href);
+        var keys = [];
+        url.searchParams.forEach(function(_, k) { keys.push(k); });
+        keys.forEach(function(k) {
+          if (type === 'stone' && /stone[_-]?type/i.test(k)) {
+            url.searchParams.delete(k);
+          }
+        });
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
+      });
+    });
   }
 
   function initCfbSlider(widget) {
-    var absMin = parseInt(widget.dataset.absMin, 10) || 0;
-    var absMax = parseInt(widget.dataset.absMax, 10) || 100000;
+    /* All values are in WHOLE DOLLARS — never cents, never floats. */
+    var absMin = parseInt(widget.dataset.absMin, 10);
+    var absMax = parseInt(widget.dataset.absMax, 10);
+    if (isNaN(absMin) || absMin < 0) absMin = 0;
+    if (isNaN(absMax) || absMax <= absMin) absMax = absMin + 5000;
+
     var curMin = parseInt(widget.dataset.curMin, 10);
     var curMax = parseInt(widget.dataset.curMax, 10);
     if (isNaN(curMin) || curMin < absMin) curMin = absMin;
@@ -1407,13 +1598,11 @@
     var fill     = widget.querySelector('.cfb-price-fill');
     var thumbMin = widget.querySelector('.cfb-price-thumb--min');
     var thumbMax = widget.querySelector('.cfb-price-thumb--max');
-    var inputMin = widget.querySelector('[name="' + pMin + '"]');
-    var inputMax = widget.querySelector('[name="' + pMax + '"]');
     var lblMin   = widget.querySelector('.cfb-pval--min');
     var lblMax   = widget.querySelector('.cfb-pval--max');
 
-    function fmt(cents) {
-      return '$' + Math.round(cents / 100).toLocaleString('en-US');
+    function fmt(dollars) {
+      return '$' + Math.round(dollars).toLocaleString('en-US');
     }
     function toPct(v)  { return ((v - absMin) / (absMax - absMin)) * 100; }
     function fromPct(p){ return absMin + (p / 100) * (absMax - absMin); }
@@ -1427,21 +1616,27 @@
       if (lblMin) lblMin.textContent = fmt(curMin);
       if (lblMax) lblMax.textContent = fmt(curMax);
     }
-    function sync() {
-      if (inputMin) inputMin.value = curMin > absMin ? curMin : '';
-      if (inputMax) inputMax.value = curMax < absMax ? curMax : '';
+
+    function submitPrice() {
+      var url = new URL(window.location.href);
+      url.searchParams.delete(pMin);
+      url.searchParams.delete(pMax);
+      if (curMin > absMin) url.searchParams.append(pMin, String(Math.round(curMin)));
+      if (curMax < absMax) url.searchParams.append(pMax, String(Math.round(curMax)));
+      url.searchParams.delete('page');
+      window.location.href = url.toString();
     }
 
-    render(); sync();
+    render();
 
     function makeDraggable(thumb, isMin) {
       var active = false;
-      var gap    = Math.max(1, (absMax - absMin) * 0.005);
+      var gap    = Math.max(1, Math.round((absMax - absMin) * 0.005));
 
       function getVal(e) {
         var r   = track.getBoundingClientRect();
         var cx  = e.touches ? e.touches[0].clientX : e.clientX;
-        return fromPct(Math.min(1, Math.max(0, (cx - r.left) / r.width)) * 100);
+        return Math.round(fromPct(Math.min(1, Math.max(0, (cx - r.left) / r.width)) * 100));
       }
       function onStart(e) {
         active = true; thumb.classList.add('is-dragging'); e.preventDefault();
@@ -1461,20 +1656,20 @@
         if (!active) return; active = false; thumb.classList.remove('is-dragging');
         document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onEnd);
         document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onEnd);
-        sync(); cfbSubmit();
+        submitPrice();
       }
       thumb.addEventListener('mousedown',  onStart);
       thumb.addEventListener('touchstart', onStart, { passive: false });
       thumb.addEventListener('keydown', function(e) {
-        var step = Math.max(100, Math.round((absMax - absMin) * 0.01));
+        var step = Math.max(1, Math.round((absMax - absMin) * 0.01));
         if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
           if (isMin) curMin = Math.max(absMin, curMin - step);
           else       curMax = Math.max(curMin + gap, curMax - step);
-          render(); sync(); cfbSubmit();
+          render(); submitPrice();
         } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
           if (isMin) curMin = Math.min(curMax - gap, curMin + step);
           else       curMax = Math.min(absMax, curMax + step);
-          render(); sync(); cfbSubmit();
+          render(); submitPrice();
         }
       });
     }
@@ -1482,13 +1677,13 @@
     track.addEventListener('click', function(e) {
       if (e.target === thumbMin || e.target === thumbMax) return;
       var r   = track.getBoundingClientRect();
-      var v   = fromPct(((e.clientX - r.left) / r.width) * 100);
-      var gap = Math.max(1, (absMax - absMin) * 0.005);
+      var v   = Math.round(fromPct(((e.clientX - r.left) / r.width) * 100));
+      var gap = Math.max(1, Math.round((absMax - absMin) * 0.005));
       if (Math.abs(v - curMin) <= Math.abs(v - curMax))
         curMin = Math.max(absMin, Math.min(v, curMax - gap));
       else
         curMax = Math.min(absMax, Math.max(v, curMin + gap));
-      render(); sync(); cfbSubmit();
+      render(); submitPrice();
     });
 
     makeDraggable(thumbMin, true);
