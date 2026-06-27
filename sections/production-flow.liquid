@@ -120,6 +120,13 @@
     height: 36px;
   }
 
+  .production-flow__icon-img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    display: block;
+  }
+
   .production-flow__label {
     font-size: 0.7rem;
     letter-spacing: 0.05em;
@@ -198,6 +205,11 @@
       height: 30px;
     }
 
+    .production-flow__icon-img {
+      width: 30px;
+      height: 30px;
+    }
+
     .production-flow__label {
       font-size: 0.6rem;
       max-width: 72px;
@@ -255,11 +267,15 @@
       <div class="production-flow__row" role="list">
         <div class="production-flow__stage" role="listitem">
           <div class="production-flow__icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 34 L30 18 L36 24 L20 40 L12 40 Z"/>
-              <line x1="28" y1="20" x2="34" y2="26"/>
-              <circle cx="16" cy="38" r="0.8" fill="currentColor"/>
-            </svg>
+            {%- if section.settings.icon_craft_confirmation != blank -%}
+              {{ section.settings.icon_craft_confirmation | image_url: width: 96 | image_tag: alt: 'Craft Confirmation', class: 'production-flow__icon-img', loading: 'lazy' }}
+            {%- else -%}
+              <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 34 L30 18 L36 24 L20 40 L12 40 Z"/>
+                <line x1="28" y1="20" x2="34" y2="26"/>
+                <circle cx="16" cy="38" r="0.8" fill="currentColor"/>
+              </svg>
+            {%- endif -%}
           </div>
           <span class="production-flow__label">Craft Confirmation</span>
         </div>
@@ -268,12 +284,16 @@
 
         <div class="production-flow__stage" role="listitem">
           <div class="production-flow__icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="24,8 36,18 24,40 12,18"/>
-              <line x1="12" y1="18" x2="36" y2="18"/>
-              <line x1="18" y1="18" x2="24" y2="40"/>
-              <line x1="30" y1="18" x2="24" y2="40"/>
-            </svg>
+            {%- if section.settings.icon_diamond_source != blank -%}
+              {{ section.settings.icon_diamond_source | image_url: width: 96 | image_tag: alt: 'Diamond Source', class: 'production-flow__icon-img', loading: 'lazy' }}
+            {%- else -%}
+              <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="24,8 36,18 24,40 12,18"/>
+                <line x1="12" y1="18" x2="36" y2="18"/>
+                <line x1="18" y1="18" x2="24" y2="40"/>
+                <line x1="30" y1="18" x2="24" y2="40"/>
+              </svg>
+            {%- endif -%}
           </div>
           <span class="production-flow__label">Diamond Source</span>
         </div>
@@ -282,12 +302,16 @@
 
         <div class="production-flow__stage" role="listitem">
           <div class="production-flow__icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M24 8 L40 16 L40 32 L24 40 L8 32 L8 16 Z"/>
-              <line x1="24" y1="8" x2="24" y2="40"/>
-              <line x1="8" y1="16" x2="40" y2="16"/>
-              <line x1="8" y1="32" x2="40" y2="32"/>
-            </svg>
+            {%- if section.settings.icon_3d_model != blank -%}
+              {{ section.settings.icon_3d_model | image_url: width: 96 | image_tag: alt: '3D Model', class: 'production-flow__icon-img', loading: 'lazy' }}
+            {%- else -%}
+              <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M24 8 L40 16 L40 32 L24 40 L8 32 L8 16 Z"/>
+                <line x1="24" y1="8" x2="24" y2="40"/>
+                <line x1="8" y1="16" x2="40" y2="16"/>
+                <line x1="8" y1="32" x2="40" y2="32"/>
+              </svg>
+            {%- endif -%}
           </div>
           <span class="production-flow__label">3D Model</span>
         </div>
@@ -296,11 +320,15 @@
 
         <div class="production-flow__stage" role="listitem">
           <div class="production-flow__icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="14" y="18" width="20" height="22" rx="2"/>
-              <path d="M14 18 L24 8 L34 18"/>
-              <line x1="18" y1="26" x2="30" y2="26"/>
-            </svg>
+            {%- if section.settings.icon_casting != blank -%}
+              {{ section.settings.icon_casting | image_url: width: 96 | image_tag: alt: 'Casting', class: 'production-flow__icon-img', loading: 'lazy' }}
+            {%- else -%}
+              <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="14" y="18" width="20" height="22" rx="2"/>
+                <path d="M14 18 L24 8 L34 18"/>
+                <line x1="18" y1="26" x2="30" y2="26"/>
+              </svg>
+            {%- endif -%}
           </div>
           <span class="production-flow__label">Casting</span>
         </div>
@@ -309,11 +337,15 @@
 
         <div class="production-flow__stage" role="listitem">
           <div class="production-flow__icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <ellipse cx="24" cy="32" rx="14" ry="6"/>
-              <polygon points="24,14 30,22 24,26 18,22"/>
-              <line x1="18" y1="22" x2="30" y2="22"/>
-            </svg>
+            {%- if section.settings.icon_stone_setting != blank -%}
+              {{ section.settings.icon_stone_setting | image_url: width: 96 | image_tag: alt: 'Stone Setting', class: 'production-flow__icon-img', loading: 'lazy' }}
+            {%- else -%}
+              <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="24" cy="32" rx="14" ry="6"/>
+                <polygon points="24,14 30,22 24,26 18,22"/>
+                <line x1="18" y1="22" x2="30" y2="22"/>
+              </svg>
+            {%- endif -%}
           </div>
           <span class="production-flow__label">Stone Setting</span>
         </div>
@@ -322,9 +354,13 @@
 
         <div class="production-flow__stage" role="listitem">
           <div class="production-flow__icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M24 8 L26 22 L38 24 L26 26 L24 38 L22 26 L10 24 L22 22 Z"/>
-            </svg>
+            {%- if section.settings.icon_final_polish != blank -%}
+              {{ section.settings.icon_final_polish | image_url: width: 96 | image_tag: alt: 'Final Polish', class: 'production-flow__icon-img', loading: 'lazy' }}
+            {%- else -%}
+              <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M24 8 L26 22 L38 24 L26 26 L24 38 L22 26 L10 24 L22 22 Z"/>
+              </svg>
+            {%- endif -%}
           </div>
           <span class="production-flow__label">Final Polish</span>
         </div>
@@ -344,12 +380,16 @@
       <div class="production-flow__row" role="list">
         <div class="production-flow__stage" role="listitem">
           <div class="production-flow__icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="8" y="20" width="32" height="20" rx="2"/>
-              <line x1="8" y1="28" x2="40" y2="28"/>
-              <polygon points="16,12 22,18 16,24 10,18"/>
-              <polygon points="32,12 38,18 32,24 26,18"/>
-            </svg>
+            {%- if section.settings.icon_inhouse_diamond_stock != blank -%}
+              {{ section.settings.icon_inhouse_diamond_stock | image_url: width: 96 | image_tag: alt: 'IN-HOUSE Diamond Stock', class: 'production-flow__icon-img', loading: 'lazy' }}
+            {%- else -%}
+              <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="8" y="20" width="32" height="20" rx="2"/>
+                <line x1="8" y1="28" x2="40" y2="28"/>
+                <polygon points="16,12 22,18 16,24 10,18"/>
+                <polygon points="32,12 38,18 32,24 26,18"/>
+              </svg>
+            {%- endif -%}
           </div>
           <span class="production-flow__label">In-House Diamond Stock</span>
         </div>
@@ -358,12 +398,16 @@
 
         <div class="production-flow__stage" role="listitem">
           <div class="production-flow__icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M24 8 L40 16 L40 32 L24 40 L8 32 L8 16 Z"/>
-              <line x1="24" y1="8" x2="24" y2="40"/>
-              <line x1="8" y1="16" x2="40" y2="16"/>
-              <line x1="8" y1="32" x2="40" y2="32"/>
-            </svg>
+            {%- if section.settings.icon_inhouse_3d_design != blank -%}
+              {{ section.settings.icon_inhouse_3d_design | image_url: width: 96 | image_tag: alt: 'IN-HOUSE 3D Design', class: 'production-flow__icon-img', loading: 'lazy' }}
+            {%- else -%}
+              <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M24 8 L40 16 L40 32 L24 40 L8 32 L8 16 Z"/>
+                <line x1="24" y1="8" x2="24" y2="40"/>
+                <line x1="8" y1="16" x2="40" y2="16"/>
+                <line x1="8" y1="32" x2="40" y2="32"/>
+              </svg>
+            {%- endif -%}
           </div>
           <span class="production-flow__label">In-House 3D Design</span>
         </div>
@@ -372,14 +416,18 @@
 
         <div class="production-flow__stage" role="listitem">
           <div class="production-flow__icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="10" y="14" width="28" height="8" rx="1"/>
-              <rect x="14" y="22" width="20" height="8" rx="1"/>
-              <rect x="10" y="30" width="28" height="8" rx="1"/>
-              <line x1="14" y1="18" x2="20" y2="18"/>
-              <line x1="18" y1="26" x2="24" y2="26"/>
-              <line x1="14" y1="34" x2="20" y2="34"/>
-            </svg>
+            {%- if section.settings.icon_inhouse_casting != blank -%}
+              {{ section.settings.icon_inhouse_casting | image_url: width: 96 | image_tag: alt: 'IN-HOUSE Casting', class: 'production-flow__icon-img', loading: 'lazy' }}
+            {%- else -%}
+              <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="10" y="14" width="28" height="8" rx="1"/>
+                <rect x="14" y="22" width="20" height="8" rx="1"/>
+                <rect x="10" y="30" width="28" height="8" rx="1"/>
+                <line x1="14" y1="18" x2="20" y2="18"/>
+                <line x1="18" y1="26" x2="24" y2="26"/>
+                <line x1="14" y1="34" x2="20" y2="34"/>
+              </svg>
+            {%- endif -%}
           </div>
           <span class="production-flow__label">In-House Casting</span>
         </div>
@@ -388,11 +436,15 @@
 
         <div class="production-flow__stage" role="listitem">
           <div class="production-flow__icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <ellipse cx="24" cy="32" rx="14" ry="6"/>
-              <polygon points="24,14 30,22 24,26 18,22"/>
-              <line x1="18" y1="22" x2="30" y2="22"/>
-            </svg>
+            {%- if section.settings.icon_inhouse_stone_setting != blank -%}
+              {{ section.settings.icon_inhouse_stone_setting | image_url: width: 96 | image_tag: alt: 'IN-HOUSE Stone Setting', class: 'production-flow__icon-img', loading: 'lazy' }}
+            {%- else -%}
+              <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="24" cy="32" rx="14" ry="6"/>
+                <polygon points="24,14 30,22 24,26 18,22"/>
+                <line x1="18" y1="22" x2="30" y2="22"/>
+              </svg>
+            {%- endif -%}
           </div>
           <span class="production-flow__label">In-House Stone Setting</span>
         </div>
@@ -401,11 +453,15 @@
 
         <div class="production-flow__stage" role="listitem">
           <div class="production-flow__icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="24" cy="20" r="8"/>
-              <path d="M14 36 Q24 28 34 36"/>
-              <path d="M20 18 L22 20 L26 16"/>
-            </svg>
+            {%- if section.settings.icon_inhouse_polish != blank -%}
+              {{ section.settings.icon_inhouse_polish | image_url: width: 96 | image_tag: alt: 'IN-HOUSE Polish', class: 'production-flow__icon-img', loading: 'lazy' }}
+            {%- else -%}
+              <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="24" cy="20" r="8"/>
+                <path d="M14 36 Q24 28 34 36"/>
+                <path d="M20 18 L22 20 L26 16"/>
+              </svg>
+            {%- endif -%}
           </div>
           <span class="production-flow__label">In-House Polish</span>
         </div>
@@ -414,12 +470,16 @@
 
         <div class="production-flow__stage" role="listitem">
           <div class="production-flow__icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="10" y="18" width="28" height="22" rx="2"/>
-              <line x1="10" y1="26" x2="38" y2="26"/>
-              <line x1="24" y1="18" x2="24" y2="40"/>
-              <path d="M18 18 Q18 12 24 14 Q30 12 30 18"/>
-            </svg>
+            {%- if section.settings.icon_direct_to_you != blank -%}
+              {{ section.settings.icon_direct_to_you | image_url: width: 96 | image_tag: alt: 'Direct To You', class: 'production-flow__icon-img', loading: 'lazy' }}
+            {%- else -%}
+              <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="10" y="18" width="28" height="22" rx="2"/>
+                <line x1="10" y1="26" x2="38" y2="26"/>
+                <line x1="24" y1="18" x2="24" y2="40"/>
+                <path d="M18 18 Q18 12 24 14 Q30 12 30 18"/>
+              </svg>
+            {%- endif -%}
           </div>
           <span class="production-flow__label">Direct To You</span>
         </div>
@@ -443,7 +503,24 @@
     { "type": "color",  "id": "card_border",    "label": "Card border",     "default": "#e5e5e5" },
     { "type": "color",  "id": "subtitle_color", "label": "Subtitle text",   "default": "#9c8454" },
     { "type": "number", "id": "padding_top",    "label": "Top padding (px)", "default": 64 },
-    { "type": "number", "id": "padding_bottom", "label": "Bottom padding (px)", "default": 64 }
+    { "type": "number", "id": "padding_bottom", "label": "Bottom padding (px)", "default": 64 },
+
+    { "type": "header", "content": "Industry Standard icons (Panel 1)" },
+    { "type": "paragraph", "content": "Upload a custom icon for each stage. Leave blank to use the built-in SVG." },
+    { "type": "image_picker", "id": "icon_craft_confirmation", "label": "Craft Confirmation" },
+    { "type": "image_picker", "id": "icon_diamond_source",     "label": "Diamond Source" },
+    { "type": "image_picker", "id": "icon_3d_model",           "label": "3D Model" },
+    { "type": "image_picker", "id": "icon_casting",            "label": "Casting" },
+    { "type": "image_picker", "id": "icon_stone_setting",      "label": "Stone Setting" },
+    { "type": "image_picker", "id": "icon_final_polish",       "label": "Final Polish" },
+
+    { "type": "header", "content": "Glam & Gems In-House icons (Panel 2)" },
+    { "type": "image_picker", "id": "icon_inhouse_diamond_stock",  "label": "IN-HOUSE Diamond Stock" },
+    { "type": "image_picker", "id": "icon_inhouse_3d_design",      "label": "IN-HOUSE 3D Design" },
+    { "type": "image_picker", "id": "icon_inhouse_casting",        "label": "IN-HOUSE Casting" },
+    { "type": "image_picker", "id": "icon_inhouse_stone_setting",  "label": "IN-HOUSE Stone Setting" },
+    { "type": "image_picker", "id": "icon_inhouse_polish",         "label": "IN-HOUSE Polish" },
+    { "type": "image_picker", "id": "icon_direct_to_you",          "label": "Direct To You" }
   ],
   "presets": [{ "name": "Production flow" }]
 }

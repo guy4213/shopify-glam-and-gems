@@ -22,7 +22,8 @@
           "type": "product_name",
           "settings": {
             "title_size": 100,
-            "heading_tag": "h1"
+            "heading_tag": "h1",
+            "enable_product_rating": false
           }
         },
         "rating_y4dqXy": {
@@ -32,49 +33,36 @@
         "price": {
           "type": "price",
           "settings": {
+            "adapt_custom_price_format": false,
             "show_tax_and_shipping": false,
             "text_size_price": 70
           }
         },
-        "ffacb41b-c15e-41ee-864a-cfbf155d407d": {
-          "type": "estimate_delivery",
+        "collapsible_tab_j3tGcM": {
+          "type": "collapsible_tab",
           "settings": {
-            "hide_when_pre_order": false,
-            "box_type": "adapt",
-            "message": "<p>Order now and your order ships by <strong>latest_delivery_date</strong>.</p>",
-            "tooltip_text": "",
-            "tooltip_icon": "none",
+            "open_by_default": false,
+            "icon": "none",
+            "another_icon": "",
             "custom_icon": "",
-            "tooltip_icon_position": "left",
-            "tooltip_message": "",
-            "show_background": false,
-            "show_border": false,
-            "background_color_light": "rgba(0,0,0,0)",
-            "message_color_light": "rgba(0,0,0,0)",
-            "border_color_light": "rgba(0,0,0,0)",
-            "background_color_dark": "rgba(0,0,0,0)",
-            "message_color_dark": "rgba(0,0,0,0)",
-            "border_color_dark": "rgba(0,0,0,0)",
-            "bg_tooltip_color_light": "rgba(0,0,0,0)",
-            "tooltip_color_light": "rgba(0,0,0,0)",
-            "bg_tooltip_color_dark": "rgba(0,0,0,0)",
-            "tooltip_color_dark": "rgba(0,0,0,0)"
+            "use_secondary_background": false,
+            "heading": "Ring Details",
+            "tab_content": "<p><strong>Stone:</strong> Lab-Grown Diamond<br/><strong>Setting Style:</strong> Halo<br/><strong>Metal:</strong> 14K Gold (Yellow, White, or Rose)<br/><strong>Band Width:</strong> 2mm<br/><strong>Diamond Shape:</strong> Radiant Cut<br/><strong>Total Carat Weight:</strong> 4.3 CTW<br/><strong>Certification:</strong> IGI Certified<br/><strong>Country of Origin:</strong> Crafted in-house</p>"
           }
         },
         "variant_picker": {
           "type": "variant_picker",
           "settings": {
             "picker_type": "button",
+            "max_swatch": 20,
             "show_variant_option": true,
             "enable_color_swatches": true,
-            "swatch_size": "medium"
-          }
-        },
-        "size_chart_79JEgt": {
-          "type": "size_chart",
-          "settings": {
-            "heading": "Find my size",
+            "swatch_size": "medium",
+            "enable_size_chart": false,
+            "option_to_show_size_chart": "",
+            "heading": "Size chart",
             "select_page": "",
+            "additional_info": "Add extra details for the image, such as measuring guide or important notes.",
             "size_chart_type": "popup"
           }
         },
@@ -100,6 +88,7 @@
           "settings": {
             "show_button_style": "primary",
             "show_dynamic_checkout": false,
+            "dymanic_checkout_style": "primary",
             "show_atc_quantity": true,
             "show_add_to_cart": true,
             "show_price": false,
@@ -136,109 +125,29 @@
             "custom_html": "<div style=\"display:flex;gap:8px;margin-bottom:4px;\"><a href=\"mailto:?subject=I%20found%20something%20you%27ll%20love&body=I%20thought%20of%20you%20when%20I%20saw%20this%20%E2%80%94%20{{ product.title | url_encode }}%20at%20{{ shop.url }}{{ product.url }}\" style=\"flex:1;padding:13px 8px;background:transparent;color:#111111;border:1px solid #111111;cursor:pointer;font-size:12px;font-weight:600;text-align:center;text-decoration:none;display:block;letter-spacing:0.06em;text-transform:uppercase;\">Drop a Hint</a><button style=\"flex:1;padding:13px 8px;background:transparent;color:#111111;border:1px solid #111111;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;\" onclick=\"alert('Wishlist feature coming soon!')\">Add To Wishlist</button></div>"
           }
         },
-        "coupon_code_QpwBeJ": {
-          "type": "coupon_code",
-          "disabled": true,
+        "ffacb41b-c15e-41ee-864a-cfbf155d407d": {
+          "type": "estimate_delivery",
           "settings": {
-            "block_edges": "square",
-            "coupon_box_edges": "square",
-            "icon": "hot-sale",
-            "another_icon": "",
+            "hide_when_pre_order": false,
+            "box_type": "adapt",
+            "message": "<p>Order now and your order ships by <strong>latest_delivery_date</strong>.</p>",
+            "tooltip_text": "",
+            "tooltip_icon": "none",
             "custom_icon": "",
-            "icon_size": 30,
-            "heading_text": "Best offers",
-            "coupon_text_1": "Flat discount of $30 on every order!",
-            "coupon_code_1": "SALEM30",
-            "coupon_text_2": "",
-            "coupon_code_2": "",
-            "background_color_light": "rgba(0,0,0,0)",
-            "heading_color_light": "rgba(0,0,0,0)",
-            "coupon_box_color_light": "rgba(0,0,0,0)",
-            "text_color_light": "rgba(0,0,0,0)",
-            "coupon_color_light": "rgba(0,0,0,0)",
-            "background_color_dark": "rgba(0,0,0,0)",
-            "heading_color_dark": "rgba(0,0,0,0)",
-            "coupon_box_color_dark": "rgba(0,0,0,0)",
-            "text_color_dark": "rgba(0,0,0,0)",
-            "coupon_color_dark": "rgba(0,0,0,0)"
-          }
-        },
-        "collapsible_tab_j3tGcM": {
-          "type": "collapsible_tab",
-          "settings": {
-            "open_by_default": false,
-            "icon": "none",
-            "another_icon": "",
-            "custom_icon": "",
-            "use_secondary_background": false,
-            "heading": "Ring Details",
-            "tab_content": "<p><strong>Stone:</strong> Lab-Grown Diamond<br/><strong>Setting Style:</strong> Halo<br/><strong>Metal:</strong> 14K Gold (Yellow, White, or Rose)<br/><strong>Band Width:</strong> 2mm<br/><strong>Diamond Shape:</strong> Radiant Cut<br/><strong>Total Carat Weight:</strong> 4.3 CTW<br/><strong>Certification:</strong> IGI Certified<br/><strong>Country of Origin:</strong> Crafted in-house</p>"
-          }
-        },
-        "collapsible_tab_bK3Ubp": {
-          "type": "collapsible_tab",
-          "settings": {
-            "open_by_default": false,
-            "icon": "none",
-            "another_icon": "",
-            "custom_icon": "",
-            "use_secondary_background": false,
-            "heading": "Payment Options",
-            "tab_content": "<p>We accept all major credit cards, PayPal, and Shop Pay. Financing available through Shop Pay Installments — split your purchase into 4 interest-free payments.</p><p><strong>Accepted:</strong> Visa, Mastercard, American Express, PayPal, Shop Pay, Apple Pay, Google Pay</p>"
-          }
-        },
-        "collapsible_tab_shipping_gg": {
-          "type": "collapsible_tab",
-          "settings": {
-            "open_by_default": false,
-            "icon": "none",
-            "another_icon": "",
-            "custom_icon": "",
-            "use_secondary_background": false,
-            "heading": "Shipping & Returns Information",
-            "tab_content": "<p><strong>Free Shipping:</strong> Complimentary insured shipping on all orders. Delivery in 5–7 business days.</p><p><strong>Returns:</strong> 30-day free returns on all unworn items in original condition.</p><p><strong>Resizing:</strong> Free resizing within 1 year of purchase.</p>"
-          }
-        },
-        "collapsible_tab_glam_gg": {
-          "type": "collapsible_tab",
-          "settings": {
-            "open_by_default": false,
-            "icon": "none",
-            "another_icon": "",
-            "custom_icon": "",
-            "use_secondary_background": false,
-            "heading": "Glam Protection Plans",
-            "tab_content": "<p>Our Glam Protection Plan covers your jewelry for 2 years from purchase, including:</p><ul><li>Free prong re-tipping</li><li>Free polishing &amp; cleaning</li><li>Free stone tightening</li><li>50% off replacement for lost stones</li></ul>"
-          }
-        },
-        "collapsible_tab_receive_gg": {
-          "type": "collapsible_tab",
-          "settings": {
-            "open_by_default": false,
-            "icon": "none",
-            "another_icon": "",
-            "custom_icon": "",
-            "use_secondary_background": false,
-            "heading": "What You'll Receive",
-            "tab_content": "<ul><li>Your ring in a Glam &amp; Gems signature box</li><li>IGI Diamond Certificate</li><li>Care card &amp; cleaning cloth</li><li>Free gift: 1.5 Carat Moissanite Hoop Earrings (orders over $3,000)</li></ul>"
-          }
-        },
-        "frequently_bought_AK7MxX": {
-          "type": "frequently_bought",
-          "settings": {
-            "icon": "percent",
-            "another_icon": "",
-            "custom_icon": "",
-            "text": "ADD MORE, GET MORE",
-            "show_background": true,
+            "tooltip_icon_position": "left",
+            "tooltip_message": "",
+            "show_background": false,
             "show_border": false,
-            "list_products": [],
-            "show_vendor": false,
-            "show_rating": false,
-            "show_highlighted_features": false,
-            "variant_type": "button",
+            "background_color_light": "rgba(0,0,0,0)",
+            "message_color_light": "rgba(0,0,0,0)",
             "border_color_light": "rgba(0,0,0,0)",
-            "border_color_dark": "rgba(0,0,0,0)"
+            "background_color_dark": "rgba(0,0,0,0)",
+            "message_color_dark": "rgba(0,0,0,0)",
+            "border_color_dark": "rgba(0,0,0,0)",
+            "bg_tooltip_color_light": "rgba(0,0,0,0)",
+            "tooltip_color_light": "rgba(0,0,0,0)",
+            "bg_tooltip_color_dark": "rgba(0,0,0,0)",
+            "tooltip_color_dark": "rgba(0,0,0,0)"
           }
         },
         "feature_icon_ka6fMP": {
@@ -303,6 +212,133 @@
             "open_new_window_6": false
           }
         },
+        "coupon_code_QpwBeJ": {
+          "type": "coupon_code",
+          "disabled": true,
+          "settings": {
+            "block_edges": "square",
+            "show_border": false,
+            "show_background": true,
+            "coupon_box_edges": "square",
+            "icon": "hot-sale",
+            "another_icon": "",
+            "custom_icon": "",
+            "icon_size": 30,
+            "heading_text": "Best offers",
+            "coupon_text_1": "Flat discount of $30 on every order!",
+            "coupon_code_1": "SALEM30",
+            "coupon_text_2": "",
+            "coupon_code_2": "",
+            "countdown_type": "none",
+            "timezone": "-4",
+            "end_year": 2024,
+            "end_month": "1",
+            "end_day": "1",
+            "end_hour": "0",
+            "end_minute": "0",
+            "end_behavior": "show_zero",
+            "expiration_message": "<p>This offer is no longer available.</p>",
+            "countdown_interval": 7,
+            "interval_unit": "day",
+            "start_year": 2024,
+            "start_month": "1",
+            "start_day": "1",
+            "start_hour": "0",
+            "start_minute": "0",
+            "text_position": "below",
+            "timer_style": "square",
+            "border_style": "none",
+            "background_color_light": "rgba(0,0,0,0)",
+            "heading_color_light": "rgba(0,0,0,0)",
+            "coupon_box_color_light": "rgba(0,0,0,0)",
+            "text_color_light": "rgba(0,0,0,0)",
+            "timer_color_light": "rgba(0,0,0,0)",
+            "line_border_color_light": "rgba(0,0,0,0)",
+            "coupon_color_light": "rgba(0,0,0,0)",
+            "background_color_dark": "rgba(0,0,0,0)",
+            "heading_color_dark": "rgba(0,0,0,0)",
+            "coupon_box_color_dark": "rgba(0,0,0,0)",
+            "text_color_dark": "rgba(0,0,0,0)",
+            "timer_color_dark": "rgba(0,0,0,0)",
+            "line_border_color_dark": "rgba(0,0,0,0)",
+            "coupon_color_dark": "rgba(0,0,0,0)"
+          }
+        },
+        "collapsible_tab_bK3Ubp": {
+          "type": "collapsible_tab",
+          "settings": {
+            "open_by_default": false,
+            "icon": "none",
+            "another_icon": "",
+            "custom_icon": "",
+            "use_secondary_background": false,
+            "heading": "Payment Options",
+            "tab_content": "<p>We accept all major credit cards, PayPal, and Shop Pay. Financing available through Shop Pay Installments — split your purchase into 4 interest-free payments.</p><p><strong>Accepted:</strong> Visa, Mastercard, American Express, PayPal, Shop Pay, Apple Pay, Google Pay</p>"
+          }
+        },
+        "collapsible_tab_shipping_gg": {
+          "type": "collapsible_tab",
+          "settings": {
+            "open_by_default": false,
+            "icon": "none",
+            "another_icon": "",
+            "custom_icon": "",
+            "use_secondary_background": false,
+            "heading": "Shipping & Returns Information",
+            "tab_content": "<p><strong>Free Shipping:</strong> Complimentary insured shipping on all orders. Delivery in 5–7 business days.</p><p><strong>Returns:</strong> 30-day free returns on all unworn items in original condition.</p><p><strong>Resizing:</strong> Free resizing within 1 year of purchase.</p>"
+          }
+        },
+        "collapsible_tab_glam_gg": {
+          "type": "collapsible_tab",
+          "settings": {
+            "open_by_default": false,
+            "icon": "none",
+            "another_icon": "",
+            "custom_icon": "",
+            "use_secondary_background": false,
+            "heading": "Glam Protection Plans",
+            "tab_content": "<p>Our Glam Protection Plan covers your jewelry for 2 years from purchase, including:</p><ul><li>Free prong re-tipping</li><li>Free polishing &amp; cleaning</li><li>Free stone tightening</li><li>50% off replacement for lost stones</li></ul>"
+          }
+        },
+        "collapsible_tab_receive_gg": {
+          "type": "collapsible_tab",
+          "settings": {
+            "open_by_default": false,
+            "icon": "none",
+            "another_icon": "",
+            "custom_icon": "",
+            "use_secondary_background": false,
+            "heading": "What You'll Receive",
+            "tab_content": "<ul><li>Your ring in a Glam &amp; Gems signature box</li><li>IGI Diamond Certificate</li><li>Care card &amp; cleaning cloth</li><li>Free gift: 1.5 Carat Moissanite Hoop Earrings (orders over $3,000)</li></ul>"
+          }
+        },
+        "size_chart_79JEgt": {
+          "type": "size_chart",
+          "settings": {
+            "heading": "Find my size",
+            "select_page": "",
+            "additional_info": "Add extra details for the image, such as measuring guide or important notes.",
+            "size_chart_type": "popup"
+          }
+        },
+        "frequently_bought_AK7MxX": {
+          "type": "frequently_bought",
+          "settings": {
+            "icon": "percent",
+            "another_icon": "",
+            "custom_icon": "",
+            "text": "ADD MORE, GET MORE",
+            "show_background": true,
+            "show_border": false,
+            "list_products": [],
+            "show_vendor": false,
+            "show_rating": false,
+            "show_highlighted_features": false,
+            "variant_type": "button",
+            "border_color_light": "rgba(0,0,0,0)",
+            "border_color_dark": "rgba(0,0,0,0)"
+          }
+        },
         "85013fef-9944-4d4d-8abc-74cdda4d0971": {
           "type": "complementary",
           "disabled": true,
@@ -330,10 +366,12 @@
           "settings": {
             "button_label": "SEE MORE BY BEST SELLERS",
             "button_link": "",
+            "mtf_button_link_1": "",
             "open_new_window_button": false,
             "show_button_style_1": "secondary",
             "button_label_2": "",
             "button_link_2": "",
+            "mtf_button_link_2": "",
             "open_new_window_button_2": false,
             "show_button_style_2": "primary",
             "color_button": "rgba(0,0,0,0)",
@@ -395,6 +433,7 @@
         "transition_style": "fade",
         "image_ratio": "natural",
         "thumbnail_position": "horizontal",
+        "enable_thumbnail_overlay": true,
         "enable_image_zoom": false,
         "zoom_effect": "enlarge",
         "enable_video_autoplay": false,
@@ -424,15 +463,58 @@
     },
     "production_flow": {
       "type": "production-flow",
-      "settings": {}
+      "settings": {
+        "section_bg": "#FFFEF3",
+        "accent_color": "#000000",
+        "card_border": "#e5e5e5",
+        "subtitle_color": "#9c8454",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
     },
     "refine_design": {
       "type": "refine-design",
-      "settings": {}
+      "settings": {
+        "heading": "Refine This Design",
+        "body": "<p>Looking for personalized variation? Our team can help refine setting details, hidden halos, matching bands, and other custom adjustments while preserving the balance and beauty of the original design.</p>",
+        "button1_label": "Book a Free Private Consultation",
+        "button1_link": "",
+        "button2_label": "Request Customization",
+        "button2_link": "",
+        "section_bg": "#fffef3",
+        "text_color": "#1a1a1a",
+        "btn_primary_bg": "#111111",
+        "btn_primary_text": "#ffffff",
+        "btn_outline": "#111111",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
     },
     "buyers_guide": {
       "type": "buyers-guide",
-      "settings": {}
+      "settings": {
+        "heading": "Engagement Ring Buyer's Guide",
+        "subtitle": "<p>Buying an engagement ring is a meaningful decision. Our guide was created to help you understand what truly matters — from diamond size and value to design.</p>",
+        "c1_title": "Shop By Carat",
+        "c1_body": "Understand how carats size actually looks, how it affects price, and where you get the best value for your budget",
+        "c1_cta_label": "Explore",
+        "c1_cta_link": "",
+        "c2_title": "Shop By Budget",
+        "c2_body": "Learn how to prioritize size, design, and diamond quality to get the most for your budget without compromising",
+        "c2_cta_label": "Explore",
+        "c2_cta_link": "",
+        "c3_title": "Create something Unique",
+        "c3_body": "Understand which design details truly change the look and value of a ring before creating your own",
+        "c3_cta_label": "Explore",
+        "c3_cta_link": "",
+        "section_bg": "#fffef3",
+        "text_color": "#1a1a1a",
+        "icon_color": "#1a1a1a",
+        "cta_bg": "#111111",
+        "cta_text": "#ffffff",
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
     },
     "product-recommendations": {
       "type": "product-recommendations",
@@ -445,6 +527,11 @@
         "products_to_show": 5,
         "background_color_light": "",
         "background_color_dark": "",
+        "show_recently_viewed_tab": false,
+        "enable_clear_history": true,
+        "tabs_desktop_alignment": "center",
+        "title_size": 120,
+        "title_style": "none",
         "show_vendor": false,
         "show_rating": false,
         "show_highlighted_features": true,
@@ -472,7 +559,6 @@
         "media_96wAdQ": {
           "type": "media",
           "settings": {
-            "image": "",
             "show_sound_control": false,
             "video_url": "",
             "video_alt_text": "",
@@ -491,7 +577,6 @@
         "media_rr9RtB": {
           "type": "media",
           "settings": {
-            "image": "",
             "show_sound_control": false,
             "video_url": "",
             "video_alt_text": "",
@@ -510,7 +595,6 @@
         "media_LUKgf8": {
           "type": "media",
           "settings": {
-            "image": "",
             "show_sound_control": false,
             "video_url": "",
             "video_alt_text": "",
@@ -529,7 +613,6 @@
         "media_YTV7NX": {
           "type": "media",
           "settings": {
-            "image": "",
             "show_sound_control": false,
             "video_url": "",
             "video_alt_text": "",
@@ -559,6 +642,8 @@
         "heading_size": 100,
         "heading_tag": "h2",
         "heading_alignment": "center",
+        "subheading": "",
+        "text": "",
         "content_position": "middle",
         "content_alignment": "left",
         "select_motion": "hover",
@@ -788,6 +873,7 @@
         "integrated_social_media": "instagram",
         "media_ratio": "aspect-square",
         "show_border": true,
+        "social_post_layout": "3",
         "background_color_light": "rgba(0,0,0,0)",
         "heading_light": "rgba(0,0,0,0)",
         "color_heading_highlight_light": "rgba(0,0,0,0)",

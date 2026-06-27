@@ -24,6 +24,10 @@
   if c3_label == blank
     assign c3_label = 'Explore'
   endif
+
+  assign c1_title = section.settings.c1_title
+  assign c2_title = section.settings.c2_title
+  assign c3_title = section.settings.c3_title
 -%}
 
 <section id="buyers-guide-{{ section.id }}" class="buyers-guide">
@@ -90,6 +94,13 @@
       height: 48px;
       color: var(--icon-color);
     }
+    #buyers-guide-{{ section.id }} .buyers-guide__icon-img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
     #buyers-guide-{{ section.id }} .buyers-guide__title {
       font-weight: 700;
       font-size: 1.05rem;
@@ -130,6 +141,10 @@
       #buyers-guide-{{ section.id }} .buyers-guide__grid {
         grid-template-columns: 1fr;
       }
+      #buyers-guide-{{ section.id }} .buyers-guide__icon-img {
+        width: 40px;
+        height: 40px;
+      }
     }
   </style>
 
@@ -146,12 +161,16 @@
       {%- comment -%} Column 1 — Shop By Carat {%- endcomment -%}
       <div class="buyers-guide__col">
         <span class="buyers-guide__icon" aria-hidden="true">
-          <svg viewBox="0 0 64 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round">
-            <polygon points="8,28 10,24 12,28 10,32"/>
-            <polygon points="20,28 24,22 28,28 24,34"/>
-            <polygon points="36,28 42,18 48,28 42,38"/>
-            <polygon points="50,28 56,16 62,28 56,40"/>
-          </svg>
+          {%- if section.settings.c1_icon != blank -%}
+            {{ section.settings.c1_icon | image_url: width: 128 | image_tag: alt: c1_title, class: 'buyers-guide__icon-img', loading: 'lazy' }}
+          {%- else -%}
+            <svg viewBox="0 0 64 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round">
+              <polygon points="8,28 10,24 12,28 10,32"/>
+              <polygon points="20,28 24,22 28,28 24,34"/>
+              <polygon points="36,28 42,18 48,28 42,38"/>
+              <polygon points="50,28 56,16 62,28 56,40"/>
+            </svg>
+          {%- endif -%}
         </span>
         {%- if section.settings.c1_title != blank -%}
           <h3 class="buyers-guide__title">{{ section.settings.c1_title }}</h3>
@@ -168,12 +187,16 @@
       {%- comment -%} Column 2 — Shop By Budget {%- endcomment -%}
       <div class="buyers-guide__col">
         <span class="buyers-guide__icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="24,6 28,10 24,14 20,10"/>
-            <line x1="24" y1="14" x2="24" y2="18"/>
-            <path d="M12 18h24a2 2 0 0 1 2 2v18a4 4 0 0 1 -4 4h-20a4 4 0 0 1 -4 -4v-18 a2 2 0 0 1 2 -2 z"/>
-            <text x="24" y="34" text-anchor="middle" font-family="serif" font-size="14" font-weight="700" stroke="none" fill="currentColor">$</text>
-          </svg>
+          {%- if section.settings.c2_icon != blank -%}
+            {{ section.settings.c2_icon | image_url: width: 128 | image_tag: alt: c2_title, class: 'buyers-guide__icon-img', loading: 'lazy' }}
+          {%- else -%}
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="24,6 28,10 24,14 20,10"/>
+              <line x1="24" y1="14" x2="24" y2="18"/>
+              <path d="M12 18h24a2 2 0 0 1 2 2v18a4 4 0 0 1 -4 4h-20a4 4 0 0 1 -4 -4v-18 a2 2 0 0 1 2 -2 z"/>
+              <text x="24" y="34" text-anchor="middle" font-family="serif" font-size="14" font-weight="700" stroke="none" fill="currentColor">$</text>
+            </svg>
+          {%- endif -%}
         </span>
         {%- if section.settings.c2_title != blank -%}
           <h3 class="buyers-guide__title">{{ section.settings.c2_title }}</h3>
@@ -190,12 +213,16 @@
       {%- comment -%} Column 3 — Create something Unique {%- endcomment -%}
       <div class="buyers-guide__col">
         <span class="buyers-guide__icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="18,12 26,12 30,18 22,32 14,18"/>
-            <line x1="18" y1="18" x2="26" y2="18"/>
-            <path d="M30 30 L40 20 L44 24 L34 34 Z"/>
-            <line x1="40" y1="20" x2="44" y2="24"/>
-          </svg>
+          {%- if section.settings.c3_icon != blank -%}
+            {{ section.settings.c3_icon | image_url: width: 128 | image_tag: alt: c3_title, class: 'buyers-guide__icon-img', loading: 'lazy' }}
+          {%- else -%}
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="18,12 26,12 30,18 22,32 14,18"/>
+              <line x1="18" y1="18" x2="26" y2="18"/>
+              <path d="M30 30 L40 20 L44 24 L34 34 Z"/>
+              <line x1="40" y1="20" x2="44" y2="24"/>
+            </svg>
+          {%- endif -%}
         </span>
         {%- if section.settings.c3_title != blank -%}
           <h3 class="buyers-guide__title">{{ section.settings.c3_title }}</h3>
@@ -240,6 +267,12 @@
       "default": "Understand which design details truly change the look and value of a ring before creating your own" },
     { "type": "text", "id": "c3_cta_label", "label": "CTA label", "default": "Explore" },
     { "type": "url",  "id": "c3_cta_link",  "label": "CTA link" },
+
+    { "type": "header", "content": "Column icons (custom uploads)" },
+    { "type": "paragraph", "content": "Upload a custom icon per column. Leave blank to use the built-in SVG." },
+    { "type": "image_picker", "id": "c1_icon", "label": "Column 1 icon (Carat)" },
+    { "type": "image_picker", "id": "c2_icon", "label": "Column 2 icon (Budget)" },
+    { "type": "image_picker", "id": "c3_icon", "label": "Column 3 icon (Unique)" },
 
     { "type": "header", "content": "Style" },
     { "type": "color",  "id": "section_bg",     "label": "Background",        "default": "#fffef3" },
