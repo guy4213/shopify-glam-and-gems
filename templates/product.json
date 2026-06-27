@@ -12,12 +12,6 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "badges": {
-          "type": "badges",
-          "settings": {
-            "position_adapt": false
-          }
-        },
         "consultation_html_gg": {
           "type": "html",
           "settings": {
@@ -47,7 +41,7 @@
           "settings": {
             "hide_when_pre_order": false,
             "box_type": "adapt",
-            "message": "<p>Estimated delivery between <strong>earliest_delivery_date and latest_delivery_date. </strong>Order within <strong>time_to_cut_off.</strong></p>",
+            "message": "<p>Order now and your order ships by <strong>latest_delivery_date</strong>.</p>",
             "tooltip_text": "",
             "tooltip_icon": "none",
             "custom_icon": "",
@@ -73,7 +67,7 @@
             "picker_type": "button",
             "show_variant_option": true,
             "enable_color_swatches": true,
-            "swatch_size": "small"
+            "swatch_size": "medium"
           }
         },
         "size_chart_79JEgt": {
@@ -95,20 +89,17 @@
             "border_color_dark": "rgba(0,0,0,0)"
           }
         },
-        "inventory_status_N8kqeE": {
-          "type": "inventory_status",
+        "engraving_html": {
+          "type": "html",
           "settings": {
-            "incoming": false,
-            "message_incoming": "",
-            "message_backorder": "",
-            "hide_preorder": false
+            "custom_html": "<div style=\"margin:12px 0;\"><label for=\"prod-engraving\" style=\"display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#333;\">Add Engraving <span style=\"font-weight:400;color:#888;\">(Optional)</span></label><input type=\"text\" id=\"prod-engraving\" name=\"properties[Engraving]\" maxlength=\"30\" placeholder=\"Up to 30 characters\" style=\"width:100%;padding:10px 12px;border:1px solid #d4d4d4;border-radius:4px;font-size:14px;background:#fff;\" /></div>"
           }
         },
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
             "show_button_style": "primary",
-            "show_dynamic_checkout": true,
+            "show_dynamic_checkout": false,
             "show_atc_quantity": true,
             "show_add_to_cart": true,
             "show_price": false,
@@ -170,39 +161,6 @@
             "coupon_box_color_dark": "rgba(0,0,0,0)",
             "text_color_dark": "rgba(0,0,0,0)",
             "coupon_color_dark": "rgba(0,0,0,0)"
-          }
-        },
-        "description_tC4Rih": {
-          "type": "description",
-          "settings": {
-            "show_in_tab": true,
-            "open_by_default": false,
-            "make_content_center": false,
-            "icon": "none",
-            "another_icon": "",
-            "custom_icon": "",
-            "heading": "DESCRIPTION",
-            "number_of_lines_shown": "none",
-            "read_more_label": "Read more",
-            "see_less_label": "See less"
-          }
-        },
-        "table_of_information_6mXCNm": {
-          "type": "table_of_information",
-          "disabled": true,
-          "settings": {
-            "show_in_tab": false,
-            "open_by_default": false,
-            "icon": "none",
-            "another_icon": "",
-            "custom_icon": "",
-            "use_secondary_background": false,
-            "heading": "Additional details",
-            "left_label": "Sort",
-            "right_label": "Values",
-            "details": "<p>Weight: 100g<br/>-Dimension: 16mm<br/><br/>-Size: Small<br/>Condition: Excellent<br/>Usage: Daily use<br/>Price range: Budget-friendly</p>",
-            "text_to_use_for_empty_fields": "-",
-            "extra_details": "<p>Add further details to enrich you product information.</p>"
           }
         },
         "collapsible_tab_j3tGcM": {
@@ -366,28 +324,6 @@
             "border_color_dark": "rgba(0,0,0,0)"
           }
         },
-        "payment_methods_cxHny8": {
-          "type": "payment_methods",
-          "settings": {
-            "heading": "Pay with",
-            "text": "Your transaction is protected with advanced security measures to keep your information confidential",
-            "custom_payment": "",
-            "show_secondary_background": false,
-            "show_border": true,
-            "background_color_light": "rgba(0,0,0,0)",
-            "heading_color_light": "rgba(0,0,0,0)",
-            "text_color_light": "rgba(0,0,0,0)",
-            "border_color_light": "rgba(0,0,0,0)",
-            "background_color_dark": "rgba(0,0,0,0)",
-            "heading_color_dark": "rgba(0,0,0,0)",
-            "text_color_dark": "rgba(0,0,0,0)",
-            "border_color_dark": "rgba(0,0,0,0)"
-          }
-        },
-        "social-sharing": {
-          "type": "social_sharing",
-          "settings": {}
-        },
         "button_WRfrWD": {
           "type": "button",
           "disabled": true,
@@ -420,31 +356,26 @@
         }
       },
       "block_order": [
-        "badges",
+        "consultation_html_gg",
         "product_name_KFAcBE",
         "rating_y4dqXy",
         "price",
-        "consultation_html_gg",
-        "ffacb41b-c15e-41ee-864a-cfbf155d407d",
+        "collapsible_tab_j3tGcM",
         "variant_picker",
-        "size_chart_79JEgt",
         "gift_wrapping_iipmyB",
-        "inventory_status_N8kqeE",
+        "engraving_html",
         "buy_buttons",
         "hint_wishlist_html_gg",
-        "coupon_code_QpwBeJ",
-        "description_tC4Rih",
-        "table_of_information_6mXCNm",
+        "ffacb41b-c15e-41ee-864a-cfbf155d407d",
         "feature_icon_ka6fMP",
-        "collapsible_tab_j3tGcM",
+        "coupon_code_QpwBeJ",
         "collapsible_tab_bK3Ubp",
         "collapsible_tab_shipping_gg",
         "collapsible_tab_glam_gg",
         "collapsible_tab_receive_gg",
+        "size_chart_79JEgt",
         "frequently_bought_AK7MxX",
         "85013fef-9944-4d4d-8abc-74cdda4d0971",
-        "payment_methods_cxHny8",
-        "social-sharing",
         "button_WRfrWD",
         "sticky-atc"
       ],
@@ -491,101 +422,17 @@
         "padding_bottom_mobile": 32
       }
     },
-    "multicolumn_YinCXW": {
-      "type": "multicolumn",
-      "blocks": {
-        "column_PLnXnP": {
-          "type": "column",
-          "settings": {
-            "icon": "truck",
-            "another_icon": "",
-            "custom_icon": "",
-            "title": "Column",
-            "highlight_type": "underline",
-            "title_link": "",
-            "open_new_window": false,
-            "heading_size": 100,
-            "text": ""
-          }
-        },
-        "column_TWEmRC": {
-          "type": "column",
-          "settings": {
-            "icon": "truck",
-            "another_icon": "",
-            "custom_icon": "",
-            "title": "Column",
-            "highlight_type": "underline",
-            "title_link": "",
-            "open_new_window": false,
-            "heading_size": 100,
-            "text": ""
-          }
-        },
-        "column_nmHNNE": {
-          "type": "column",
-          "settings": {
-            "icon": "truck",
-            "another_icon": "",
-            "custom_icon": "",
-            "title": "Column",
-            "highlight_type": "underline",
-            "title_link": "",
-            "open_new_window": false,
-            "heading_size": 100,
-            "text": ""
-          }
-        }
-      },
-      "block_order": [
-        "column_PLnXnP",
-        "column_TWEmRC",
-        "column_nmHNNE"
-      ],
-      "name": "t:sections.multicolumn.name",
-      "settings": {
-        "title": "",
-        "highlight_type": "underline",
-        "heading_size": 100,
-        "heading_tag": "h2",
-        "secondary_background": "section",
-        "border_column": "line_vertical",
-        "column_content_alignment": "center",
-        "icon_position": "next",
-        "icon_size": 60,
-        "enable_desktop_slider": true,
-        "swiper_on_mobile": true,
-        "enable_arrow_mobile": false,
-        "auto_play": true,
-        "change_bar_every": 5,
-        "background_color_light": "rgba(0,0,0,0)",
-        "heading_light": "rgba(0,0,0,0)",
-        "text_light": "rgba(0,0,0,0)",
-        "color_heading_highlight_light": "rgba(0,0,0,0)",
-        "line_border_light": "rgba(0,0,0,0)",
-        "color_icon_light": "rgba(0,0,0,0)",
-        "background_color_dark": "rgba(0,0,0,0)",
-        "heading_dark": "rgba(0,0,0,0)",
-        "text_dark": "rgba(0,0,0,0)",
-        "color_heading_highlight_dark": "rgba(0,0,0,0)",
-        "line_border_dark": "rgba(0,0,0,0)",
-        "color_icon_dark": "rgba(0,0,0,0)",
-        "column_layout_desktop": "lg:w-1/3",
-        "section_height_desktop": "md:py-7",
-        "spacing_desktop": 56,
-        "full_width": false,
-        "padding_full_width": false,
-        "show_section_divider": false,
-        "padding_top": 60,
-        "padding_bottom": 60,
-        "column_layout_mobile": "w-full",
-        "section_height_mobile": "py-5",
-        "spacing_mobile": 28,
-        "full_width_mobile": true,
-        "show_section_divider_mobile": false,
-        "padding_top_mobile": 32,
-        "padding_bottom_mobile": 32
-      }
+    "production_flow": {
+      "type": "production-flow",
+      "settings": {}
+    },
+    "refine_design": {
+      "type": "refine-design",
+      "settings": {}
+    },
+    "buyers_guide": {
+      "type": "buyers-guide",
+      "settings": {}
     },
     "product-recommendations": {
       "type": "product-recommendations",
@@ -1178,11 +1025,11 @@
   },
   "order": [
     "main",
-    "multicolumn_YinCXW",
+    "production_flow",
+    "refine_design",
+    "buyers_guide",
     "product-recommendations",
     "flow_rNmacB",
-    "image_with_text_WkRRKg",
-    "image_with_text_ctMbnb",
     "faq_xXWG6k",
     "recently_viewed_EPWBrq",
     "social_feeds_DmebEe"

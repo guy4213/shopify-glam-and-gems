@@ -94,7 +94,7 @@
       ]
     </script>
   {%- endif -%}
-  {%- render 'collection-filter-board' -%}
+  {%- render 'collection-filter-board', section: section -%}
   {%- liquid
     assign _cfb_l1 = collection.metafields.custom.visual_filter_label_1 | strip
     assign _cfb_l2 = collection.metafields.custom.visual_filter_label_2 | strip
@@ -907,7 +907,115 @@
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 44
-    }
+    },
+    { "type": "header", "content": "Filter board · layout" },
+    { "type": "color", "id": "cfb_board_bg",            "label": "Board background",   "default": "rgba(0,0,0,0)" },
+    { "type": "color", "id": "cfb_board_border",        "label": "Divider lines",      "default": "#e8e8e8" },
+    { "type": "color", "id": "cfb_heading_text",        "label": "Group heading text", "default": "#888888" },
+    { "type": "select", "id": "cfb_tile_alignment",     "label": "Tile alignment",
+      "options": [
+        { "value": "left",   "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right",  "label": "Right" }
+      ],
+      "default": "left"
+    },
+
+    { "type": "header", "content": "Tiles · base" },
+    { "type": "color", "id": "cfb_tile_bg",             "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "cfb_tile_border",         "label": "Border",     "default": "#d8d8d8" },
+    { "type": "color", "id": "cfb_tile_text",           "label": "Label text", "default": "#444444" },
+    { "type": "color", "id": "cfb_tile_icon",           "label": "Icon color", "default": "#333333" },
+
+    { "type": "header", "content": "Tiles · hover" },
+    { "type": "color", "id": "cfb_tile_hover_bg",       "label": "Background", "default": "#fafafa" },
+    { "type": "color", "id": "cfb_tile_hover_border",   "label": "Border",     "default": "#111111" },
+    { "type": "color", "id": "cfb_tile_hover_text",     "label": "Label text", "default": "#111111" },
+    { "type": "color", "id": "cfb_tile_hover_icon",     "label": "Icon color", "default": "#111111" },
+
+    { "type": "header", "content": "Tiles · selected (active)" },
+    { "type": "color", "id": "cfb_tile_active_bg",      "label": "Background", "default": "#111111" },
+    { "type": "color", "id": "cfb_tile_active_border",  "label": "Border",     "default": "#111111" },
+    { "type": "color", "id": "cfb_tile_active_text",    "label": "Label text", "default": "#111111" },
+    { "type": "color", "id": "cfb_tile_active_icon",    "label": "Icon color", "default": "#ffffff" },
+
+    { "type": "header", "content": "Chips · Metal / Stone Type" },
+    { "type": "color", "id": "cfb_chip_bg",             "label": "Background",        "default": "#f7f7f7" },
+    { "type": "color", "id": "cfb_chip_border",         "label": "Border",            "default": "#c5c5c5" },
+    { "type": "color", "id": "cfb_chip_text",           "label": "Text",              "default": "#333333" },
+    { "type": "color", "id": "cfb_chip_hover_bg",       "label": "Hover background",  "default": "#e8e8e8" },
+    { "type": "color", "id": "cfb_chip_active_bg",      "label": "Active background", "default": "#111111" },
+    { "type": "color", "id": "cfb_chip_active_text",    "label": "Active text",       "default": "#ffffff" },
+
+    { "type": "header", "content": "Quick Filter buttons" },
+    { "type": "color", "id": "cfb_quick_bg",            "label": "Background",        "default": "#ffffff" },
+    { "type": "color", "id": "cfb_quick_border",        "label": "Border",            "default": "#c5c5c5" },
+    { "type": "color", "id": "cfb_quick_text",          "label": "Text",              "default": "#333333" },
+    { "type": "color", "id": "cfb_quick_hover_bg",      "label": "Hover background",  "default": "#f5f5f5" },
+    { "type": "color", "id": "cfb_quick_active_bg",     "label": "Active background", "default": "#111111" },
+    { "type": "color", "id": "cfb_quick_active_text",   "label": "Active text",       "default": "#ffffff" },
+
+    { "type": "header", "content": "Price slider" },
+    { "type": "color", "id": "cfb_price_track",         "label": "Track background",   "default": "#dddddd" },
+    { "type": "color", "id": "cfb_price_fill",          "label": "Fill (between thumbs)", "default": "#111111" },
+    { "type": "color", "id": "cfb_price_thumb_border",  "label": "Thumb border",       "default": "#333333" },
+    { "type": "color", "id": "cfb_price_value_bg",      "label": "Value box background", "default": "#f0f0f0" },
+    { "type": "color", "id": "cfb_price_value_text",    "label": "Value box text",     "default": "#111111" },
+
+    { "type": "header", "content": "Filter icons · Diamond Shape" },
+    { "type": "paragraph", "content": "Upload a custom icon for each shape. Leave blank to use the built-in faceted-cut SVG." },
+    { "type": "image_picker", "id": "cfb_icon_shape_round",    "label": "Round" },
+    { "type": "image_picker", "id": "cfb_icon_shape_oval",     "label": "Oval" },
+    { "type": "image_picker", "id": "cfb_icon_shape_radiant",  "label": "Radiant" },
+    { "type": "image_picker", "id": "cfb_icon_shape_pear",     "label": "Pear" },
+    { "type": "image_picker", "id": "cfb_icon_shape_emerald",  "label": "Emerald" },
+    { "type": "image_picker", "id": "cfb_icon_shape_cushion",  "label": "Cushion" },
+    { "type": "image_picker", "id": "cfb_icon_shape_marquise", "label": "Marquise" },
+    { "type": "image_picker", "id": "cfb_icon_shape_princess", "label": "Princess" },
+    { "type": "image_picker", "id": "cfb_icon_shape_heart",    "label": "Heart" },
+    { "type": "image_picker", "id": "cfb_icon_shape_asscher",  "label": "Asscher" },
+
+    { "type": "header", "content": "Filter icons · Style — Engagement Rings" },
+    { "type": "image_picker", "id": "cfb_icon_style_three_stone",  "label": "Three Stone" },
+    { "type": "image_picker", "id": "cfb_icon_style_solitaire",    "label": "Solitaire" },
+    { "type": "image_picker", "id": "cfb_icon_style_side_stone",   "label": "Side Stone" },
+    { "type": "image_picker", "id": "cfb_icon_style_hidden_halo",  "label": "Hidden Halo" },
+    { "type": "image_picker", "id": "cfb_icon_style_halo",         "label": "Halo" },
+    { "type": "image_picker", "id": "cfb_icon_style_double_halo",  "label": "Double Halo" },
+    { "type": "image_picker", "id": "cfb_icon_style_bridal_sets",  "label": "Bridal Sets (ER + WR)" },
+
+    { "type": "header", "content": "Filter icons · Style — Wedding Rings" },
+    { "type": "image_picker", "id": "cfb_icon_style_classic",        "label": "Classic" },
+    { "type": "image_picker", "id": "cfb_icon_style_side_diamonds",  "label": "Side Diamonds" },
+    { "type": "image_picker", "id": "cfb_icon_style_bezel",          "label": "Bezel (WR + Jewelry)" },
+    { "type": "image_picker", "id": "cfb_icon_style_eternity",       "label": "Eternity (WR + Jewelry)" },
+    { "type": "image_picker", "id": "cfb_icon_style_half_eternity",  "label": "Half Eternity" },
+    { "type": "image_picker", "id": "cfb_icon_style_contoured",      "label": "Contoured" },
+    { "type": "image_picker", "id": "cfb_icon_style_special",        "label": "Special" },
+
+    { "type": "header", "content": "Filter icons · Style — Jewelry" },
+    { "type": "image_picker", "id": "cfb_icon_style_tennis",   "label": "Tennis" },
+    { "type": "image_picker", "id": "cfb_icon_style_stacking", "label": "Stacking" },
+    { "type": "image_picker", "id": "cfb_icon_style_studs",    "label": "Studs" },
+    { "type": "image_picker", "id": "cfb_icon_style_chains",   "label": "Chains" },
+    { "type": "image_picker", "id": "cfb_icon_style_drop",     "label": "Drop" },
+    { "type": "image_picker", "id": "cfb_icon_style_hoop",     "label": "Hoop" },
+    { "type": "image_picker", "id": "cfb_icon_style_bangles",  "label": "Bangles" },
+    { "type": "image_picker", "id": "cfb_icon_style_cuff",     "label": "Cuff" },
+
+    { "type": "header", "content": "Filter icons · Category" },
+    { "type": "image_picker", "id": "cfb_icon_category_engagement_rings", "label": "Engagement Rings" },
+    { "type": "image_picker", "id": "cfb_icon_category_wedding_rings",    "label": "Wedding Rings" },
+    { "type": "image_picker", "id": "cfb_icon_category_necklaces",        "label": "Necklaces" },
+    { "type": "image_picker", "id": "cfb_icon_category_earrings",         "label": "Earrings" },
+    { "type": "image_picker", "id": "cfb_icon_category_bracelets",        "label": "Bracelets" },
+    { "type": "image_picker", "id": "cfb_icon_category_fashion_rings",    "label": "Fashion Rings" },
+
+    { "type": "header", "content": "Filter icons · Quick Filter" },
+    { "type": "image_picker", "id": "cfb_icon_quick_ready_to_ship", "label": "Ready To Ship" },
+    { "type": "image_picker", "id": "cfb_icon_quick_on_sale",       "label": "On Sale" },
+    { "type": "image_picker", "id": "cfb_icon_quick_new_arrival",   "label": "New Arrival" },
+    { "type": "image_picker", "id": "cfb_icon_quick_best_sellers",  "label": "Best Sellers" }
   ],
   "blocks": [
     {

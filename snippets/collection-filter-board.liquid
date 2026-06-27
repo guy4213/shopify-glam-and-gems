@@ -45,40 +45,85 @@
 
 {%- if cfb_has_labels or cfb_has_quick -%}
 
+{%- if section -%}
+  {%- assign _cfb_justify = 'flex-start' -%}
+  {%- if section.settings.cfb_tile_alignment == 'center' -%}{%- assign _cfb_justify = 'center' -%}{%- endif -%}
+  {%- if section.settings.cfb_tile_alignment == 'right' -%}{%- assign _cfb_justify = 'flex-end' -%}{%- endif -%}
+<style>
+  .cfb-board[data-section="{{ section.id | default: 'cfb-default' }}"] {
+    --cfb-board-bg: {{ section.settings.cfb_board_bg | default: 'rgba(0,0,0,0)' }};
+    --cfb-board-border: {{ section.settings.cfb_board_border | default: '#e8e8e8' }};
+    --cfb-heading-text: {{ section.settings.cfb_heading_text | default: '#888888' }};
+    --cfb-justify: {{ _cfb_justify }};
+    --cfb-tile-bg: {{ section.settings.cfb_tile_bg | default: '#ffffff' }};
+    --cfb-tile-border: {{ section.settings.cfb_tile_border | default: '#d8d8d8' }};
+    --cfb-tile-text: {{ section.settings.cfb_tile_text | default: '#444444' }};
+    --cfb-tile-icon: {{ section.settings.cfb_tile_icon | default: '#333333' }};
+    --cfb-tile-hover-bg: {{ section.settings.cfb_tile_hover_bg | default: '#fafafa' }};
+    --cfb-tile-hover-border: {{ section.settings.cfb_tile_hover_border | default: '#111111' }};
+    --cfb-tile-hover-text: {{ section.settings.cfb_tile_hover_text | default: '#111111' }};
+    --cfb-tile-hover-icon: {{ section.settings.cfb_tile_hover_icon | default: '#111111' }};
+    --cfb-tile-active-bg: {{ section.settings.cfb_tile_active_bg | default: '#111111' }};
+    --cfb-tile-active-border: {{ section.settings.cfb_tile_active_border | default: '#111111' }};
+    --cfb-tile-active-text: {{ section.settings.cfb_tile_active_text | default: '#111111' }};
+    --cfb-tile-active-icon: {{ section.settings.cfb_tile_active_icon | default: '#ffffff' }};
+    --cfb-chip-bg: {{ section.settings.cfb_chip_bg | default: '#f7f7f7' }};
+    --cfb-chip-border: {{ section.settings.cfb_chip_border | default: '#c5c5c5' }};
+    --cfb-chip-text: {{ section.settings.cfb_chip_text | default: '#333333' }};
+    --cfb-chip-hover-bg: {{ section.settings.cfb_chip_hover_bg | default: '#e8e8e8' }};
+    --cfb-chip-active-bg: {{ section.settings.cfb_chip_active_bg | default: '#111111' }};
+    --cfb-chip-active-text: {{ section.settings.cfb_chip_active_text | default: '#ffffff' }};
+    --cfb-quick-bg: {{ section.settings.cfb_quick_bg | default: '#ffffff' }};
+    --cfb-quick-border: {{ section.settings.cfb_quick_border | default: '#c5c5c5' }};
+    --cfb-quick-text: {{ section.settings.cfb_quick_text | default: '#333333' }};
+    --cfb-quick-hover-bg: {{ section.settings.cfb_quick_hover_bg | default: '#f5f5f5' }};
+    --cfb-quick-active-bg: {{ section.settings.cfb_quick_active_bg | default: '#111111' }};
+    --cfb-quick-active-text: {{ section.settings.cfb_quick_active_text | default: '#ffffff' }};
+    --cfb-price-track: {{ section.settings.cfb_price_track | default: '#dddddd' }};
+    --cfb-price-fill: {{ section.settings.cfb_price_fill | default: '#111111' }};
+    --cfb-price-thumb-border: {{ section.settings.cfb_price_thumb_border | default: '#333333' }};
+    --cfb-price-value-bg: {{ section.settings.cfb_price_value_bg | default: '#f0f0f0' }};
+    --cfb-price-value-text: {{ section.settings.cfb_price_value_text | default: '#111111' }};
+  }
+</style>
+{%- endif -%}
+
 <style>
   /* ── Visually-hidden helper (defined locally — theme has no global .sr-only) ── */
   .cfb-board .sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
 
   /* ── LAYOUT (unchanged) ── */
-  .collection-filter-board.cfb-board { border-bottom: 1px solid #e8e8e8; margin-bottom: 0.5rem; }
+  .collection-filter-board.cfb-board { background: var(--cfb-board-bg, rgba(0,0,0,0)); border-bottom: 1px solid var(--cfb-board-border, #e8e8e8); margin-bottom: 0.5rem; }
   .cfb-board .cfb-inner { max-width: var(--page-width); margin: 0 auto; padding: 0 1.25rem; }
-  .cfb-board .cfb-top-row { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #e8e8e8; }
+  .cfb-board .cfb-top-row { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--cfb-board-border, #e8e8e8); }
   .cfb-board .cfb-top-row.cfb-single { grid-template-columns: 1fr; }
   .cfb-board .cfb-top-cell { padding: 1.25rem 1.25rem 1.25rem 0; }
-  .cfb-board .cfb-top-cell + .cfb-top-cell { padding-left: 1.25rem; padding-right: 0; border-left: 1px solid #e8e8e8; }
+  .cfb-board .cfb-top-cell + .cfb-top-cell { padding-left: 1.25rem; padding-right: 0; border-left: 1px solid var(--cfb-board-border, #e8e8e8); }
   .cfb-board .cfb-bottom-row { display: flex; align-items: stretch; min-height: 4.5rem; }
   .cfb-board .cfb-bottom-cell { flex: 1 1 0; padding: 1rem 1.25rem 1rem 0; min-width: 0; }
-  .cfb-board .cfb-bottom-cell + .cfb-bottom-cell { padding-left: 1.25rem; padding-right: 0; border-left: 1px solid #e8e8e8; }
-  .cfb-board .cfb-quick-section { flex: 0 0 auto; padding: 1rem 0 1rem 1.25rem; margin-left: auto; border-left: 1px solid #e8e8e8; width: clamp(180px, 35%, 300px); }
+  .cfb-board .cfb-bottom-cell + .cfb-bottom-cell { padding-left: 1.25rem; padding-right: 0; border-left: 1px solid var(--cfb-board-border, #e8e8e8); }
+  .cfb-board .cfb-quick-section { flex: 0 0 auto; padding: 1rem 0 1rem 1.25rem; margin-left: auto; border-left: 1px solid var(--cfb-board-border, #e8e8e8); width: clamp(180px, 35%, 300px); }
   .cfb-board .cfb-quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
-  .cfb-board .cfb-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
-  .cfb-board .cfb-group-heading { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #888; margin: 0 0 0.6rem; }
+  .cfb-board .cfb-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; justify-content: var(--cfb-justify, flex-start); }
+  .cfb-board .cfb-group-heading { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cfb-heading-text, #888); margin: 0 0 0.6rem; }
 
   /* ── QUICK FILTER BUTTONS ── */
   .cfb-board .cfb-quick-block {
     display: flex; align-items: center; justify-content: center;
-    padding: 0.6rem 0.5rem; min-height: 2.6rem;
-    background: #f7f7f7;
-    border: 1.5px solid #c5c5c5;
-    border-radius: 3px;
-    font-size: 0.78rem; font-weight: 500; color: #333;
+    padding: 0.7rem 0.6rem; min-height: 2.6rem;
+    background: var(--cfb-quick-bg, #fff);
+    border: 1px solid var(--cfb-quick-border, #c5c5c5);
+    border-radius: 2px;
+    font-size: 0.7rem; font-weight: 500; color: var(--cfb-quick-text, #333);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     cursor: pointer !important;
-    text-align: center; line-height: 1.3;
+    text-align: center; line-height: 1.2;
     transition: all 0.2s ease-in-out;
     user-select: none; -webkit-tap-highlight-color: transparent;
   }
   .cfb-board .cfb-quick-block:hover {
-    background: #e8e8e8 !important;
+    background: var(--cfb-quick-hover-bg, #f5f5f5) !important;
     border-color: #333 !important;
     color: #000 !important;
     transform: translateY(-1px);
@@ -87,9 +132,9 @@
   .cfb-board .cfb-quick-block:active { transform: scale(0.96); box-shadow: none; }
   .cfb-board .cfb-quick-block.cfb-active,
   .cfb-board .cfb-quick-block.is-active {
-    background: #111 !important;
-    border-color: #111 !important;
-    color: #fff !important;
+    background: var(--cfb-quick-active-bg, #111) !important;
+    border-color: var(--cfb-quick-active-bg, #111) !important;
+    color: var(--cfb-quick-active-text, #fff) !important;
     font-weight: 700;
     box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     transform: none;
@@ -106,17 +151,17 @@
   .cfb-board .cfb-chip-label {
     display: inline-flex; align-items: center; gap: 0.4rem;
     padding: 0.38rem 1rem;
-    background: #f7f7f7;
-    border: 1.5px solid #c5c5c5;
+    background: var(--cfb-chip-bg, #f7f7f7);
+    border: 1.5px solid var(--cfb-chip-border, #c5c5c5);
     border-radius: 3px;
-    font-size: 0.8rem; font-weight: 500; color: #333;
+    font-size: 0.8rem; font-weight: 500; color: var(--cfb-chip-text, #333);
     cursor: pointer !important;
     line-height: 1.5; white-space: nowrap;
     transition: all 0.2s ease-in-out;
     user-select: none; -webkit-tap-highlight-color: transparent;
   }
   .cfb-board .cfb-chip-label:hover {
-    background: #e8e8e8 !important;
+    background: var(--cfb-chip-hover-bg, #e8e8e8) !important;
     border-color: #333 !important;
     color: #000 !important;
     transform: translateY(-1px);
@@ -125,9 +170,9 @@
   .cfb-board .cfb-chip-label:active { transform: scale(0.96); box-shadow: none; }
   .cfb-board .cfb-chip-label.cfb-active,
   .cfb-board .cfb-chip-label.is-active {
-    background: #111 !important;
-    border-color: #111 !important;
-    color: #fff !important;
+    background: var(--cfb-chip-active-bg, #111) !important;
+    border-color: var(--cfb-chip-active-bg, #111) !important;
+    color: var(--cfb-chip-active-text, #fff) !important;
     font-weight: 700;
     box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     transform: none;
@@ -162,92 +207,92 @@
   }
   .cfb-board .cfb-tile-img-wrap {
     width: 64px; height: 64px; border-radius: 50%;
-    background: #f7f7f7;
-    border: 1.5px solid #c5c5c5;
+    background: var(--cfb-tile-bg, #f7f7f7);
+    border: 1.5px solid var(--cfb-tile-border, #c5c5c5);
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
     transition: all 0.2s ease-in-out;
     flex-shrink: 0;
   }
   .cfb-board .cfb-tile-name {
-    font-size: 0.67rem; font-weight: 500; color: #555;
+    font-size: 0.67rem; font-weight: 500; color: var(--cfb-tile-text, #555);
     text-align: center; max-width: 70px; line-height: 1.25;
     transition: all 0.2s ease-in-out;
   }
   .cfb-board .cfb-tile-svg {
-    width: 30px; height: 30px; color: #555;
+    width: 30px; height: 30px; color: var(--cfb-tile-icon, #555);
     transition: all 0.2s ease-in-out;
   }
   /* Tile hover */
   .cfb-board .cfb-tile-label:hover .cfb-tile-img-wrap {
-    background: #e8e8e8 !important;
-    border-color: #333 !important;
+    background: var(--cfb-tile-hover-bg, #e8e8e8) !important;
+    border-color: var(--cfb-tile-hover-border, #333) !important;
     border-width: 2px;
     transform: translateY(-3px) scale(1.08);
     box-shadow: 0 6px 16px rgba(0,0,0,0.15);
   }
-  .cfb-board .cfb-tile-label:hover .cfb-tile-name { color: #111 !important; font-weight: 600; }
-  .cfb-board .cfb-tile-label:hover .cfb-tile-svg { color: #111 !important; transform: scale(1.12); }
+  .cfb-board .cfb-tile-label:hover .cfb-tile-name { color: var(--cfb-tile-hover-text, #111) !important; font-weight: 600; }
+  .cfb-board .cfb-tile-label:hover .cfb-tile-svg { color: var(--cfb-tile-hover-icon, #111) !important; transform: scale(1.12); }
   /* Tile press */
   .cfb-board .cfb-tile-label:active .cfb-tile-img-wrap { transform: scale(0.93); box-shadow: none; }
   /* Tile selected */
   .cfb-board .cfb-tile-label.cfb-active .cfb-tile-img-wrap,
   .cfb-board .cfb-tile-label.is-active .cfb-tile-img-wrap {
-    background: #111 !important;
-    border-color: #111 !important;
+    background: var(--cfb-tile-active-bg, #111) !important;
+    border-color: var(--cfb-tile-active-border, #111) !important;
     border-width: 2.5px;
     box-shadow: 0 0 0 3px #fff, 0 0 0 5px #111;
   }
   .cfb-board .cfb-tile-label.cfb-active .cfb-tile-svg,
-  .cfb-board .cfb-tile-label.is-active .cfb-tile-svg { color: #fff !important; }
+  .cfb-board .cfb-tile-label.is-active .cfb-tile-svg { color: var(--cfb-tile-active-icon, #fff) !important; }
   .cfb-board .cfb-tile-label.cfb-active .cfb-tile-name,
-  .cfb-board .cfb-tile-label.is-active .cfb-tile-name { color: #111 !important; font-weight: 700; }
+  .cfb-board .cfb-tile-label.is-active .cfb-tile-name { color: var(--cfb-tile-active-text, #111) !important; font-weight: 700; }
   /* Tile states */
   .cfb-board .cfb-tile-label.cfb-disabled { opacity: 0.3; pointer-events: none; cursor: default !important; }
   .cfb-board .cfb-tile-label.cfb-preview { opacity: 0.32; pointer-events: none; cursor: default !important; }
   .cfb-board .cfb-tile-img-el { width: 78%; height: 78%; object-fit: contain; display: block; }
 
-  /* ── TILE RECT VARIANT (style + category tiles per IDEAL design) ── */
+  /* ── TILE RECT VARIANT (style + category + shape per IDEAL design) ── */
   .cfb-board .cfb-chips--tiles {
-    gap: 0.55rem 0.7rem;
+    gap: 0.4rem 0.5rem;
     align-items: flex-start;
     padding-top: 0.15rem;
+    justify-content: var(--cfb-justify, flex-start);
   }
-  .cfb-board .cfb-tile-label--rect { gap: 0.4rem; }
+  .cfb-board .cfb-tile-label--rect { gap: 0.35rem; }
   .cfb-board .cfb-tile-label--rect .cfb-tile-img-wrap {
-    width: 78px;
-    height: 54px;
-    border-radius: 8px;
-    background: #fff;
-    border: 1.5px solid #d8d8d8;
+    width: 64px;
+    height: 50px;
+    border-radius: 10px;
+    background: var(--cfb-tile-bg, #fff);
+    border: 1px solid var(--cfb-tile-border, #d8d8d8);
   }
-  .cfb-board .cfb-tile-label--rect .cfb-tile-svg { width: 26px; height: 26px; color: #555; }
+  .cfb-board .cfb-tile-label--rect .cfb-tile-svg { width: 30px; height: 30px; color: var(--cfb-tile-icon, #333); }
   .cfb-board .cfb-tile-label--rect .cfb-tile-name {
-    font-size: 0.7rem;
-    max-width: 86px;
-    color: #444;
+    font-size: 0.68rem;
+    max-width: 72px;
+    color: var(--cfb-tile-text, #444);
     font-weight: 500;
+    letter-spacing: 0.01em;
   }
   .cfb-board .cfb-tile-label--rect:hover .cfb-tile-img-wrap {
-    background: #fafafa !important;
-    border-color: #333 !important;
-    border-width: 1.5px;
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    background: var(--cfb-tile-hover-bg, #fafafa) !important;
+    border-color: var(--cfb-tile-hover-border, #111) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
   }
-  .cfb-board .cfb-tile-label--rect:hover .cfb-tile-name { color: #111 !important; font-weight: 600; }
-  .cfb-board .cfb-tile-label--rect:hover .cfb-tile-svg { color: #111 !important; transform: scale(1.08); }
+  .cfb-board .cfb-tile-label--rect:hover .cfb-tile-name { color: var(--cfb-tile-hover-text, #111) !important; font-weight: 600; }
+  .cfb-board .cfb-tile-label--rect:hover .cfb-tile-svg { color: var(--cfb-tile-hover-icon, #111) !important; }
   .cfb-board .cfb-tile-label--rect.cfb-active .cfb-tile-img-wrap,
   .cfb-board .cfb-tile-label--rect.is-active .cfb-tile-img-wrap {
-    background: #111 !important;
-    border-color: #111 !important;
-    border-width: 1.5px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+    background: var(--cfb-tile-active-bg, #111) !important;
+    border-color: var(--cfb-tile-active-border, #111) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
   .cfb-board .cfb-tile-label--rect.cfb-active .cfb-tile-svg,
-  .cfb-board .cfb-tile-label--rect.is-active .cfb-tile-svg { color: #fff !important; }
+  .cfb-board .cfb-tile-label--rect.is-active .cfb-tile-svg { color: var(--cfb-tile-active-icon, #fff) !important; }
   .cfb-board .cfb-tile-label--rect.cfb-active .cfb-tile-name,
-  .cfb-board .cfb-tile-label--rect.is-active .cfb-tile-name { color: #111 !important; font-weight: 700; }
+  .cfb-board .cfb-tile-label--rect.is-active .cfb-tile-name { color: var(--cfb-tile-active-text, #111) !important; font-weight: 700; }
 
   /* ── Button reset — tiles & chips render as <button>; strip browser defaults ── */
   .cfb-board button.cfb-tile-label {
@@ -269,6 +314,21 @@
     outline: none;
     margin: 0;
   }
+
+  /* ── METAL CHIPS — soft-corner rectangles, swatch on the left ── */
+  .cfb-board .cfb-chip-label:has(> .cfb-swatch) {
+    border-radius: 4px !important;
+    padding: 0.5rem 0.95rem;
+    font-weight: 500;
+  }
+  .cfb-board .cfb-chip-label:has(> .cfb-swatch) .cfb-swatch {
+    width: 1rem;
+    height: 1rem;
+    border-width: 1px;
+  }
+
+  /* ── PRICE — endpoint labels align to track edges ── */
+  .cfb-board .cfb-price-display { margin-left: 9px; margin-right: 9px; }
 
   /* ── STONE TYPE — cream "ALL" pill ── */
   .cfb-board .cfb-chip-label.cfb-stone-all {
@@ -309,15 +369,15 @@
 
   /* ── PRICE SLIDER ── */
   .cfb-board .cfb-price-placeholder { padding-top: 0.5rem; }
-  .cfb-board .cfb-price-track:not(.cfb-price-track--live) { position: relative; height: 4px; background: #ddd; border-radius: 4px; margin: 1rem 0 0.5rem; }
+  .cfb-board .cfb-price-track:not(.cfb-price-track--live) { position: relative; height: 4px; background: var(--cfb-price-track, #ddd); border-radius: 4px; margin: 1rem 0 0.5rem; }
   .cfb-board .cfb-price-track:not(.cfb-price-track--live)::before { content: ''; position: absolute; left: 20%; right: 30%; top: 0; height: 100%; background: #999; border-radius: 4px; }
   .cfb-board .cfb-price-labels { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; }
   .cfb-board .cfb-price-slider { padding-top: 0.35rem; }
-  .cfb-board .cfb-price-track--live { position: relative; height: 4px; background: #ddd; border-radius: 4px; margin: 1.2rem 9px 0.6rem; cursor: pointer; user-select: none; }
-  .cfb-board .cfb-price-fill { position: absolute; height: 100%; background: #111; border-radius: 4px; pointer-events: none; }
+  .cfb-board .cfb-price-track--live { position: relative; height: 4px; background: var(--cfb-price-track, #ddd); border-radius: 4px; margin: 1.2rem 9px 0.6rem; cursor: pointer; user-select: none; }
+  .cfb-board .cfb-price-fill { position: absolute; height: 100%; background: var(--cfb-price-fill, #111); border-radius: 4px; pointer-events: none; }
   .cfb-board .cfb-price-thumb {
     position: absolute; width: 18px; height: 18px; border-radius: 50%;
-    background: #fff; border: 2.5px solid #333;
+    background: #fff; border: 2.5px solid var(--cfb-price-thumb-border, #333);
     box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     top: 50%; transform: translate(-50%, -50%);
     cursor: grab; touch-action: none;
@@ -327,24 +387,24 @@
   .cfb-board .cfb-price-thumb:hover { border-color: #111; box-shadow: 0 0 0 5px rgba(0,0,0,0.12); transform: translate(-50%, -50%) scale(1.15); }
   .cfb-board .cfb-price-thumb.is-dragging { cursor: grabbing; border-color: #111; box-shadow: 0 0 0 7px rgba(0,0,0,0.14); transform: translate(-50%, -50%) scale(1.2); }
   .cfb-board .cfb-price-display { display: flex; align-items: center; justify-content: space-between; gap: 0.3rem; font-size: 0.82rem; color: #888; margin-top: 0.5rem; }
-  .cfb-board .cfb-price-display .cfb-pval { background: #f0f0f0; border: 1px solid #ccc; border-radius: 3px; padding: 0.15rem 0.5rem; font-weight: 700; color: #111; font-size: 0.85rem; }
+  .cfb-board .cfb-price-display .cfb-pval { background: var(--cfb-price-value-bg, #f0f0f0); border: 1px solid #ccc; border-radius: 3px; padding: 0.15rem 0.5rem; font-weight: 700; color: var(--cfb-price-value-text, #111); font-size: 0.85rem; }
   .cfb-board .cfb-price-display span:not(.cfb-pval) { color: #bbb; }
 
   /* ── MOBILE ── */
   @media (max-width: 767px) {
     .cfb-board .cfb-top-row { grid-template-columns: 1fr; }
-    .cfb-board .cfb-top-cell + .cfb-top-cell { border-left: none; border-top: 1px solid #e8e8e8; padding-left: 0; }
+    .cfb-board .cfb-top-cell + .cfb-top-cell { border-left: none; border-top: 1px solid var(--cfb-board-border, #e8e8e8); padding-left: 0; }
     .cfb-board .cfb-bottom-row { flex-direction: column; }
-    .cfb-board .cfb-bottom-cell { padding: 0.75rem 0; border-left: none !important; border-top: 1px solid #e8e8e8; }
+    .cfb-board .cfb-bottom-cell { padding: 0.75rem 0; border-left: none !important; border-top: 1px solid var(--cfb-board-border, #e8e8e8); }
     .cfb-board .cfb-bottom-cell:first-child { border-top: none; }
-    .cfb-board .cfb-quick-section { margin-left: 0; border-left: none; border-top: 1px solid #e8e8e8; width: 100%; padding-left: 0; padding-right: 0; }
+    .cfb-board .cfb-quick-section { margin-left: 0; border-left: none; border-top: 1px solid var(--cfb-board-border, #e8e8e8); width: 100%; padding-left: 0; padding-right: 0; }
   }
   @media (max-width: 479px) {
     .cfb-board .cfb-quick-grid { grid-template-columns: 1fr 1fr; }
   }
 </style>
 
-<div class="cfb-board collection-filter-board">
+<div class="cfb-board collection-filter-board"{% if section %} data-section="{{ section.id }}"{% endif %}>
   <div class="cfb-inner">
 
     {%- comment -%} ===== TOP ROW: label_1 and label_2 ===== {%- endcomment -%}
@@ -431,17 +491,25 @@
 
                       {%- if vo_image != blank -%}
                         {%- if vo_functional -%}
-                          <label for="{{ vo_input_id }}" class="cfb-tile-label{% if vo_is_active %} cfb-active{% endif %}{% if settings.edges_type == 'rounded_corners' %} rounded{% endif %}">
+                          <label for="{{ vo_input_id }}" class="cfb-tile-label cfb-tile-label--rect{% if vo_is_active %} cfb-active{% endif %}">
                             <input type="checkbox" id="{{ vo_input_id }}" class="sr-only" name="{{ vo_matched_fv.param_name }}" value="{{ vo_matched_fv.value }}" form="FacetFiltersForm" {% if vo_is_active %}checked{% endif %} @change="onSubmit()">
                             <span class="cfb-tile-img-wrap{% if settings.edges_type == 'rounded_corners' %} rounded{% endif %}">
-                              {{ vo_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: vo_label_text, loading: 'lazy' }}
+                              {%- assign _vo_gl_lc = cfb_gl | downcase -%}
+                              {%- if _vo_gl_lc contains 'shape' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: vo_value_label, svg_snippet: 'cfb-shape-svg' -%}
+                              {%- elsif _vo_gl_lc contains 'style' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'style', value_name: vo_value_label, svg_snippet: 'cfb-style-svg' -%}
+                              {%- elsif _vo_gl_lc contains 'category' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'category', value_name: vo_value_label, svg_snippet: 'cfb-category-svg' -%}
+                              {%- else -%}{{ vo_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: vo_label_text, loading: 'lazy' }}{%- endif -%}
                             </span>
                             <span class="cfb-tile-name">{{ vo_label_text | escape }}</span>
                           </label>
                         {%- else -%}
-                          <span class="cfb-tile-label cfb-preview{% if vo_is_zero %} cfb-disabled{% endif %}" aria-hidden="true">
+                          <span class="cfb-tile-label cfb-tile-label--rect cfb-preview{% if vo_is_zero %} cfb-disabled{% endif %}" aria-hidden="true">
                             <span class="cfb-tile-img-wrap{% if settings.edges_type == 'rounded_corners' %} rounded{% endif %}">
-                              {{ vo_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: '', loading: 'lazy' }}
+                              {%- assign _vo_gl_lc = cfb_gl | downcase -%}
+                              {%- if _vo_gl_lc contains 'shape' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: vo_value_label, svg_snippet: 'cfb-shape-svg' -%}
+                              {%- elsif _vo_gl_lc contains 'style' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'style', value_name: vo_value_label, svg_snippet: 'cfb-style-svg' -%}
+                              {%- elsif _vo_gl_lc contains 'category' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'category', value_name: vo_value_label, svg_snippet: 'cfb-category-svg' -%}
+                              {%- else -%}{{ vo_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: '', loading: 'lazy' }}{%- endif -%}
                             </span>
                             <span class="cfb-tile-name">{{ vo_label_text | escape }}</span>
                           </span>
@@ -502,8 +570,8 @@
                 {%- assign cfb_gl_lc = cfb_gl | downcase -%}
 
                 {%- if cfb_gl_lc contains 'shape' -%}
-                  {%- assign _fb_shape_list = 'Round|Oval|Cushion|Princess|Emerald|Radiant|Pear|Marquise|Asscher|Heart' | split: '|' -%}
-                  <div class="cfb-chips">
+                  {%- assign _fb_shape_list = 'Round|Oval|Radiant|Pear|Emerald|Cushion|Marquise|Princess|Heart|Asscher' | split: '|' -%}
+                  <div class="cfb-chips cfb-chips--tiles">
                     {%- for _sname in _fb_shape_list -%}
                       {%- liquid
                         assign _sfv = nil
@@ -528,32 +596,18 @@
                           endif
                         endif
                       -%}
-                      {%- capture _svg -%}
-                        {%- case _snlc -%}
-                          {%- when 'round' -%}<svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="10.5" stroke="currentColor" stroke-width="1.5"/></svg>
-                          {%- when 'oval' -%}<svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none"><ellipse cx="16" cy="16" rx="10.5" ry="7" stroke="currentColor" stroke-width="1.5"/></svg>
-                          {%- when 'cushion' -%}<svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none"><rect x="5.5" y="5.5" width="21" height="21" rx="5" stroke="currentColor" stroke-width="1.5"/></svg>
-                          {%- when 'princess' -%}<svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none"><rect x="5.5" y="5.5" width="21" height="21" stroke="currentColor" stroke-width="1.5"/></svg>
-                          {%- when 'emerald' -%}<svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none"><path d="M9 5.5h14l3.5 3.5v14L23 26.5H9L5.5 23V9z" stroke="currentColor" stroke-width="1.5"/></svg>
-                          {%- when 'radiant' -%}<svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none"><path d="M7 5.5h18l3 3.5v14l-3 3.5H7l-3-3.5V9z" stroke="currentColor" stroke-width="1.5"/></svg>
-                          {%- when 'pear' -%}<svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none"><path d="M16 27C10 21 5.5 15.5 5.5 11a10.5 10.5 0 0121 0c0 4.5-4 10-10.5 16z" stroke="currentColor" stroke-width="1.5"/></svg>
-                          {%- when 'marquise' -%}<svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none"><path d="M16 4.5C22 10 27.5 14 27.5 16S22 22 16 27.5C10 22 4.5 18 4.5 16S10 10 16 4.5z" stroke="currentColor" stroke-width="1.5"/></svg>
-                          {%- when 'asscher' -%}<svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none"><path d="M10.5 5.5h11l5 5v11l-5 5h-11l-5-5v-11z" stroke="currentColor" stroke-width="1.5"/></svg>
-                          {%- when 'heart' -%}<svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none"><path d="M16 26C8 20 4 14 4 10c0-3.5 2.5-5.5 6-5.5 2.5 0 4.5 1.5 6 3.5 1.5-2 3.5-3.5 6-3.5 3.5 0 6 2 6 5.5 0 4-4 10-12 16z" stroke="currentColor" stroke-width="1.5"/></svg>
-                          {%- else -%}<svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="10.5" stroke="currentColor" stroke-width="1.5"/></svg>
-                        {%- endcase -%}
-                      {%- endcapture -%}
                       {%- if _sfv_ok -%}
-                        <label for="cfb-fs-{{ _sname | handle }}" class="cfb-tile-label{% if _sfv.active %} cfb-active{% endif %}">
+                        <label for="cfb-fs-{{ _sname | handle }}" class="cfb-tile-label cfb-tile-label--rect{% if _sfv.active %} cfb-active{% endif %}">
                           <input type="checkbox" id="cfb-fs-{{ _sname | handle }}" class="sr-only" name="{{ _sfv.param_name }}" value="{{ _sfv.value }}" form="FacetFiltersForm"{% if _sfv.active %} checked{% endif %} @change="onSubmit()">
-                          <span class="cfb-tile-img-wrap" data-shape="{{ _sname | downcase }}">{{ _svg }}</span>
+                          <span class="cfb-tile-img-wrap" data-shape="{{ _snlc }}">{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: _sname, svg_snippet: 'cfb-shape-svg' -%}</span>
                           <span class="cfb-tile-name">{{ _sname }}</span>
                         </label>
                       {%- else -%}
-                        <span class="cfb-tile-label cfb-preview" aria-hidden="true">
-                          <span class="cfb-tile-img-wrap" data-shape="{{ _sname | downcase }}">{{ _svg }}</span>
+                        <label for="cfb-fs-{{ _sname | handle }}" class="cfb-tile-label cfb-tile-label--rect">
+                          <input type="checkbox" id="cfb-fs-{{ _sname | handle }}" class="sr-only" name="filter.p.m.custom.diamond_shape" value="{{ _sname }}" form="FacetFiltersForm" @change="onSubmit()">
+                          <span class="cfb-tile-img-wrap" data-shape="{{ _snlc }}">{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: _sname, svg_snippet: 'cfb-shape-svg' -%}</span>
                           <span class="cfb-tile-name">{{ _sname }}</span>
-                        </span>
+                        </label>
                       {%- endif -%}
                     {%- endfor -%}
                   </div>
@@ -609,7 +663,7 @@
                       -%}
                       <label for="cfb-fst-{{ _stname | handle }}" class="cfb-tile-label cfb-tile-label--rect{% if _st_active %} cfb-active{% endif %}">
                         <input type="checkbox" id="cfb-fst-{{ _stname | handle }}" class="sr-only" name="{{ _st_param }}" value="{{ _st_value }}" form="FacetFiltersForm"{% if _st_active %} checked{% endif %} @change="onSubmit()">
-                        <span class="cfb-tile-img-wrap">{%- render 'cfb-style-svg', name: _stlc -%}</span>
+                        <span class="cfb-tile-img-wrap">{%- render 'cfb-icon-resolve', section: section, filter_group: 'style', value_name: _stname, svg_snippet: 'cfb-style-svg' -%}</span>
                         <span class="cfb-tile-name">{{ _stname }}</span>
                       </label>
                     {%- endfor -%}
@@ -655,7 +709,7 @@
                       -%}
                       <label for="cfb-fcat-{{ _cname | handle }}" class="cfb-tile-label cfb-tile-label--rect{% if _c_active %} cfb-active{% endif %}">
                         <input type="checkbox" id="cfb-fcat-{{ _cname | handle }}" class="sr-only" name="{{ _c_param }}" value="{{ _c_value }}" form="FacetFiltersForm"{% if _c_active %} checked{% endif %} @change="onSubmit()">
-                        <span class="cfb-tile-img-wrap">{%- render 'cfb-category-svg', name: _clc -%}</span>
+                        <span class="cfb-tile-img-wrap">{%- render 'cfb-icon-resolve', section: section, filter_group: 'category', value_name: _cname, svg_snippet: 'cfb-category-svg' -%}</span>
                         <span class="cfb-tile-name">{{ _cname }}</span>
                       </label>
                     {%- endfor -%}
@@ -723,11 +777,20 @@
                   </div>
 
                 {%- elsif cfb_gl_lc contains 'metal' -%}
+                  {%- liquid
+                    assign _metal_param_t = 'filter.p.m.custom.metal_type'
+                    assign _metal_list_t  = 'White Gold|#E8E8E8,Yellow Gold|#D4AF37,Rose Gold|#B76E79,Platinum|#C5C7CE' | split: ','
+                  -%}
                   <div class="cfb-chips">
-                    <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true"><span class="cfb-swatch" style="background-color:#E8E8E8"></span>White Gold</span>
-                    <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true"><span class="cfb-swatch" style="background-color:#D4AF37"></span>Yellow Gold</span>
-                    <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true"><span class="cfb-swatch" style="background-color:#B76E79"></span>Rose Gold</span>
-                    <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true"><span class="cfb-swatch" style="background-color:#C5C7CE"></span>Platinum</span>
+                    {%- for _mp in _metal_list_t -%}
+                      {%- assign _parts = _mp | split: '|' -%}
+                      {%- assign _mname = _parts[0] -%}
+                      {%- assign _mcolor = _parts[1] -%}
+                      <label for="cfb-tmetal-{{ _mname | handle }}" class="cfb-chip-label{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}">
+                        <input type="checkbox" id="cfb-tmetal-{{ _mname | handle }}" class="sr-only" name="{{ _metal_param_t }}" value="{{ _mname }}" form="FacetFiltersForm" @change="onSubmit()">
+                        <span class="cfb-swatch" style="background-color:{{ _mcolor }}"></span>{{ _mname }}
+                      </label>
+                    {%- endfor -%}
                   </div>
 
                 {%- elsif cfb_gl_lc contains 'price' -%}
@@ -876,12 +939,12 @@
                       {%- if vo_functional -%}
                         <label for="{{ vo_input_id }}" class="cfb-tile-label{% if vo_is_active %} cfb-active{% endif %}{% if settings.edges_type == 'rounded_corners' %} rounded{% endif %}">
                           <input type="checkbox" id="{{ vo_input_id }}" class="sr-only" name="{{ vo_matched_fv.param_name }}" value="{{ vo_matched_fv.value }}" form="FacetFiltersForm" {% if vo_is_active %}checked{% endif %} @change="onSubmit()">
-                          <span class="cfb-tile-img-wrap{% if settings.edges_type == 'rounded_corners' %} rounded{% endif %}">{{ vo_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: vo_label_text, loading: 'lazy' }}</span>
+                          <span class="cfb-tile-img-wrap" data-shape="{{ vo_value_label | downcase }}">{%- assign _vo_gl_lc = cfb_gl | downcase -%}{%- if _vo_gl_lc contains 'shape' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: vo_value_label, svg_snippet: 'cfb-shape-svg' -%}{%- elsif _vo_gl_lc contains 'style' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'style', value_name: vo_value_label, svg_snippet: 'cfb-style-svg' -%}{%- elsif _vo_gl_lc contains 'category' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'category', value_name: vo_value_label, svg_snippet: 'cfb-category-svg' -%}{%- else -%}{{ vo_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: vo_label_text, loading: 'lazy' }}{%- endif -%}</span>
                           <span class="cfb-tile-name">{{ vo_label_text | escape }}</span>
                         </label>
                       {%- else -%}
-                        <span class="cfb-tile-label cfb-preview{% if vo_is_zero %} cfb-disabled{% endif %}" aria-hidden="true">
-                          <span class="cfb-tile-img-wrap{% if settings.edges_type == 'rounded_corners' %} rounded{% endif %}">{{ vo_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: '', loading: 'lazy' }}</span>
+                        <span class="cfb-tile-label cfb-tile-label--rect cfb-preview{% if vo_is_zero %} cfb-disabled{% endif %}" aria-hidden="true">
+                          <span class="cfb-tile-img-wrap" data-shape="{{ vo_value_label | downcase }}">{%- assign _vo_gl_lc = cfb_gl | downcase -%}{%- if _vo_gl_lc contains 'shape' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: vo_value_label, svg_snippet: 'cfb-shape-svg' -%}{%- elsif _vo_gl_lc contains 'style' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'style', value_name: vo_value_label, svg_snippet: 'cfb-style-svg' -%}{%- elsif _vo_gl_lc contains 'category' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'category', value_name: vo_value_label, svg_snippet: 'cfb-category-svg' -%}{%- else -%}{{ vo_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: '', loading: 'lazy' }}{%- endif -%}</span>
                           <span class="cfb-tile-name">{{ vo_label_text | escape }}</span>
                         </span>
                       {%- endif -%}
@@ -932,10 +995,40 @@
               {%- endif -%}
             {%- else -%}
               {%- if cfb_gl_lc contains 'shape' -%}
-                <div class="cfb-chips">
-                  {%- assign _fb_shapes = 'Round,Oval,Radiant,Pear,Emerald,Cushion' | split: ',' -%}
-                  {%- for _s in _fb_shapes -%}
-                    <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-md{% endif %}" aria-hidden="true">{{ _s }}</span>
+                {%- assign _fb_shapes_b = 'Round|Oval|Radiant|Pear|Emerald|Cushion|Marquise|Princess|Heart|Asscher' | split: '|' -%}
+                <div class="cfb-chips cfb-chips--tiles">
+                  {%- for _s in _fb_shapes_b -%}
+                    {%- liquid
+                      assign _sfv_b = nil
+                      for _sf in collection.filters
+                        if _sf.type != 'price_range'
+                          for _sfval in _sf.values
+                            if _sfval.value == _s or _sfval.label == _s
+                              assign _sfv_b = _sfval
+                              break
+                            endif
+                          endfor
+                        endif
+                        if _sfv_b != nil
+                          break
+                        endif
+                      endfor
+                      assign _slc = _s | downcase
+                      if _sfv_b != nil
+                        assign _s_param  = _sfv_b.param_name
+                        assign _s_value  = _sfv_b.value
+                        assign _s_active = _sfv_b.active
+                      else
+                        assign _s_param  = 'filter.p.m.custom.diamond_shape'
+                        assign _s_value  = _s
+                        assign _s_active = false
+                      endif
+                    -%}
+                    <label for="cfb-bs{{ cfb_slot }}-{{ _s | handle }}" class="cfb-tile-label cfb-tile-label--rect{% if _s_active %} cfb-active{% endif %}">
+                      <input type="checkbox" id="cfb-bs{{ cfb_slot }}-{{ _s | handle }}" class="sr-only" name="{{ _s_param }}" value="{{ _s_value }}" form="FacetFiltersForm"{% if _s_active %} checked{% endif %} @change="onSubmit()">
+                      <span class="cfb-tile-img-wrap" data-shape="{{ _slc }}">{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: _s, svg_snippet: 'cfb-shape-svg' -%}</span>
+                      <span class="cfb-tile-name">{{ _s }}</span>
+                    </label>
                   {%- endfor -%}
                 </div>
               {%- elsif cfb_gl_lc contains 'stone' -%}
@@ -1128,12 +1221,12 @@
                       {%- if vo_functional -%}
                         <label for="{{ vo_input_id }}" class="cfb-tile-label{% if vo_is_active %} cfb-active{% endif %}{% if settings.edges_type == 'rounded_corners' %} rounded{% endif %}">
                           <input type="checkbox" id="{{ vo_input_id }}" class="sr-only" name="{{ vo_matched_fv.param_name }}" value="{{ vo_matched_fv.value }}" form="FacetFiltersForm" {% if vo_is_active %}checked{% endif %} @change="onSubmit()">
-                          <span class="cfb-tile-img-wrap{% if settings.edges_type == 'rounded_corners' %} rounded{% endif %}">{{ vo_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: vo_label_text, loading: 'lazy' }}</span>
+                          <span class="cfb-tile-img-wrap" data-shape="{{ vo_value_label | downcase }}">{%- assign _vo_gl_lc = cfb_gl | downcase -%}{%- if _vo_gl_lc contains 'shape' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: vo_value_label, svg_snippet: 'cfb-shape-svg' -%}{%- elsif _vo_gl_lc contains 'style' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'style', value_name: vo_value_label, svg_snippet: 'cfb-style-svg' -%}{%- elsif _vo_gl_lc contains 'category' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'category', value_name: vo_value_label, svg_snippet: 'cfb-category-svg' -%}{%- else -%}{{ vo_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: vo_label_text, loading: 'lazy' }}{%- endif -%}</span>
                           <span class="cfb-tile-name">{{ vo_label_text | escape }}</span>
                         </label>
                       {%- else -%}
-                        <span class="cfb-tile-label cfb-preview{% if vo_is_zero %} cfb-disabled{% endif %}" aria-hidden="true">
-                          <span class="cfb-tile-img-wrap{% if settings.edges_type == 'rounded_corners' %} rounded{% endif %}">{{ vo_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: '', loading: 'lazy' }}</span>
+                        <span class="cfb-tile-label cfb-tile-label--rect cfb-preview{% if vo_is_zero %} cfb-disabled{% endif %}" aria-hidden="true">
+                          <span class="cfb-tile-img-wrap" data-shape="{{ vo_value_label | downcase }}">{%- assign _vo_gl_lc = cfb_gl | downcase -%}{%- if _vo_gl_lc contains 'shape' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: vo_value_label, svg_snippet: 'cfb-shape-svg' -%}{%- elsif _vo_gl_lc contains 'style' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'style', value_name: vo_value_label, svg_snippet: 'cfb-style-svg' -%}{%- elsif _vo_gl_lc contains 'category' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'category', value_name: vo_value_label, svg_snippet: 'cfb-category-svg' -%}{%- else -%}{{ vo_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: '', loading: 'lazy' }}{%- endif -%}</span>
                           <span class="cfb-tile-name">{{ vo_label_text | escape }}</span>
                         </span>
                       {%- endif -%}
@@ -1184,10 +1277,40 @@
               {%- endif -%}
             {%- else -%}
               {%- if cfb_gl_lc contains 'shape' -%}
-                <div class="cfb-chips">
-                  {%- assign _fb_shapes = 'Round,Oval,Radiant,Pear,Emerald,Cushion' | split: ',' -%}
-                  {%- for _s in _fb_shapes -%}
-                    <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-md{% endif %}" aria-hidden="true">{{ _s }}</span>
+                {%- assign _fb_shapes_b = 'Round|Oval|Radiant|Pear|Emerald|Cushion|Marquise|Princess|Heart|Asscher' | split: '|' -%}
+                <div class="cfb-chips cfb-chips--tiles">
+                  {%- for _s in _fb_shapes_b -%}
+                    {%- liquid
+                      assign _sfv_b = nil
+                      for _sf in collection.filters
+                        if _sf.type != 'price_range'
+                          for _sfval in _sf.values
+                            if _sfval.value == _s or _sfval.label == _s
+                              assign _sfv_b = _sfval
+                              break
+                            endif
+                          endfor
+                        endif
+                        if _sfv_b != nil
+                          break
+                        endif
+                      endfor
+                      assign _slc = _s | downcase
+                      if _sfv_b != nil
+                        assign _s_param  = _sfv_b.param_name
+                        assign _s_value  = _sfv_b.value
+                        assign _s_active = _sfv_b.active
+                      else
+                        assign _s_param  = 'filter.p.m.custom.diamond_shape'
+                        assign _s_value  = _s
+                        assign _s_active = false
+                      endif
+                    -%}
+                    <label for="cfb-bs{{ cfb_slot }}-{{ _s | handle }}" class="cfb-tile-label cfb-tile-label--rect{% if _s_active %} cfb-active{% endif %}">
+                      <input type="checkbox" id="cfb-bs{{ cfb_slot }}-{{ _s | handle }}" class="sr-only" name="{{ _s_param }}" value="{{ _s_value }}" form="FacetFiltersForm"{% if _s_active %} checked{% endif %} @change="onSubmit()">
+                      <span class="cfb-tile-img-wrap" data-shape="{{ _slc }}">{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: _s, svg_snippet: 'cfb-shape-svg' -%}</span>
+                      <span class="cfb-tile-name">{{ _s }}</span>
+                    </label>
                   {%- endfor -%}
                 </div>
               {%- elsif cfb_gl_lc contains 'stone' -%}
@@ -1345,11 +1468,20 @@
               {%- endfor -%}
             </div>
           {%- else -%}
+            {%- liquid
+              assign _metal_param = 'filter.p.m.custom.metal_type'
+              assign _metal_list  = 'White Gold|#E5E4E2,Yellow Gold|#D4AF37,Rose Gold|#B76E79,Platinum|#C5C7CE' | split: ','
+            -%}
             <div class="cfb-chips">
-              <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true"><span class="cfb-swatch" style="background-color:#E5E4E2"></span>White Gold</span>
-              <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true"><span class="cfb-swatch" style="background-color:#D4AF37"></span>Yellow Gold</span>
-              <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true"><span class="cfb-swatch" style="background-color:#B76E79"></span>Rose Gold</span>
-              <span class="cfb-chip-label cfb-preview{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}" aria-hidden="true"><span class="cfb-swatch" style="background-color:#E5E4E2"></span>Platinum</span>
+              {%- for _mp in _metal_list -%}
+                {%- assign _parts = _mp | split: '|' -%}
+                {%- assign _mname = _parts[0] -%}
+                {%- assign _mcolor = _parts[1] -%}
+                <label for="cfb-metal-{{ _mname | handle }}" class="cfb-chip-label{% if settings.edges_type == 'rounded_corners' %} rounded-full{% endif %}">
+                  <input type="checkbox" id="cfb-metal-{{ _mname | handle }}" class="sr-only" name="{{ _metal_param }}" value="{{ _mname }}" form="FacetFiltersForm" @change="onSubmit()">
+                  <span class="cfb-swatch" style="background-color:{{ _mcolor }}"></span>{{ _mname }}
+                </label>
+              {%- endfor -%}
             </div>
           {%- endif -%}
         </div>
@@ -1472,7 +1604,40 @@
                       {{ cfb_qv | escape }}
                     </label>
                   {%- else -%}
-                    <span class="cfb-quick-block cfb-disabled{% if settings.edges_type == 'rounded_corners' %} rounded{% endif %}" aria-hidden="true">{{ cfb_qv | escape }}</span>
+                    {%- liquid
+                      assign _qf_lc      = cfb_qv | downcase
+                      assign _qf_handle  = cfb_qv | handle
+                      assign _qf_param   = 'filter.p.tag'
+                      assign _qf_value   = cfb_qv
+                      if _qf_lc contains 'ready'
+                        assign _qf_param = 'filter.p.m.custom.ready_to_ship'
+                        assign _qf_value = 'true'
+                      elsif _qf_lc contains 'sale'
+                        assign _qf_param = 'filter.p.m.custom.on_sale'
+                        assign _qf_value = 'true'
+                      elsif _qf_lc contains 'new'
+                        assign _qf_param = 'filter.p.tag'
+                        assign _qf_value = 'new-arrival'
+                      elsif _qf_lc contains 'best'
+                        assign _qf_param = 'filter.p.tag'
+                        assign _qf_value = 'best-seller'
+                      endif
+                    -%}
+                    <label
+                      for="cfb-q-{{ _qf_handle }}"
+                      class="cfb-quick-block{% if settings.edges_type == 'rounded_corners' %} rounded{% endif %}"
+                    >
+                      <input
+                        type="checkbox"
+                        id="cfb-q-{{ _qf_handle }}"
+                        class="sr-only"
+                        name="{{ _qf_param }}"
+                        value="{{ _qf_value }}"
+                        form="FacetFiltersForm"
+                        @change="onSubmit()"
+                      >
+                      {{ cfb_qv | escape }}
+                    </label>
                   {%- endif -%}
                 {%- endif -%}
               {%- endfor -%}
@@ -1715,7 +1880,9 @@
         initCfbSlider(w);
       }
     });
-    applyCfbShapeImages();
+    /* applyCfbShapeImages() disabled — the inline `cfb-shape-svg` snippet renders the
+       new faceted-cut SVGs, and this would overwrite them with metafield silhouettes. */
+    /* applyCfbShapeImages(); */
   }
 
   if (document.readyState === 'loading') {

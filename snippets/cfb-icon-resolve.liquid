@@ -1,0 +1,24 @@
+{%- comment -%}
+  Renders the icon for a filter tile:
+  - if a matching image_picker setting is set on the section → render that image
+  - else → fall back to the inline SVG snippet for that group
+  Setting ID convention: cfb_icon_<filter_group>_<handle>
+    e.g. cfb_icon_shape_round, cfb_icon_style_three_stone, cfb_icon_quick_ready_to_ship
+  Required params:
+    section        — the parent section object
+    filter_group   — 'shape' | 'style' | 'category' | 'quick'
+    value_name     — original value label, e.g. 'Round', 'Three Stone'
+    svg_snippet    — 'cfb-shape-svg' | 'cfb-style-svg' | 'cfb-category-svg'
+{%- endcomment -%}
+{%- assign _svg_key   = value_name | downcase -%}
+{%- assign _id_handle = value_name | handleize | replace: '-', '_' -%}
+{%- assign _setting_id = 'cfb_icon_' | append: filter_group | append: '_' | append: _id_handle -%}
+{%- assign _icon_image = nil -%}
+{%- if section and section.settings[_setting_id] != blank -%}
+  {%- assign _icon_image = section.settings[_setting_id] -%}
+{%- endif -%}
+{%- if _icon_image -%}
+  {{ _icon_image | image_url: width: 120 | image_tag: class: 'cfb-tile-img-el', alt: value_name, loading: 'lazy' }}
+{%- else -%}
+  {%- render svg_snippet, name: _svg_key -%}
+{%- endif -%}

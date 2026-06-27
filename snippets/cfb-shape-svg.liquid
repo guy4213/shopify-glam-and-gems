@@ -1,0 +1,119 @@
+{%- comment -%}
+  Inline SVG icon for collection-filter-board "diamond shape" tile.
+  Usage: {% render 'cfb-shape-svg', name: 'round' %}
+  `name` is the lowercased shape label (e.g. 'round', 'oval', 'pear'...).
+  Each SVG is a top-view technical diamond-cut diagram.
+  Stroke hierarchy: outline 1.2 / inner table 1 / facet lines 0.7.
+{%- endcomment -%}
+{%- case name -%}
+  {%- when 'round' -%}
+    <svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+      <circle cx="16" cy="16" r="12" stroke-width="1.2"/>
+      <circle cx="16" cy="16" r="5" stroke-width="1"/>
+      <line x1="16" y1="4" x2="16" y2="11" stroke-width="0.7"/>
+      <line x1="16" y1="28" x2="16" y2="21" stroke-width="0.7"/>
+      <line x1="4" y1="16" x2="11" y2="16" stroke-width="0.7"/>
+      <line x1="28" y1="16" x2="21" y2="16" stroke-width="0.7"/>
+      <line x1="7.5" y1="7.5" x2="12.5" y2="12.5" stroke-width="0.7"/>
+      <line x1="24.5" y1="7.5" x2="19.5" y2="12.5" stroke-width="0.7"/>
+      <line x1="24.5" y1="24.5" x2="19.5" y2="19.5" stroke-width="0.7"/>
+      <line x1="7.5" y1="24.5" x2="12.5" y2="19.5" stroke-width="0.7"/>
+    </svg>
+
+  {%- when 'oval' -%}
+    <svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+      <ellipse cx="16" cy="16" rx="8" ry="12" stroke-width="1.2"/>
+      <ellipse cx="16" cy="16" rx="3.5" ry="5" stroke-width="1"/>
+      <line x1="16" y1="4" x2="16" y2="28" stroke-width="0.7"/>
+      <line x1="16" y1="16" x2="8" y2="16" stroke-width="0.7"/>
+      <line x1="16" y1="16" x2="24" y2="16" stroke-width="0.7"/>
+      <line x1="10" y1="9" x2="12.5" y2="12" stroke-width="0.7"/>
+      <line x1="22" y1="9" x2="19.5" y2="12" stroke-width="0.7"/>
+      <line x1="10" y1="23" x2="12.5" y2="20" stroke-width="0.7"/>
+      <line x1="22" y1="23" x2="19.5" y2="20" stroke-width="0.7"/>
+    </svg>
+
+  {%- when 'radiant' -%}
+    <svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+      <path d="M9 4h14l5 5v14l-5 5H9l-5-5V9z" stroke-width="1.2"/>
+      <path d="M12 11h8l3 3v4l-3 3h-8l-3-3v-4z" stroke-width="1"/>
+      <line x1="4" y1="9" x2="9" y2="14" stroke-width="0.7"/>
+      <line x1="28" y1="9" x2="23" y2="14" stroke-width="0.7"/>
+      <line x1="28" y1="23" x2="23" y2="18" stroke-width="0.7"/>
+      <line x1="4" y1="23" x2="9" y2="18" stroke-width="0.7"/>
+      <line x1="16" y1="4" x2="16" y2="11" stroke-width="0.7"/>
+      <line x1="16" y1="28" x2="16" y2="21" stroke-width="0.7"/>
+      <line x1="4" y1="16" x2="9" y2="16" stroke-width="0.7"/>
+      <line x1="28" y1="16" x2="23" y2="16" stroke-width="0.7"/>
+    </svg>
+
+  {%- when 'pear' -%}
+    <svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+      <path d="M16 4 C 10 11 6 16 6 20 a10 8 0 0 0 20 0 c0-4-4-9-10-16z" stroke-width="1.2"/>
+      <path d="M16 11 C 13 15 11 18 11 20 a5 4 0 0 0 10 0 c0-2-2-5-5-9z" stroke-width="1"/>
+      <line x1="16" y1="4" x2="16" y2="28" stroke-width="0.7"/>
+      <line x1="6" y1="20" x2="11" y2="20" stroke-width="0.7"/>
+      <line x1="26" y1="20" x2="21" y2="20" stroke-width="0.7"/>
+      <line x1="9" y1="14" x2="13" y2="16" stroke-width="0.7"/>
+      <line x1="23" y1="14" x2="19" y2="16" stroke-width="0.7"/>
+    </svg>
+
+  {%- when 'emerald' -%}
+    <svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+      <path d="M10 4h12l6 6v12l-6 6H10l-6-6V10z" stroke-width="1.2"/>
+      <path d="M11.5 8h9l3.5 3.5v9l-3.5 3.5h-9l-3.5-3.5v-9z" stroke-width="0.7"/>
+      <path d="M13 11.5h7l2 2v5l-2 2h-7l-2-2v-5z" stroke-width="0.7"/>
+      <path d="M14 14h4l1 1v2l-1 1h-4l-1-1v-2z" stroke-width="1"/>
+    </svg>
+
+  {%- when 'cushion' -%}
+    <svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+      <path d="M11 4h10c4 0 7 3 7 7v10c0 4-3 7-7 7H11c-4 0-7-3-7-7V11c0-4 3-7 7-7z" stroke-width="1.2"/>
+      <path d="M13.5 11h5c1.5 0 2.5 1 2.5 2.5v5c0 1.5-1 2.5-2.5 2.5h-5c-1.5 0-2.5-1-2.5-2.5v-5c0-1.5 1-2.5 2.5-2.5z" stroke-width="1"/>
+      <line x1="4" y1="4" x2="11" y2="11" stroke-width="0.7"/>
+      <line x1="28" y1="4" x2="21" y2="11" stroke-width="0.7"/>
+      <line x1="28" y1="28" x2="21" y2="21" stroke-width="0.7"/>
+      <line x1="4" y1="28" x2="11" y2="21" stroke-width="0.7"/>
+    </svg>
+
+  {%- when 'marquise' -%}
+    <svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+      <path d="M4 16 C 10 8 14 4 16 4 C 18 4 22 8 28 16 C 22 24 18 28 16 28 C 14 28 10 24 4 16 z" stroke-width="1.2"/>
+      <path d="M10 16 C 12.5 13 14.5 11.5 16 11.5 C 17.5 11.5 19.5 13 22 16 C 19.5 19 17.5 20.5 16 20.5 C 14.5 20.5 12.5 19 10 16 z" stroke-width="1"/>
+      <line x1="4" y1="16" x2="28" y2="16" stroke-width="0.7"/>
+      <line x1="16" y1="4" x2="16" y2="11.5" stroke-width="0.7"/>
+      <line x1="16" y1="28" x2="16" y2="20.5" stroke-width="0.7"/>
+    </svg>
+
+  {%- when 'princess' -%}
+    <svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+      <rect x="4" y="4" width="24" height="24" stroke-width="1.2"/>
+      <rect x="11" y="11" width="10" height="10" stroke-width="1"/>
+      <line x1="4" y1="4" x2="11" y2="11" stroke-width="0.7"/>
+      <line x1="28" y1="4" x2="21" y2="11" stroke-width="0.7"/>
+      <line x1="28" y1="28" x2="21" y2="21" stroke-width="0.7"/>
+      <line x1="4" y1="28" x2="11" y2="21" stroke-width="0.7"/>
+    </svg>
+
+  {%- when 'heart' -%}
+    <svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+      <path d="M16 28 C 5 19 4 13 4 10 a6 6 0 0 1 12 -1 a6 6 0 0 1 12 1 c0 3-1 9-12 18z" stroke-width="1.2"/>
+      <path d="M16 22 C 10 17 9 13 9 11 a3.5 3.5 0 0 1 7 -0.5 a3.5 3.5 0 0 1 7 0.5 c0 2-1 6-7 11z" stroke-width="1"/>
+      <line x1="16" y1="22" x2="16" y2="28" stroke-width="0.7"/>
+      <line x1="10" y1="13" x2="13" y2="15" stroke-width="0.7"/>
+      <line x1="22" y1="13" x2="19" y2="15" stroke-width="0.7"/>
+    </svg>
+
+  {%- when 'asscher' -%}
+    <svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+      <path d="M10 4h12l6 6v12l-6 6H10l-6-6V10z" stroke-width="1.2"/>
+      <path d="M11.5 8h9l3.5 3.5v9l-3.5 3.5h-9l-3.5-3.5v-9z" stroke-width="0.7"/>
+      <path d="M13 11.5h6l2 2v5l-2 2h-6l-2-2v-5z" stroke-width="0.7"/>
+      <rect x="13.5" y="13.5" width="5" height="5" stroke-width="1"/>
+    </svg>
+
+  {%- else -%}
+    <svg class="cfb-tile-svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linejoin="round">
+      <circle cx="16" cy="16" r="11" stroke-width="1.2"/>
+    </svg>
+{%- endcase -%}

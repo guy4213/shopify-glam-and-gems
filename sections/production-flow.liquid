@@ -1,0 +1,450 @@
+{%- liquid
+  assign section_bg = section.settings.section_bg
+  assign accent_color = section.settings.accent_color
+  assign card_border = section.settings.card_border
+  assign subtitle_color = section.settings.subtitle_color
+  assign pad_top = section.settings.padding_top
+  assign pad_bottom = section.settings.padding_bottom
+-%}
+
+<style>
+  #production-flow-{{ section.id }} {
+    --pf-bg: {{ section_bg }};
+    --accent-color: {{ accent_color }};
+    --card-border: {{ card_border }};
+    --subtitle-color: {{ subtitle_color }};
+    background-color: var(--pf-bg);
+    padding-top: {{ pad_top }}px;
+    padding-bottom: {{ pad_bottom }}px;
+  }
+
+  .production-flow {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .production-flow__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .production-flow__panel {
+    text-align: center;
+    padding: 32px 0;
+  }
+
+  .production-flow__panel + .production-flow__panel {
+    margin-top: 24px;
+  }
+
+  .production-flow__subtitle {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--subtitle-color);
+    margin: 0 0 14px;
+    text-align: center;
+  }
+
+  .production-flow__intro {
+    max-width: 640px;
+    margin: 0 auto 20px;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: #444;
+    font-weight: 300;
+    text-align: center;
+  }
+
+  .production-flow__heading {
+    font-size: 1.9rem;
+    font-weight: 600;
+    margin: 0 0 6px;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .production-flow__heading--serif {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: 2.2rem;
+  }
+
+  .production-flow__small {
+    font-size: 0.78rem;
+    color: #777;
+    margin: 0 0 28px;
+    text-align: center;
+  }
+
+  .production-flow__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 12px 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .production-flow__row::-webkit-scrollbar {
+    height: 0;
+    display: none;
+  }
+
+  .production-flow__stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+  }
+
+  .production-flow__icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2a2a2a;
+    background: #fff;
+  }
+
+  .production-flow__icon svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .production-flow__label {
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+    max-width: 90px;
+    line-height: 1.25;
+    color: #333;
+  }
+
+  .production-flow__chevron {
+    color: #c9c9c9;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .production-flow__chevron svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .production-flow__you {
+    border: 1.5px solid var(--accent-color);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4px;
+    box-sizing: border-box;
+    margin-left: 6px;
+    background: #fff;
+  }
+
+  .production-flow__you-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent-color);
+    line-height: 1;
+  }
+
+  .production-flow__you-sub {
+    font-size: 0.5rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--accent-color);
+    line-height: 1.15;
+    margin-top: 3px;
+    text-transform: uppercase;
+    max-width: 70px;
+  }
+
+  @media (max-width: 768px) {
+    .production-flow__row {
+      justify-content: flex-start;
+      scroll-snap-type: x mandatory;
+      gap: 6px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .production-flow__icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+    }
+
+    .production-flow__icon svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    .production-flow__label {
+      font-size: 0.6rem;
+      max-width: 72px;
+    }
+
+    .production-flow__chevron svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .production-flow__you {
+      width: 68px;
+      height: 68px;
+    }
+
+    .production-flow__you-label {
+      font-size: 0.62rem;
+    }
+
+    .production-flow__you-sub {
+      font-size: 0.44rem;
+      max-width: 60px;
+    }
+
+    .production-flow__heading {
+      font-size: 1.45rem;
+    }
+
+    .production-flow__heading--serif {
+      font-size: 1.75rem;
+    }
+
+    .production-flow__intro {
+      font-size: 0.88rem;
+    }
+  }
+</style>
+
+{%- capture chevron_svg -%}
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+{%- endcapture -%}
+
+<div id="production-flow-{{ section.id }}" class="production-flow">
+  <div class="production-flow__inner">
+
+    {%- comment -%} ===== Panel 1: Industry Standard ===== {%- endcomment -%}
+    <section class="production-flow__panel production-flow__panel--industry" aria-label="Industry Standard production flow">
+      <p class="production-flow__subtitle">Directly From The Source</p>
+      <p class="production-flow__intro">
+        With direct access to diamond sourcing and full control over production, we ensure fine jewelry defined by exceptional craftsmanship, trusted quality, and meaningful value.
+      </p>
+      <h2 class="production-flow__heading">Industry Standard</h2>
+      <p class="production-flow__small">Multiple outsourced production stages before reaching the customer</p>
+
+      <div class="production-flow__row" role="list">
+        <div class="production-flow__stage" role="listitem">
+          <div class="production-flow__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 34 L30 18 L36 24 L20 40 L12 40 Z"/>
+              <line x1="28" y1="20" x2="34" y2="26"/>
+              <circle cx="16" cy="38" r="0.8" fill="currentColor"/>
+            </svg>
+          </div>
+          <span class="production-flow__label">Craft Confirmation</span>
+        </div>
+
+        <span class="production-flow__chevron" aria-hidden="true">{{ chevron_svg }}</span>
+
+        <div class="production-flow__stage" role="listitem">
+          <div class="production-flow__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="24,8 36,18 24,40 12,18"/>
+              <line x1="12" y1="18" x2="36" y2="18"/>
+              <line x1="18" y1="18" x2="24" y2="40"/>
+              <line x1="30" y1="18" x2="24" y2="40"/>
+            </svg>
+          </div>
+          <span class="production-flow__label">Diamond Source</span>
+        </div>
+
+        <span class="production-flow__chevron" aria-hidden="true">{{ chevron_svg }}</span>
+
+        <div class="production-flow__stage" role="listitem">
+          <div class="production-flow__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M24 8 L40 16 L40 32 L24 40 L8 32 L8 16 Z"/>
+              <line x1="24" y1="8" x2="24" y2="40"/>
+              <line x1="8" y1="16" x2="40" y2="16"/>
+              <line x1="8" y1="32" x2="40" y2="32"/>
+            </svg>
+          </div>
+          <span class="production-flow__label">3D Model</span>
+        </div>
+
+        <span class="production-flow__chevron" aria-hidden="true">{{ chevron_svg }}</span>
+
+        <div class="production-flow__stage" role="listitem">
+          <div class="production-flow__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="14" y="18" width="20" height="22" rx="2"/>
+              <path d="M14 18 L24 8 L34 18"/>
+              <line x1="18" y1="26" x2="30" y2="26"/>
+            </svg>
+          </div>
+          <span class="production-flow__label">Casting</span>
+        </div>
+
+        <span class="production-flow__chevron" aria-hidden="true">{{ chevron_svg }}</span>
+
+        <div class="production-flow__stage" role="listitem">
+          <div class="production-flow__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="24" cy="32" rx="14" ry="6"/>
+              <polygon points="24,14 30,22 24,26 18,22"/>
+              <line x1="18" y1="22" x2="30" y2="22"/>
+            </svg>
+          </div>
+          <span class="production-flow__label">Stone Setting</span>
+        </div>
+
+        <span class="production-flow__chevron" aria-hidden="true">{{ chevron_svg }}</span>
+
+        <div class="production-flow__stage" role="listitem">
+          <div class="production-flow__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M24 8 L26 22 L38 24 L26 26 L24 38 L22 26 L10 24 L22 22 Z"/>
+            </svg>
+          </div>
+          <span class="production-flow__label">Final Polish</span>
+        </div>
+
+        <div class="production-flow__you" aria-label="You — higher price">
+          <span class="production-flow__you-label">YOU</span>
+          <span class="production-flow__you-sub">Higher Price</span>
+        </div>
+      </div>
+    </section>
+
+    {%- comment -%} ===== Panel 2: Glam & Gems — In-House ===== {%- endcomment -%}
+    <section class="production-flow__panel production-flow__panel--inhouse" aria-label="Glam and Gems in-house production flow">
+      <h2 class="production-flow__heading production-flow__heading--serif">Glam &amp; Gems</h2>
+      <p class="production-flow__subtitle">Designed, Crafted, And Produced In-House</p>
+
+      <div class="production-flow__row" role="list">
+        <div class="production-flow__stage" role="listitem">
+          <div class="production-flow__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="8" y="20" width="32" height="20" rx="2"/>
+              <line x1="8" y1="28" x2="40" y2="28"/>
+              <polygon points="16,12 22,18 16,24 10,18"/>
+              <polygon points="32,12 38,18 32,24 26,18"/>
+            </svg>
+          </div>
+          <span class="production-flow__label">In-House Diamond Stock</span>
+        </div>
+
+        <span class="production-flow__chevron" aria-hidden="true">{{ chevron_svg }}</span>
+
+        <div class="production-flow__stage" role="listitem">
+          <div class="production-flow__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M24 8 L40 16 L40 32 L24 40 L8 32 L8 16 Z"/>
+              <line x1="24" y1="8" x2="24" y2="40"/>
+              <line x1="8" y1="16" x2="40" y2="16"/>
+              <line x1="8" y1="32" x2="40" y2="32"/>
+            </svg>
+          </div>
+          <span class="production-flow__label">In-House 3D Design</span>
+        </div>
+
+        <span class="production-flow__chevron" aria-hidden="true">{{ chevron_svg }}</span>
+
+        <div class="production-flow__stage" role="listitem">
+          <div class="production-flow__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="10" y="14" width="28" height="8" rx="1"/>
+              <rect x="14" y="22" width="20" height="8" rx="1"/>
+              <rect x="10" y="30" width="28" height="8" rx="1"/>
+              <line x1="14" y1="18" x2="20" y2="18"/>
+              <line x1="18" y1="26" x2="24" y2="26"/>
+              <line x1="14" y1="34" x2="20" y2="34"/>
+            </svg>
+          </div>
+          <span class="production-flow__label">In-House Casting</span>
+        </div>
+
+        <span class="production-flow__chevron" aria-hidden="true">{{ chevron_svg }}</span>
+
+        <div class="production-flow__stage" role="listitem">
+          <div class="production-flow__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="24" cy="32" rx="14" ry="6"/>
+              <polygon points="24,14 30,22 24,26 18,22"/>
+              <line x1="18" y1="22" x2="30" y2="22"/>
+            </svg>
+          </div>
+          <span class="production-flow__label">In-House Stone Setting</span>
+        </div>
+
+        <span class="production-flow__chevron" aria-hidden="true">{{ chevron_svg }}</span>
+
+        <div class="production-flow__stage" role="listitem">
+          <div class="production-flow__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="24" cy="20" r="8"/>
+              <path d="M14 36 Q24 28 34 36"/>
+              <path d="M20 18 L22 20 L26 16"/>
+            </svg>
+          </div>
+          <span class="production-flow__label">In-House Polish</span>
+        </div>
+
+        <span class="production-flow__chevron" aria-hidden="true">{{ chevron_svg }}</span>
+
+        <div class="production-flow__stage" role="listitem">
+          <div class="production-flow__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="10" y="18" width="28" height="22" rx="2"/>
+              <line x1="10" y1="26" x2="38" y2="26"/>
+              <line x1="24" y1="18" x2="24" y2="40"/>
+              <path d="M18 18 Q18 12 24 14 Q30 12 30 18"/>
+            </svg>
+          </div>
+          <span class="production-flow__label">Direct To You</span>
+        </div>
+
+        <div class="production-flow__you" aria-label="You — better quality, better value">
+          <span class="production-flow__you-label">YOU</span>
+          <span class="production-flow__you-sub">Better Quality &middot; Better Value</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Production flow",
+  "settings": [
+    { "type": "color",  "id": "section_bg",     "label": "Background",      "default": "#ffffff" },
+    { "type": "color",  "id": "accent_color",   "label": "Accent / YOU badge color", "default": "#000000" },
+    { "type": "color",  "id": "card_border",    "label": "Card border",     "default": "#e5e5e5" },
+    { "type": "color",  "id": "subtitle_color", "label": "Subtitle text",   "default": "#9c8454" },
+    { "type": "number", "id": "padding_top",    "label": "Top padding (px)", "default": 64 },
+    { "type": "number", "id": "padding_bottom", "label": "Bottom padding (px)", "default": 64 }
+  ],
+  "presets": [{ "name": "Production flow" }]
+}
+{% endschema %}
