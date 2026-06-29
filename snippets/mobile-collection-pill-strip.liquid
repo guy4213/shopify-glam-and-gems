@@ -1,0 +1,152 @@
+{%- comment -%}
+  Mobile-only horizontal "Shop By <Label>" pill strip.
+  Renders the first available visual filter group (Style / Shape / Category)
+  from collection.metafields.custom.visual_filter_label_1..4 +
+  collection.metafields.custom.filter_visual_options.
+  Hidden on >= 768px so desktop is unchanged.
+{%- endcomment -%}
+
+{%- liquid
+  assign mcp_label = ''
+  assign _l1 = collection.metafields.custom.visual_filter_label_1 | strip
+  assign _l2 = collection.metafields.custom.visual_filter_label_2 | strip
+  assign _l3 = collection.metafields.custom.visual_filter_label_3 | strip
+  assign _l4 = collection.metafields.custom.visual_filter_label_4 | strip
+
+  if _l1 != blank
+    assign _lc = _l1 | downcase
+    unless _lc contains 'metal' or _lc contains 'price'
+      assign mcp_label = _l1
+    endunless
+  endif
+  if mcp_label == '' and _l2 != blank
+    assign _lc = _l2 | downcase
+    unless _lc contains 'metal' or _lc contains 'price'
+      assign mcp_label = _l2
+    endunless
+  endif
+  if mcp_label == '' and _l3 != blank
+    assign _lc = _l3 | downcase
+    unless _lc contains 'metal' or _lc contains 'price'
+      assign mcp_label = _l3
+    endunless
+  endif
+  if mcp_label == '' and _l4 != blank
+    assign _lc = _l4 | downcase
+    unless _lc contains 'metal' or _lc contains 'price'
+      assign mcp_label = _l4
+    endunless
+  endif
+
+  assign mcp_visual_options = collection.metafields.custom.filter_visual_options.value
+  assign mcp_has_options = false
+  if mcp_label != blank and mcp_visual_options != blank
+    for vo in mcp_visual_options
+      assign _fl = vo.fields["filter_label"].value | strip
+      if _fl == mcp_label
+        assign mcp_has_options = true
+        break
+      endif
+    endfor
+  endif
+
+  assign mcp_found_filter = nil
+  if mcp_has_options
+    for f in collection.filters
+      if f.label == mcp_label
+        assign mcp_found_filter = f
+        break
+      endif
+    endfor
+  endif
+-%}
+
+{%- if mcp_has_options -%}
+<style>
+  .mcp-strip { padding: 0.75rem 1rem 1rem; }
+  .mcp-strip-heading { font-size: 0.95rem; font-weight: 600; margin: 0 0 0.5rem; color: rgba(var(--colors-heading), 1); }
+  .mcp-strip-scroll { display: flex; gap: 0.75rem; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 0.25rem; }
+  .mcp-strip-scroll::-webkit-scrollbar { display: none; }
+  .mcp-tile { flex: 0 0 auto; width: 72px; text-align: center; cursor: pointer; }
+  .mcp-tile-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+  .mcp-tile-img-wrap { display: flex; align-items: center; justify-content: center; width: 72px; height: 72px; background: #fff; border: 1px solid #d8d8d8; transition: border-color 0.15s ease; }
+  .mcp-tile-img-wrap svg, .mcp-tile-img-wrap img { max-width: 60%; max-height: 60%; }
+  .mcp-tile-name { display: block; margin-top: 0.35rem; font-size: 0.75rem; line-height: 1.1; color: #444; }
+  .mcp-tile.is-active .mcp-tile-img-wrap { border-color: #111; border-width: 2px; }
+  .mcp-tile.is-active .mcp-tile-name { color: rgba(var(--colors-heading), 1); font-weight: 600; }
+  .mcp-tile.is-disabled { opacity: 0.45; pointer-events: none; }
+</style>
+
+<div class="md:hidden mcp-strip">
+  <p class="mcp-strip-heading">Shop By {{ mcp_label | escape }}</p>
+  <div class="mcp-strip-scroll" role="list">
+    {%- for vo in mcp_visual_options -%}
+      {%- assign _vo_fl = vo.fields["filter_label"].value | strip -%}
+      {%- if _vo_fl == mcp_label -%}
+        {%- liquid
+          assign vo_value_label = vo.fields["value_label"].value | strip
+          assign vo_display_raw = vo.fields["display_label"].value | strip
+          assign vo_image       = vo.fields["image"].value
+          if vo_display_raw != blank
+            assign vo_label_text = vo_display_raw
+          else
+            assign vo_label_text = vo_value_label
+          endif
+
+          assign vo_matched_fv = nil
+          if mcp_found_filter != nil and mcp_found_filter.type != 'price_range'
+            for fv in mcp_found_filter.values
+              if fv.label == vo_value_label
+                assign vo_matched_fv = fv
+                break
+              endif
+            endfor
+          endif
+
+          assign vo_functional = false
+          assign vo_is_active  = false
+          assign vo_is_zero    = false
+          if vo_matched_fv != nil
+            assign vo_functional = true
+            if vo_matched_fv.active
+              assign vo_is_active = true
+            endif
+            if vo_matched_fv.count == 0 and vo_matched_fv.active == false
+              assign vo_is_zero    = true
+              assign vo_functional = false
+            endif
+          endif
+
+          assign vo_input_id = 'mcp-' | append: vo_value_label | handle
+          assign mcp_label_lc = mcp_label | downcase
+        -%}
+
+        {%- if vo_functional -%}
+          <label for="{{ vo_input_id }}" role="listitem" class="mcp-tile{% if vo_is_active %} is-active{% endif %}">
+            <input type="checkbox" id="{{ vo_input_id }}" class="mcp-tile-input" name="{{ vo_matched_fv.param_name }}" value="{{ vo_matched_fv.value }}" form="FacetFiltersForm" {% if vo_is_active %}checked{% endif %} @change="onSubmit(0)">
+            <span class="mcp-tile-img-wrap">
+              {%- if mcp_label_lc contains 'shape' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: vo_value_label, svg_snippet: 'cfb-shape-svg' -%}
+              {%- elsif mcp_label_lc contains 'style' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'style', value_name: vo_value_label, svg_snippet: 'cfb-style-svg' -%}
+              {%- elsif mcp_label_lc contains 'category' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'category', value_name: vo_value_label, svg_snippet: 'cfb-category-svg' -%}
+              {%- elsif vo_image != blank -%}{{ vo_image | image_url: width: 120 | image_tag: alt: vo_label_text, loading: 'lazy' }}
+              {%- endif -%}
+            </span>
+            <span class="mcp-tile-name">{{ vo_label_text | escape }}</span>
+          </label>
+        {%- else -%}
+          <span role="listitem" class="mcp-tile{% if vo_is_zero %} is-disabled{% endif %}" aria-hidden="true">
+            <span class="mcp-tile-img-wrap">
+              {%- if mcp_label_lc contains 'shape' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: vo_value_label, svg_snippet: 'cfb-shape-svg' -%}
+              {%- elsif mcp_label_lc contains 'style' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'style', value_name: vo_value_label, svg_snippet: 'cfb-style-svg' -%}
+              {%- elsif mcp_label_lc contains 'category' -%}{%- render 'cfb-icon-resolve', section: section, filter_group: 'category', value_name: vo_value_label, svg_snippet: 'cfb-category-svg' -%}
+              {%- elsif vo_image != blank -%}{{ vo_image | image_url: width: 120 | image_tag: alt: '', loading: 'lazy' }}
+              {%- endif -%}
+            </span>
+            <span class="mcp-tile-name">{{ vo_label_text | escape }}</span>
+          </span>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+{%- endif -%}

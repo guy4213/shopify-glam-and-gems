@@ -1,0 +1,333 @@
+{% comment %}
+  Renders ONE filter row in the mobile collection drawer.
+
+  Accepts:
+  - filter: {Object} A Shopify filter object from collection.filters
+  - index:  {Number} Index of this filter among siblings (for unique ids)
+
+  Usage:
+  {% render 'input-filter-mobile', filter: filter, index: 0 %}
+
+  Contract:
+  - Every input emits form="FacetFiltersForm" so it submits with the parent
+    form that lives at the top of facets.liquid (#FacetFiltersForm).
+  - Every input emits @change="onSubmit(0)" so the existing Alpine handler
+    (xFiltersAndSortby) re-runs the fetch on change.
+  - Input name/value attributes exactly mirror snippets/input-filter.liquid
+    (value.param_name / value.value, filter.min_value.param_name, etc.) so
+    Shopify's filter URL params are unchanged.
+{% endcomment %}
+
+{%- liquid
+  assign label = filter.label | default: ''
+  assign label_lc = label | downcase
+  assign uid = 'fm-' | append: index | append: '-' | append: label | handle
+
+  assign is_price   = false
+  assign is_boolean = false
+  assign is_metal   = false
+  assign is_visual  = false
+
+  if filter.type == 'price_range'
+    assign is_price = true
+  elsif filter.type == 'boolean' or label_lc contains 'ready'
+    assign is_boolean = true
+  endif
+
+  unless is_price or is_boolean
+    if filter.presentation == 'swatch' or filter.presentation == 'color' or label_lc contains 'metal'
+      assign is_metal = true
+    endif
+  endunless
+
+  unless is_price or is_boolean or is_metal
+    assign vfl_1 = collection.metafields.custom.visual_filter_label_1 | strip
+    assign vfl_2 = collection.metafields.custom.visual_filter_label_2 | strip
+    assign vfl_3 = collection.metafields.custom.visual_filter_label_3 | strip
+    assign vfl_4 = collection.metafields.custom.visual_filter_label_4 | strip
+    assign vfl_list = '' | split: ''
+    if vfl_1 != blank
+      assign _lc = vfl_1 | downcase
+      unless _lc contains 'metal' or _lc contains 'price'
+        assign vfl_list = vfl_list | push: vfl_1
+      endunless
+    endif
+    if vfl_2 != blank
+      assign _lc = vfl_2 | downcase
+      unless _lc contains 'metal' or _lc contains 'price'
+        assign vfl_list = vfl_list | push: vfl_2
+      endunless
+    endif
+    if vfl_3 != blank
+      assign _lc = vfl_3 | downcase
+      unless _lc contains 'metal' or _lc contains 'price'
+        assign vfl_list = vfl_list | push: vfl_3
+      endunless
+    endif
+    if vfl_4 != blank
+      assign _lc = vfl_4 | downcase
+      unless _lc contains 'metal' or _lc contains 'price'
+        assign vfl_list = vfl_list | push: vfl_4
+      endunless
+    endif
+    if vfl_list contains label
+      assign is_visual = true
+    endif
+  endunless
+
+  assign visual_options = collection.metafields.custom.filter_visual_options.value
+-%}
+
+<div class="ifm-row" data-filter-index="{{ index }}" data-filter-label="{{ label | escape }}">
+
+  {%- if is_price -%}
+    <p class="ifm-heading">{{ label | escape | default: 'Price Range' }}</p>
+    <div class="ifm-price">
+      <div class="ifm-price-track" aria-hidden="true"></div>
+      <div class="ifm-price-inputs">
+        <label class="ifm-price-field">
+          <span class="sr-only">From</span>
+          <input
+            type="number"
+            inputmode="numeric"
+            min="0"
+            step="1"
+            form="FacetFiltersForm"
+            name="{{ filter.min_value.param_name }}"
+            {%- if filter.min_value.value -%} value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"{%- endif %}
+            placeholder="$0"
+            aria-label="Minimum price"
+            @change="onSubmit(0)"
+          >
+        </label>
+        <label class="ifm-price-field">
+          <span class="sr-only">To</span>
+          <input
+            type="number"
+            inputmode="numeric"
+            min="0"
+            step="1"
+            form="FacetFiltersForm"
+            name="{{ filter.max_value.param_name }}"
+            {%- if filter.max_value.value -%} value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"{%- endif %}
+            placeholder="${{ filter.range_max | money_without_currency | replace: ',', '' }}"
+            aria-label="Maximum price"
+            @change="onSubmit(0)"
+          >
+        </label>
+      </div>
+    </div>
+
+  {%- elsif is_boolean -%}
+    {%- assign bool_value = filter.values | first -%}
+    {%- if bool_value != nil -%}
+      <label for="{{ uid }}-bool" class="ifm-bool-row">
+        <input
+          type="checkbox"
+          id="{{ uid }}-bool"
+          class="ifm-bool-checkbox"
+          form="FacetFiltersForm"
+          name="{{ bool_value.param_name }}"
+          value="{{ bool_value.value }}"
+          {% if bool_value.active %}checked{% endif %}
+          @change="onSubmit(0)"
+        >
+        <span class="ifm-bool-label">{{ label | upcase | escape }}</span>
+      </label>
+    {%- endif -%}
+
+  {%- elsif is_visual -%}
+    <p class="ifm-heading">Shop By {{ label | escape }}</p>
+    <div class="ifm-scroll-row">
+      {%- for value in filter.values -%}
+        {%- liquid
+          assign vo_image = nil
+          assign vo_color = ''
+          if visual_options != blank
+            for vo in visual_options
+              assign _fl = vo.fields["filter_label"].value | strip
+              assign _vl = vo.fields["value_label"].value | strip
+              if _fl == label and _vl == value.label
+                assign vo_image = vo.fields["image"].value
+                assign vo_color = vo.fields["color"].value | strip
+                break
+              endif
+            endfor
+          endif
+          assign tile_id = uid | append: '-' | append: forloop.index
+          assign tile_disabled = false
+          if value.count == 0 and value.active == false
+            assign tile_disabled = true
+          endif
+        -%}
+        <label
+          for="{{ tile_id }}"
+          class="ifm-tile{% if value.active %} is-active{% endif %}{% if tile_disabled %} is-disabled{% endif %}"
+        >
+          <input
+            type="checkbox"
+            id="{{ tile_id }}"
+            class="ifm-visually-hidden"
+            form="FacetFiltersForm"
+            name="{{ value.param_name }}"
+            value="{{ value.value }}"
+            {% if value.active %}checked{% endif %}
+            {% if tile_disabled %}disabled{% endif %}
+            @change="onSubmit(0)"
+          >
+          <span class="ifm-tile-box">
+            {%- if vo_image != blank -%}
+              {{ vo_image | image_url: width: 120 | image_tag: class: 'ifm-tile-img', alt: value.label, loading: 'lazy' }}
+            {%- elsif vo_color != blank -%}
+              <span class="ifm-tile-swatch" style="background-color:{{ vo_color }}"></span>
+            {%- elsif value.image != blank -%}
+              {{ value.image | image_url: width: 120 | image_tag: class: 'ifm-tile-img', alt: value.label, loading: 'lazy' }}
+            {%- else -%}
+              <span class="ifm-tile-initial">{{ value.label | slice: 0, 1 | upcase }}</span>
+            {%- endif -%}
+          </span>
+          <span class="ifm-tile-name">{{ value.label | escape }}</span>
+        </label>
+      {%- endfor -%}
+    </div>
+
+  {%- elsif is_metal -%}
+    <p class="ifm-heading">Shop By Metal</p>
+    <div class="ifm-metal-row">
+      {%- for value in filter.values -%}
+        {%- liquid
+          assign vo_color = ''
+          assign vo_image = nil
+          if visual_options != blank
+            for vo in visual_options
+              assign _fl = vo.fields["filter_label"].value | strip
+              assign _vl = vo.fields["value_label"].value | strip
+              if _fl == label and _vl == value.label
+                assign vo_color = vo.fields["color"].value | strip
+                assign vo_image = vo.fields["image"].value
+                break
+              endif
+            endfor
+          endif
+          assign swatch_bg = ''
+          if vo_color != blank
+            assign swatch_bg = vo_color
+          elsif value.swatch.color != blank
+            assign swatch_bg = value.swatch.color
+          else
+            assign swatch_bg = value.label | split: ' ' | last | handle
+          endif
+          assign mid = uid | append: '-m-' | append: forloop.index
+          assign m_disabled = false
+          if value.count == 0 and value.active == false
+            assign m_disabled = true
+          endif
+        -%}
+        <label for="{{ mid }}" class="ifm-metal-tile{% if value.active %} is-active{% endif %}{% if m_disabled %} is-disabled{% endif %}">
+          <input
+            type="checkbox"
+            id="{{ mid }}"
+            class="ifm-visually-hidden"
+            form="FacetFiltersForm"
+            name="{{ value.param_name }}"
+            value="{{ value.value }}"
+            {% if value.active %}checked{% endif %}
+            {% if m_disabled %}disabled{% endif %}
+            @change="onSubmit(0)"
+          >
+          <span class="ifm-metal-swatch" {% if vo_image != blank %}style="background-image:url({{ vo_image | image_url: width: 120 }});background-size:cover;background-position:center"{% else %}style="background-color:{{ swatch_bg }}"{% endif %}></span>
+          <span class="ifm-metal-name">{{ value.label | escape }}</span>
+        </label>
+      {%- endfor -%}
+    </div>
+
+  {%- else -%}
+    <p class="ifm-heading">{{ label | escape }}</p>
+    <ul class="ifm-list" role="list">
+      {%- for value in filter.values -%}
+        {%- assign did = uid | append: '-d-' | append: forloop.index -%}
+        {%- assign d_disabled = false -%}
+        {%- if value.count == 0 and value.active == false -%}{%- assign d_disabled = true -%}{%- endif -%}
+        <li class="ifm-list-item">
+          <label for="{{ did }}" class="ifm-list-row{% if d_disabled %} is-disabled{% endif %}">
+            <input
+              type="checkbox"
+              id="{{ did }}"
+              class="ifm-list-checkbox"
+              form="FacetFiltersForm"
+              name="{{ value.param_name }}"
+              value="{{ value.value }}"
+              {% if value.active %}checked{% endif %}
+              {% if d_disabled %}disabled{% endif %}
+              @change="onSubmit(0)"
+            >
+            <span class="ifm-list-label">{{ value.label | escape }}</span>
+            {%- if value.count -%}<span class="ifm-list-count">({{ value.count }})</span>{%- endif -%}
+          </label>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+
+</div>
+
+<style>
+  .ifm-row { padding: 1.25rem 1.25rem; border-bottom: 1px solid #ececec; }
+  .ifm-row:last-child { border-bottom: none; }
+  .ifm-row .sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
+  .ifm-row .ifm-visually-hidden { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
+
+  .ifm-heading { font-size: 0.95rem; font-weight: 600; color: #111; margin: 0 0 0.85rem; letter-spacing: 0.01em; }
+
+  .ifm-scroll-row {
+    display: flex; flex-wrap: nowrap; gap: 0.85rem;
+    overflow-x: auto; overflow-y: hidden;
+    margin: 0 -1.25rem; padding: 0.25rem 1.25rem 0.6rem;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ifm-scroll-row::-webkit-scrollbar { display: none; }
+  .ifm-tile { display: inline-flex; flex-direction: column; align-items: center; gap: 0.45rem; flex: 0 0 auto; min-width: 70px; cursor: pointer; scroll-snap-align: start; }
+  .ifm-tile-box { width: 70px; height: 70px; min-width: 70px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #d8d8d8; border-radius: 8px; overflow: hidden; transition: border-color .15s ease, box-shadow .15s ease; }
+  .ifm-tile-img { width: 78%; height: 78%; object-fit: contain; display: block; }
+  .ifm-tile-initial { font-size: 1.2rem; font-weight: 600; color: #555; }
+  .ifm-tile-swatch { display: block; width: 70%; height: 70%; border-radius: 50%; }
+  .ifm-tile-name { font-size: 0.72rem; color: #555; text-align: center; max-width: 80px; line-height: 1.2; }
+  .ifm-tile.is-active .ifm-tile-box { border-color: #111; border-width: 2px; }
+  .ifm-tile.is-active .ifm-tile-name { color: #111; font-weight: 700; }
+  .ifm-tile.is-disabled { opacity: 0.35; pointer-events: none; }
+
+  .ifm-price { display: flex; flex-direction: column; gap: 0.85rem; }
+  .ifm-price-track { height: 2px; background: #111; opacity: 0.85; border-radius: 2px; margin: 0.25rem 0.25rem 0.15rem; position: relative; }
+  .ifm-price-track::before, .ifm-price-track::after { content: ''; position: absolute; top: 50%; width: 10px; height: 10px; border-radius: 50%; background: #111; transform: translateY(-50%); }
+  .ifm-price-track::before { left: -2px; }
+  .ifm-price-track::after  { right: -2px; }
+  .ifm-price-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  .ifm-price-field { display: block; }
+  .ifm-price-field input { width: 100%; min-height: 44px; padding: 0.55rem 0.8rem; border: 1px solid #d0d0d0; border-radius: 4px; background: #fff; color: #111; font-size: 0.95rem; -webkit-appearance: none; -moz-appearance: textfield; }
+  .ifm-price-field input:focus { outline: none; border-color: #111; box-shadow: 0 0 0 2px rgba(0,0,0,0.08); }
+  .ifm-price-field input::-webkit-outer-spin-button, .ifm-price-field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .ifm-metal-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem 0.9rem; }
+  .ifm-metal-tile { display: inline-flex; flex-direction: column; align-items: center; gap: 0.4rem; cursor: pointer; min-height: 44px; }
+  .ifm-metal-swatch { display: block; width: 60px; height: 60px; border-radius: 6px; border: 1px solid #c8c8c8; transition: box-shadow .15s ease, border-color .15s ease; }
+  .ifm-metal-name { font-size: 0.72rem; color: #555; text-align: center; line-height: 1.2; }
+  .ifm-metal-tile.is-active .ifm-metal-swatch { border-color: #111; box-shadow: 0 0 0 2px #111; }
+  .ifm-metal-tile.is-active .ifm-metal-name { color: #111; font-weight: 700; }
+  .ifm-metal-tile.is-disabled { opacity: 0.35; pointer-events: none; }
+
+  .ifm-bool-row { display: flex; align-items: center; gap: 0.85rem; padding: 0.55rem 0; min-height: 44px; cursor: pointer; }
+  .ifm-bool-checkbox { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; min-width: 22px; border: 1.5px solid #111; border-radius: 3px; background: #fff; cursor: pointer; position: relative; margin: 0; flex-shrink: 0; }
+  .ifm-bool-checkbox:checked { background: #111; }
+  .ifm-bool-checkbox:checked::after { content: ''; position: absolute; left: 6px; top: 2px; width: 6px; height: 11px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .ifm-bool-label { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.05em; color: #111; }
+
+  .ifm-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+  .ifm-list-row { display: flex; align-items: center; gap: 0.7rem; padding: 0.55rem 0; min-height: 44px; cursor: pointer; }
+  .ifm-list-checkbox { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; min-width: 20px; border: 1.5px solid #888; border-radius: 3px; background: #fff; cursor: pointer; position: relative; margin: 0; flex-shrink: 0; }
+  .ifm-list-checkbox:checked { background: #111; border-color: #111; }
+  .ifm-list-checkbox:checked::after { content: ''; position: absolute; left: 5px; top: 1px; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .ifm-list-label { font-size: 0.9rem; color: #222; flex: 1; }
+  .ifm-list-count { font-size: 0.8rem; color: #888; }
+  .ifm-list-row.is-disabled { opacity: 0.4; pointer-events: none; }
+</style>

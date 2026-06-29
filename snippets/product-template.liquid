@@ -21,6 +21,277 @@
 <link rel="preload" href="{{ 'model-css.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="{{ 'model-css.css' | asset_url }}"></noscript>
 
+{%- if is_product_page -%}
+{%- assign gg_variant_bg = section.settings.gg_variant_bg_color | default: '#fffef3' -%}
+{%- assign gg_media_bg = section.settings.gg_media_bg_color | default: '#fffef3' -%}
+<style data-gg-pp-colors>
+  /* Desktop + mobile: variant pill background */
+  .x-variant-picker .gg-capsule,
+  .x-variant-picker .gg-capsule-select {
+    background: {{ gg_variant_bg }} !important;
+  }
+  /* Desktop + mobile: product media area background */
+  .product-media-container,
+  .product-media-container .splide,
+  .product-media-container .splide__list,
+  .product-media-container .splide__slide,
+  .product-media-container .splide__slide > * {
+    background-color: {{ gg_media_bg }};
+  }
+  /* Desktop: video media spans both columns (2-image width) */
+  @media (min-width: 768px) {
+    .product-media-item.gg-media-full {
+      width: 100% !important;
+    }
+  }
+</style>
+<style data-gg-mobile-pp>
+  @media (max-width: 749px) {
+    /* Cream background for info column on mobile */
+    #x-product-template-{{ product.id }}-{{ section.id }} {
+      background: #fffef3 !important;
+    }
+    #x-product-template-{{ product.id }}-{{ section.id }} .product-info,
+    #x-product-template-{{ product.id }}-{{ section.id }} > .product-page-info,
+    #x-product-template-{{ product.id }}-{{ section.id }} [class*="x-product-info"] {
+      background: #fffef3 !important;
+    }
+    /* Photography caption styling */
+    .gg-photo-caption {
+      display: block;
+      background: #fffef3;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      padding: 8px 12px;
+      margin: 8px 14px 12px;
+      font-size: 11px;
+      font-style: italic;
+      color: #555;
+      text-align: center;
+      line-height: 1.4;
+    }
+    /* Heart icon overlay on media */
+    .product-media-container {
+      position: relative;
+    }
+    /* Mobile thumbnail strip below hero — 3 thumbs visible with horizontal scroll */
+    [id^="x-product-thumbnail-"] {
+      display: block !important;
+      width: 100% !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      -webkit-overflow-scrolling: touch;
+      padding: 10px 14px 4px !important;
+      margin-top: 6px !important;
+      scroll-snap-type: x mandatory;
+    }
+    [id^="x-product-thumbnail-"]::-webkit-scrollbar {
+      display: none;
+    }
+    [id^="x-product-thumbnail-"] > .flex {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      gap: 10px !important;
+      width: max-content !important;
+      max-width: none !important;
+      height: auto !important;
+    }
+    [id^="x-product-thumbnail-"] .x-thumbnail,
+    [id^="x-product-thumbnail-"] .media-thumbnail {
+      flex: 0 0 calc((100vw - 28px - 20px) / 3) !important;
+      min-width: calc((100vw - 28px - 20px) / 3) !important;
+      max-width: calc((100vw - 28px - 20px) / 3) !important;
+      aspect-ratio: 1 / 1 !important;
+      scroll-snap-align: start;
+      opacity: 1 !important;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .gg-wishlist-heart {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 5;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid #e5e5e5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .gg-wishlist-heart svg {
+      width: 18px;
+      height: 18px;
+      color: #111;
+    }
+    /* Variant picker: full-width pills on mobile (no text clipping) */
+    .x-variant-picker {
+      padding: 0 14px;
+    }
+    .x-variant-picker .gg-capsule {
+      width: 100%;
+    }
+    .x-variant-picker .gg-capsule-label {
+      padding: 0 12px !important;
+      font-size: 11px !important;
+    }
+    .x-variant-picker .gg-capsule-select {
+      padding: 12px 32px 12px 12px !important;
+      font-size: 13px !important;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    /* Hide quantity stepper on mobile */
+    .x-block-buy-buttons [x-data*="xQuantitySelector"] {
+      display: none !important;
+    }
+    /* Hide pre-order disclaimer container completely */
+    .x-pre-order-button {
+      display: none !important;
+    }
+    /* Hide inline ATC + inline consultation CTA on mobile — sticky bar replaces them */
+    .x-block-buy-buttons {
+      display: none !important;
+    }
+    .gg-book-consultation {
+      display: none !important;
+    }
+    /* Force solid black ATC button (only matters off-mobile) */
+    .x-block-buy-buttons .add_to_cart_button {
+      background: #111 !important;
+      color: #fff !important;
+      border-color: #111 !important;
+      border-radius: 0 !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.06em !important;
+      text-transform: uppercase !important;
+    }
+    /* (unused on mobile, kept for desktop fallback) */
+    .gg-book-consultation-desktop-noop {
+      display: block;
+      width: calc(100% - 28px);
+      margin: 0 14px 16px;
+      padding: 14px 0;
+      background: transparent;
+      color: #111;
+      border: 1px solid #111;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 0;
+      cursor: pointer;
+    }
+    /* Accordion stack styling */
+    .x-block-collapsible-tabs,
+    [class*="x-block-collapsible_tab"] {
+      margin: 0 14px 8px !important;
+      border: 1px solid #e5e5e5 !important;
+      border-radius: 6px !important;
+      overflow: hidden;
+      background: #fff;
+    }
+    /* Gift block: right-aligned earring graphic */
+    .x-block-gift-wrapping,
+    [class*="x-block-gift"] {
+      position: relative;
+      margin: 8px 14px;
+      padding: 12px 80px 12px 14px !important;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      min-height: 64px;
+    }
+    .x-block-gift-wrapping::after,
+    [class*="x-block-gift"]::after {
+      content: "";
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 56px;
+      height: 56px;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23999' stroke-width='1.2'><circle cx='22' cy='14' r='3'/><path d='M22 17 L22 28'/><circle cx='22' cy='38' r='10'/><circle cx='42' cy='14' r='3'/><path d='M42 17 L42 28'/><circle cx='42' cy='38' r='10'/></svg>");
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      pointer-events: none;
+    }
+    /* Engraving inline row spacing */
+    [class*="x-block-html"] {
+      margin: 0 14px;
+    }
+    /* Hide breadcrumb on mobile */
+    .x-block-breadcrumb,
+    .breadcrumbs,
+    [id^="breadcrumbs--"],
+    [class*="breadcrumb"][role="navigation"] {
+      display: none !important;
+    }
+    /* Sticky bottom ATC bar */
+    .gg-sticky-atc-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 60;
+      background: #fffef3;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom)) 12px;
+      border-top: 1px solid #e5e5e5;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transform: translateY(0);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .gg-sticky-atc-bar.is-hidden {
+      transform: translateY(100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .gg-sticky-atc-btn {
+      display: block;
+      width: 100%;
+      padding: 13px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid #111;
+      border-radius: 0;
+      box-sizing: border-box;
+      text-decoration: none;
+      font-family: inherit;
+    }
+    .gg-sticky-atc-btn--primary {
+      background: #111;
+      color: #fff;
+    }
+    .gg-sticky-atc-btn--outline {
+      background: transparent;
+      color: #111;
+    }
+    /* Push page content above sticky bar */
+    body.template-product,
+    body[class*="template-product"] {
+      padding-bottom: 140px !important;
+    }
+  }
+</style>
+{%- endif -%}
+
 {%-liquid
   assign unavailable_text = 'products.product.unavailable' | t 
   assign product_form_id = 'product-form-' | append: section.id
@@ -241,6 +512,11 @@
           {% endif %}
           {% assign show_thumbnail_mobile = false %}
         {% endif %}
+        {%- if is_product_page -%}
+          <button type="button" class="gg-wishlist-heart md:hidden" aria-label="Add to wishlist" onclick="alert('Wishlist coming soon!')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        {%- endif -%}
         {%- render 'media-gallery',
           product: product,
           enable_sticky_image: enable_sticky_image,
@@ -261,6 +537,9 @@
           is_rtl: is_rtl
         -%}
       </div>
+      {%- if is_product_page -%}
+        <p class="gg-photo-caption md:hidden">Every piece is photographed in real life to reflect true proportions, craftsmanship, and design details</p>
+      {%- endif -%}
       {% liquid
         assign rounded_class = ""
         if settings.edges_type == 'rounded_corners'
@@ -979,12 +1258,7 @@
                                 {%- elsif product.selected_or_first_available_variant.available == false or quantity_rule_soldout -%}
                                   {{ 'products.product.sold_out' | t }}{{ add_to_cart_price }}
                                 {%- else -%}
-                                  {%- if can_show_preorder -%}
-                                    {%- assign default_preorder_text = 'products.product.pre_order' | t -%}
-                                    {{ block.settings.preorder_button_label | default: default_preorder_text }}{{ add_to_cart_price }}
-                                  {%- else -%}
-                                    {{ 'products.product.add_to_cart' | t }}{{ add_to_cart_price }}
-                                  {%- endif -%}
+                                  {{ 'products.product.add_to_cart' | t }}{{ add_to_cart_price }}
                                 {%- endif -%}
                               </span>
                               {% if settings.buttons_animation == 'sliced' and block.settings.show_button_style == 'primary' %}
@@ -1107,21 +1381,10 @@
                           </div>
                           <span class="ml-2 pt-0.5" x-ref="error_message"></span>
                         </div>
-                        <div class="x-pre-order-button pre-order-{{ section.id }}"{% if can_show_preorder %} id="pre-order-{{ section.id }}"{% endif %}>
-                          {%- if can_show_preorder -%}
-                            {%- render 'pre-order',
-                              message: block.settings.preorder_message,
-                              container_id: block.id,
-                              preorder_show_dynamic_button: block.settings.preorder_show_dynamic_button,
-                              show_background: block.settings.show_background,
-                              box_type: block.settings.box_type,
-                              background_color_light: block.settings.background_color_light,
-                              message_color_light: block.settings.message_color_light,
-                              background_color_dark: block.settings.background_color_dark,
-                              message_color_dark: block.settings.message_color_dark
-                            -%}
-                          {%- endif -%}
-                        </div>
+                        {%- comment -%} Pre-order message render suppressed per design decision (always render Add to Cart). {%- endcomment -%}
+                        {%- if is_product_page -%}
+                          <a href="#" class="gg-book-consultation md:hidden" onclick="event.preventDefault();alert('Consultation booking coming soon!');">Book a Private Consultation</a>
+                        {%- endif -%}
                         {%- if block.settings.pickup_availability -%}
                           <div id="pickup-pre-order-{{ section.id }}" class="x-pickup-pre-order mt-6 {% if can_show_preorder and block.settings.hide_when_pre_order %} hidden disable-pickup{% endif %}">
                             <div id="pickup-{{ section.id }}" class="pick-up-{{ section.id }}{% if show_content_center %} text-center{% endif %}" x-intersect.once.margin.300px="$store.xPickupAvailable.updatePickUp('{{ section.id }}', '{{ product.selected_or_first_available_variant.id }}')"></div>
@@ -1177,7 +1440,8 @@
                           media_with_option: media_with_option,
                           option_with_value: option_with_value,
                           swatch_size: block.settings.swatch_size,
-                          show_content_center: show_content_center
+                          show_content_center: show_content_center,
+                          is_product_page: is_product_page
                         %}
                       </div>
                     </div>
@@ -3075,6 +3339,47 @@
     {% endif %}
   </div>
 </div>
+{%- if is_product_page -%}
+  <div class="gg-sticky-atc-bar md:hidden" id="gg-sticky-atc-{{ section.id }}" role="region" aria-label="Add to cart and contact actions">
+    <button type="button" class="gg-sticky-atc-btn gg-sticky-atc-btn--primary" onclick="var f=document.getElementById('product-form-{{ section.id }}');var b=f&&f.querySelector('.add_to_cart_button');if(b){b.click();}">
+      Add to Cart
+    </button>
+    <a href="#" class="gg-sticky-atc-btn gg-sticky-atc-btn--outline" onclick="event.preventDefault();alert('Consultation booking coming soon!');">
+      Book a Private Consultation
+    </a>
+  </div>
+  <script>
+    (function () {
+      function init() {
+        var bar = document.getElementById('gg-sticky-atc-{{ section.id }}');
+        if (!bar || !('IntersectionObserver' in window)) return;
+        var footer = document.querySelector('footer.gg-footer')
+          || document.querySelector('footer[role="contentinfo"]')
+          || document.querySelector('footer');
+        if (!footer) {
+          // Footer not in DOM yet — retry shortly
+          setTimeout(init, 300);
+          return;
+        }
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) {
+              bar.classList.add('is-hidden');
+            } else {
+              bar.classList.remove('is-hidden');
+            }
+          });
+        }, { rootMargin: '0px 0px 0px 0px', threshold: 0 });
+        io.observe(footer);
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+{%- endif -%}
 {%- assign first_3d_model = product.media | where: 'media_type', 'model' | first -%}
 {%- if first_3d_model -%}
   <script type="application/json" id="ProductJSON-{{ section.id }}">

@@ -425,11 +425,11 @@
                 endfor
               endif
             %}
-            <div 
+            <div
               id="postion-image-{{ section.id }}-{{ first_media.id }}"
-              class="product-media-item w-[calc(50%-5px)] postion-image-{{ section.id }}{% if product.featured_media.id == first_media.id %} featured-image{% endif %}{% if media_layout == 'stacked' %} relative first:w-full{% endif %}" 
+              class="product-media-item w-[calc(50%-5px)] postion-image-{{ section.id }}{% if product.featured_media.id == first_media.id %} featured-image{% endif %}{% if media_layout == 'stacked' %} relative first:w-full{% endif %}{% if first_media.media_type == 'video' or first_media.media_type == 'external_video' %} gg-media-full{% endif %}"
               data-media-id="{{ section.id }}-{{ first_media.id }}"
-              data-index="{{ media_index }}" 
+              data-index="{{ media_index }}"
               {% if show_media_with_tag_alt %}
                 data-media-option="{{ media_with_option | join: "_" | handle }}"
                 data-media-type="{{ data_media_type }}"
@@ -482,9 +482,9 @@
             {% if media.id != product.selected_or_first_available_variant.featured_media.id or show_first_image_avaiable == false %}
               <div
                 id="postion-image-{{ section.id }}-{{ media.id }}"
-                class="product-media-item w-[calc(50%-5px)] postion-image-{{ section.id }}{% if product.featured_media.id == media.id %} featured-image{% endif %}{% if media_layout == 'stacked' %} relative first:w-full{% endif %}" 
+                class="product-media-item w-[calc(50%-5px)] postion-image-{{ section.id }}{% if product.featured_media.id == media.id %} featured-image{% endif %}{% if media_layout == 'stacked' %} relative first:w-full{% endif %}{% if media.media_type == 'video' or media.media_type == 'external_video' %} gg-media-full{% endif %}"
                 data-media-id="{{ section.id }}-{{ media.id }}"
-                data-index="{{ media_index }}" 
+                data-index="{{ media_index }}"
                 {% if show_media_with_tag_alt %}
                   data-media-option="{{ media_with_option | join: "_" | handle }}"
                   data-media-type="{{ data_media_type }}"

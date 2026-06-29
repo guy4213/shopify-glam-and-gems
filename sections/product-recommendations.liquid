@@ -21,7 +21,71 @@
   }
   @media (min-width: 1024px) {
     #shopify-section-{{ section.id }} .tab-title-container .h4 {
-      font-size: {{ base_size }}rem; 
+      font-size: {{ base_size }}rem;
+    }
+  }
+  @media (max-width: 767px) {
+    #shopify-section-{{ section.id }} .splide__list {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      gap: 10px !important;
+      overflow-x: auto !important;
+      scroll-snap-type: x mandatory !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding-bottom: 6px !important;
+    }
+    #shopify-section-{{ section.id }} .splide__list::-webkit-scrollbar {
+      display: none !important;
+    }
+    #shopify-section-{{ section.id }} .splide__slide,
+    #shopify-section-{{ section.id }} .x-splide-slide {
+      flex: 0 0 66vw !important;
+      max-width: 66vw !important;
+      scroll-snap-align: start !important;
+    }
+    #shopify-section-{{ section.id }} .card-product {
+      position: relative;
+    }
+    #shopify-section-{{ section.id }} .cfb-card-attrs,
+    #shopify-section-{{ section.id }} .highlighted-features,
+    #shopify-section-{{ section.id }} .x-quickview-trigger {
+      display: none !important;
+    }
+    #shopify-section-{{ section.id }} .card-product .title-product,
+    #shopify-section-{{ section.id }} .card-product .product-title {
+      font-size: 13px !important;
+      line-height: 1.3 !important;
+      display: -webkit-box !important;
+      -webkit-line-clamp: 2 !important;
+      -webkit-box-orient: vertical !important;
+      overflow: hidden !important;
+    }
+    #shopify-section-{{ section.id }} .price-compare,
+    #shopify-section-{{ section.id }} s.price-compare {
+      color: #999 !important;
+      text-decoration: line-through !important;
+      font-size: 12px !important;
+      font-weight: 400 !important;
+    }
+    #shopify-section-{{ section.id }} .price-sale {
+      color: #c0392b !important;
+      font-weight: 700 !important;
+    }
+    #shopify-section-{{ section.id }} .card-product:has(s.price-compare)::before,
+    #shopify-section-{{ section.id }} .card-product:has(.price-compare)::before {
+      content: "Sale";
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: #d0021b;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 10px;
+      z-index: 3;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
   }
 {% endstyle %}

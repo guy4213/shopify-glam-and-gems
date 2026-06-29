@@ -1,7 +1,12 @@
 /**
  * Glam & Gems — Carat Size Automation Worker
  * Triggered by Shopify Flow on product create/update when isDiamond = "yes"
- * Adds "Carat Size" option and sets per-carat prices across all variants.
+ *
+ * Behavior:
+ *  - If product already has an option named "Carat Size" OR "Carat Weight":
+ *      add missing carat values to it (productOptionUpdate, MANAGE).
+ *  - Else: create a new "Carat Size" option (productOptionsCreate, CREATE).
+ *  - Either way: set per-carat prices on all variants.
  *
  * Required env vars (set in Cloudflare dashboard):
  *   SHOPIFY_TOKEN   — shpat_... Admin API token
@@ -12,6 +17,7 @@
 const API_VERSION = "2025-01";
 const MAX_RETRIES = 3;
 const BATCH_SIZE = 100;
+const CARAT_OPTION_NAMES = ["Carat Size", "Carat Weight"];
 
 // ─── Structured logger ────────────────────────────────────────────────────────
 
@@ -196,7 +202,7 @@ async function processProduct(productId, env) {
        product(id: $id) {
          id
          title
-         options { name optionValues { name } }
+         options { id name optionValues { id name } }
          metafields(first: 20, namespace: "custom") {
            edges { node { key value } }
          }
@@ -208,34 +214,31 @@ async function processProduct(productId, env) {
 
   if (!product) throw new Error(`Product not found: ${gid}`);
 
-  // Step 2 — Guard: skip if Carat Size option already exists
-  if (product.options.some((o) => o.name === "Carat Size")) {
-    log("log", "guard", "Carat Size already exists — skipping", { product_id: gid });
-    return { skipped: true, reason: "Carat Size option already exists" };
-  }
-
   const warnings = [];
 
-  // Step 3 — Parse metafields into a flat key→value map
+  // Step 2 — Parse metafields into a flat key→value map
   const mf = {};
   for (const { node } of product.metafields.edges) {
     mf[node.key] = node.value;
   }
 
   // Build ordered label array (smallest → largest carat)
+  // Normalize "X.0 Carat" → "X Carat" so labels are whole numbers
+  const normalize = (s) => (s ? String(s).replace(/^(\d+)\.0(\s+Carat)$/i, "$1$2") : s);
+
   const labels = [
-    mf["stone_weight_m_2"],
-    mf["stone_weight_m_1"],
-    mf["total_carat_range"],
-    mf["stone_weight_p_1"],
-    mf["stone_weight_p_2"],
+    normalize(mf["stone_weight_m_2"]),
+    normalize(mf["stone_weight_m_1"]),
+    normalize(mf["total_carat_range"]),
+    normalize(mf["stone_weight_p_1"]),
+    normalize(mf["stone_weight_p_2"]),
   ].filter(Boolean);
 
   if (labels.length === 0) {
     throw new Error("No carat label metafields found — check stone_weight_* fields");
   }
 
-  // Protection 2 — detect duplicate carat labels before building priceMap
+  // Detect duplicate carat labels before building priceMap
   const uniqueLabels = new Set(labels);
   if (uniqueLabels.size !== labels.length) {
     const msg = "Duplicate carat labels detected — prices may be incorrect";
@@ -243,63 +246,105 @@ async function processProduct(productId, env) {
     warnings.push(msg);
   }
 
-  // Map each label to its price
+  // Map each label to its price (use normalized labels as keys)
   const priceMap = {
-    [mf["stone_weight_m_2"]]: mf["minus_2_size_ct"],
-    [mf["stone_weight_m_1"]]: mf["minus_1_size_ct"],
-    [mf["total_carat_range"]]: mf["original_price"],
-    [mf["stone_weight_p_1"]]: mf["plus_1_size_ct"],
-    [mf["stone_weight_p_2"]]: mf["plus_2_size_ct"],
+    [normalize(mf["stone_weight_m_2"])]: mf["minus_2_size_ct"],
+    [normalize(mf["stone_weight_m_1"])]: mf["minus_1_size_ct"],
+    [normalize(mf["total_carat_range"])]: mf["original_price"],
+    [normalize(mf["stone_weight_p_1"])]: mf["plus_1_size_ct"],
+    [normalize(mf["stone_weight_p_2"])]: mf["plus_2_size_ct"],
   };
 
   log("log", "metafields", "Labels and price map parsed", { product_id: gid, labels });
 
-  // Step 4 — Create "Carat Size" option (variantStrategy: CREATE builds all combos)
-  const createData = await gql(
-    `mutation CreateCaratOption($productId: ID!, $options: [OptionCreateInput!]!) {
-       productOptionsCreate(
-         productId: $productId
-         options: $options
-         variantStrategy: CREATE
-       ) {
-         userErrors { field message code }
-       }
-     }`,
-    {
-      productId: gid,
-      options: [
+  // Step 3 — Find existing carat option (either "Carat Size" or "Carat Weight")
+  const existingCaratOpt = product.options.find((o) => CARAT_OPTION_NAMES.includes(o.name));
+
+  let caratOptName;
+
+  if (existingCaratOpt) {
+    // ─── Path A: option already exists — add missing values to it ────────────
+    caratOptName = existingCaratOpt.name;
+    // Compare existing values in normalized form so "6.0 Carat" matches "6 Carat"
+    const existingValuesNorm = existingCaratOpt.optionValues.map((v) => normalize(v.name));
+    const missingValues = labels.filter((l) => !existingValuesNorm.includes(l));
+
+    if (missingValues.length === 0) {
+      log("log", "options", `${caratOptName} already has all values — re-pricing only`, { product_id: gid });
+    } else {
+      const updateData = await gql(
+        `mutation AddCaratValues($productId: ID!, $option: OptionUpdateInput!, $optionValuesToAdd: [OptionValueCreateInput!]!) {
+           productOptionUpdate(
+             productId: $productId
+             option: $option
+             optionValuesToAdd: $optionValuesToAdd
+             variantStrategy: MANAGE
+           ) {
+             userErrors { field message code }
+           }
+         }`,
         {
-          name: "Carat Size",
-          values: labels.map((l) => ({ name: l })),
+          productId: gid,
+          option: { id: existingCaratOpt.id },
+          optionValuesToAdd: missingValues.map((name) => ({ name })),
         },
-      ],
-    },
-    env
-  );
+        env
+      );
 
-  const { userErrors } = createData.productOptionsCreate;
-
-  // Idempotency: if a race condition caused double-fire, skip cleanly instead of throwing
-  if (userErrors.length > 0) {
-    const alreadyExists = userErrors.some(
-      (e) =>
-        e.code === "TAKEN" ||
-        e.code === "DUPLICATE" ||
-        e.message?.toLowerCase().includes("already")
-    );
-    if (alreadyExists) {
-      log("log", "idempotency", "Option already exists (race condition) — skipping", { product_id: gid });
-      return { skipped: true, reason: "Carat Size option already exists (detected via userErrors)" };
+      const { userErrors } = updateData.productOptionUpdate;
+      if (userErrors.length > 0) {
+        throw new Error("productOptionUpdate failed: " + JSON.stringify(userErrors));
+      }
+      log("log", "options", `Added ${missingValues.length} value(s) to ${caratOptName}`, { product_id: gid, missingValues });
     }
-    throw new Error("productOptionsCreate failed: " + JSON.stringify(userErrors));
+  } else {
+    // ─── Path B: no carat option — create a new "Carat Size" ─────────────────
+    if (product.options.length >= 3) {
+      throw new Error(
+        `Cannot create Carat Size — product already has ${product.options.length} options (Shopify limit is 3) and none of them is "${CARAT_OPTION_NAMES.join('" / "')}"`
+      );
+    }
+
+    caratOptName = "Carat Size";
+    const createData = await gql(
+      `mutation CreateCaratOption($productId: ID!, $options: [OptionCreateInput!]!) {
+         productOptionsCreate(
+           productId: $productId
+           options: $options
+           variantStrategy: CREATE
+         ) {
+           userErrors { field message code }
+         }
+       }`,
+      {
+        productId: gid,
+        options: [{ name: caratOptName, values: labels.map((l) => ({ name: l })) }],
+      },
+      env
+    );
+
+    const { userErrors } = createData.productOptionsCreate;
+    if (userErrors.length > 0) {
+      const alreadyExists = userErrors.some(
+        (e) => e.code === "TAKEN" || e.code === "DUPLICATE" || e.message?.toLowerCase().includes("already")
+      );
+      if (alreadyExists) {
+        log("log", "idempotency", "Option already exists (race) — skipping", { product_id: gid });
+        return { skipped: true, reason: "Carat Size option already exists (detected via userErrors)" };
+      }
+      throw new Error("productOptionsCreate failed: " + JSON.stringify(userErrors));
+    }
+    log("log", "options", "Carat Size option created", { product_id: gid, labels });
   }
 
-  log("log", "options", "Carat Size option created", { product_id: gid, labels });
-
-  // Step 5 — Fetch ALL variants via separate paginated query
-  // Protection 1 — retry until Shopify finishes creating variants asynchronously
-  const expectedCount = [...product.options.map((o) => o.optionValues.length), labels.length]
-    .reduce((a, b) => a * b, 1);
+  // Step 4 — Fetch ALL variants via separate paginated query
+  // Retry until Shopify finishes creating variants asynchronously.
+  // Expected count = product of all existing option-value counts × full label set.
+  // If the carat option already existed (Path A), its old value count is replaced
+  // by labels.length (full set after additions).
+  const expectedCount = product.options
+    .map((o) => (CARAT_OPTION_NAMES.includes(o.name) ? labels.length : o.optionValues.length))
+    .reduce((a, b) => a * b, existingCaratOpt ? 1 : labels.length);
 
   let allVariants = [];
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -318,15 +363,16 @@ async function processProduct(productId, env) {
   }
   log("log", "variants", `Fetched ${allVariants.length} variants`, { product_id: gid });
 
-  // Step 6 — Build price updates with robust normalization
+  // Step 5 — Build price updates with robust normalization
   const variantUpdates = [];
   let variantsSkipped = 0;
 
   for (const variant of allVariants) {
-    const caratOpt = variant.selectedOptions.find((o) => o.name === "Carat Size");
+    const caratOpt = variant.selectedOptions.find((o) => o.name === caratOptName);
     if (!caratOpt) continue;
 
-    const rawPrice = priceMap[caratOpt.value];
+    // Normalize variant value so "6.0 Carat" matches "6 Carat" in the priceMap
+    const rawPrice = priceMap[normalize(caratOpt.value)];
     const numericPrice = parseFloat(String(rawPrice ?? "").replace(/[^0-9.]/g, ""));
 
     if (isNaN(numericPrice)) {

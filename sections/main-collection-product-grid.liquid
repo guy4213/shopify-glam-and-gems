@@ -95,6 +95,7 @@
     </script>
   {%- endif -%}
   {%- render 'collection-filter-board', section: section -%}
+  {%- render 'mobile-collection-pill-strip', section: section -%}
   {%- liquid
     assign _cfb_l1 = collection.metafields.custom.visual_filter_label_1 | strip
     assign _cfb_l2 = collection.metafields.custom.visual_filter_label_2 | strip
@@ -116,7 +117,7 @@
       assign filter_used = filter_used | append: 'Metal;Price;'
     endif
   -%}
-  <div class="{% if section.settings.full_width %}full-width{% else %}x-pgw page-width mr-auto ml-auto{% endif %}{% if section.settings.sticky_filtering %} sticky top-[var(--height-header)] duration-300 z-[19] bg-[rgba(var(--colors-background),1)]{% endif %} empty:min-h-[50px]{% if section.settings.enable_filtering == false and section.settings.enable_sorting == false %} invisible h-0{% endif %}{% if section.settings.enable_filtering == false and section.settings.enable_sorting == false and section.settings.enable_advanced_filter == false %} hidden{% endif %}" id="header-filter"></div>
+  <div class="hidden md:block {% if section.settings.full_width %}full-width{% else %}x-pgw page-width mr-auto ml-auto{% endif %}{% if section.settings.sticky_filtering %} sticky top-[var(--height-header)] duration-300 z-[19] bg-[rgba(var(--colors-background),1)]{% endif %} empty:min-h-[50px]{% if section.settings.enable_filtering == false and section.settings.enable_sorting == false %} invisible h-0{% endif %}{% if section.settings.enable_filtering == false and section.settings.enable_sorting == false and section.settings.enable_advanced_filter == false %} hidden{% endif %}" id="header-filter"></div>
   {%- liquid
     assign mf_label_1 = collection.metafields.custom.visual_filter_label_1 | strip
     assign mf_label_2 = collection.metafields.custom.visual_filter_label_2 | strip
@@ -134,6 +135,7 @@
     endif
   -%}
   {% if show_advanced_filter %}
+    <div class="hidden md:block">
     {% liquid
       if use_mf_filter_labels
         assign key_value = mf_label_1 | append: "~" | append: mf_label_2 | append: "~" | append: mf_label_3 | append: "~" | append: mf_label_4 | split: "~"
@@ -152,7 +154,7 @@
           endif
           for filter in collection.filters
             assign sorted_values = filter.values
-            
+
             assign filter_index = forloop.index
             unless filter_label != filter.label or filter_used contains filter.label
               assign filter_advanced_count = filter_advanced_count | plus: 1
@@ -162,7 +164,7 @@
           endfor
         endif
       endfor
-      
+
       assign only_show_advanded_filter = false
       if collection.filters.size == filter_advanced_count
         assign only_show_advanded_filter = true
@@ -171,6 +173,7 @@
         assign only_show_advanded_filter = true
       endif
     %}
+    </div>
   {% endif %}
   <div 
     class="{% if section.settings.full_width %}full-width{% else %}x-pgw page-width mr-auto ml-auto{% endif %}{% if section.settings.filter_type == 'aside' and section.settings.enable_filtering and show_filter %} grid {% if section.settings.default_hide_filtering %} md:grid-cols-2 filter-aside:md:grid-cols-3 filter-aside:lg:grid-cols-4{% else %} md:grid-cols-3{% endif %} lg:grid-cols-4 md:gap-7 md:pt-7{% endif %}"
@@ -221,7 +224,7 @@
         %}
       </div>
       <div
-        class="x-auto-focus {% if section.settings.filter_type == 'above' %}mt-6 md:mt-7{% elsif section.settings.filter_type == 'aside' %}md:col-span-2{% if section.settings.default_hide_filtering %} lg:col-span-4 filter-aside:lg:col-span-3{% else %} lg:col-span-3 filter-aside:md:col-span-3 filter-aside:lg:col-span-4{% endif %}{% endif %}"
+        class="x-auto-focus pb-[80px] md:pb-0 {% if section.settings.filter_type == 'above' %}mt-6 md:mt-7{% elsif section.settings.filter_type == 'aside' %}md:col-span-2{% if section.settings.default_hide_filtering %} lg:col-span-4 filter-aside:lg:col-span-3{% else %} lg:col-span-3 filter-aside:md:col-span-3 filter-aside:lg:col-span-4{% endif %}{% endif %}"
         id="ProductGridContainer"
         x-intersect.once='$store.xCustomerEvent.fire("list_product_viewed", $el, {
           "list": {
@@ -262,6 +265,25 @@
                 <div class="hidden" id="perpage-collection"></div>
               </div>
             {%- else -%}
+              <div class="md:hidden flex justify-end items-center gap-2 px-4 mb-3">
+                <label for="MobileSortBy" class="text-sm">{{ 'products.facets.sort_by_label' | t }}</label>
+                <div class="relative eurus">
+                  {%- assign mobile_sort_by = collection.sort_by | default: collection.default_sort_by -%}
+                  <select
+                    id="MobileSortBy"
+                    name="sort_by"
+                    form="FacetFiltersForm"
+                    aria-label="Sort by"
+                    class="cursor-pointer pt-1 pb-1 pl-2 pr-7 focus:outline-none bg-transparent border border-solid"
+                    @change="onSubmit(0)"
+                  >
+                    {%- for option in collection.sort_options -%}
+                      <option value="{{ option.value | escape }}"{% if option.value == mobile_sort_by %} selected="selected"{% endif %}>{{ option.name | escape }}</option>
+                    {%- endfor -%}
+                  </select>
+                  <span class="w-3 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">{% render 'icon-alls', icon: 'icon-caret' %}</span>
+                </div>
+              </div>
               <div id="items-grid" class="grid grid-cols-{{ section.settings.products_per_row_on_mobile }} md:grid-cols-2 lg:grid-cols-{{ section.settings.products_per_row_on_desktop }} gap-{{ section.id }} md:list-layout:grid-cols-1{% if section.settings.pagination == 'pagination' %} pb-10 border-b border-solid{% endif %}{% if request.design_mode and section.settings.pagination != 'pagination' %} opacity-0{% endif %}" {% if request.design_mode and section.settings.pagination != 'pagination' %} :class="loading ? 'opacity-0' : 'opacity-100'"{% endif %}>
                   {% liquid 
                     assign curent_page = paginate.current_page | minus: 1

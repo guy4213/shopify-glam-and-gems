@@ -136,6 +136,12 @@
           <s class="cap rtl:inline-block price-compare rtl:leading-tight text-[80%]">{% if settings.currency_code_enable %}{{ compare_at_price | money_with_currency }}{% else %}{{ compare_at_price | money }}{% endif %}</s>
         {%- endif -%}
         <span {% if product.price_varies or product.compare_at_price_varies or product.has_only_default_variant %} class="price-sale selection:bg-text-[rgb(var(--colors-price-sale),0.2)] ml-1{% unless align_left %} rtl:mr-1 rtl:ml-0{% endunless %}"{% endif %}>{{ money_price }}</span>
+        {%- if compare_at_price > 0 -%}
+          {%- assign discount_pct = compare_at_price | minus: price | times: 100.0 | divided_by: compare_at_price | round -%}
+          {%- if discount_pct > 0 -%}
+            <span class="gg-discount-chip" style="display:inline-block;background:#d0021b;color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;letter-spacing:0.04em;vertical-align:middle;">-{{ discount_pct }}%</span>
+          {%- endif -%}
+        {%- endif -%}
       {%- endif -%}
     {%- else -%}
       <p class="price">

@@ -5,6 +5,8 @@
   assign subtitle_color = section.settings.subtitle_color
   assign pad_top = section.settings.padding_top
   assign pad_bottom = section.settings.padding_bottom
+  assign outcome_industry = section.settings.outcome_industry_text | default: 'Higher Price'
+  assign outcome_glam = section.settings.outcome_glam_text | default: 'Better Quality · Better Value'
 -%}
 
 <style>
@@ -185,53 +187,120 @@
     max-width: 70px;
   }
 
+  .production-flow__trust {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    max-width: 720px;
+    margin: 8px auto 0;
+    padding: 16px 12px 4px;
+    border-top: 1px solid var(--card-border);
+  }
+
+  .production-flow__trust-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+  }
+
+  .production-flow__trust-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-color);
+  }
+
+  .production-flow__trust-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .production-flow__trust-img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .production-flow__trust-label {
+    font-size: 0.65rem;
+    line-height: 1.2;
+    color: #333;
+    letter-spacing: 0.02em;
+  }
+
   @media (max-width: 768px) {
+    .production-flow__inner {
+      padding: 0 8px;
+    }
+
     .production-flow__row {
-      justify-content: flex-start;
-      scroll-snap-type: x mandatory;
-      gap: 6px;
-      padding-left: 12px;
-      padding-right: 12px;
+      justify-content: center;
+      flex-wrap: nowrap;
+      overflow-x: visible;
+      gap: 2px;
+      padding: 8px 0;
+    }
+
+    .production-flow__stage {
+      gap: 3px;
+      flex: 0 1 auto;
+      min-width: 0;
     }
 
     .production-flow__icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
     }
 
     .production-flow__icon svg {
-      width: 30px;
-      height: 30px;
+      width: 20px;
+      height: 20px;
     }
 
     .production-flow__icon-img {
-      width: 30px;
-      height: 30px;
+      width: 20px;
+      height: 20px;
     }
 
     .production-flow__label {
-      font-size: 0.6rem;
-      max-width: 72px;
+      font-size: 0.45rem;
+      max-width: 44px;
+      letter-spacing: 0.02em;
+      line-height: 1.15;
+    }
+
+    .production-flow__chevron {
+      flex: 0 0 auto;
     }
 
     .production-flow__chevron svg {
-      width: 18px;
-      height: 18px;
+      width: 10px;
+      height: 10px;
     }
 
     .production-flow__you {
-      width: 68px;
-      height: 68px;
+      width: 42px;
+      height: 42px;
+      margin-left: 2px;
+      padding: 2px;
     }
 
     .production-flow__you-label {
-      font-size: 0.62rem;
+      font-size: 0.5rem;
+      letter-spacing: 0.04em;
     }
 
     .production-flow__you-sub {
-      font-size: 0.44rem;
-      max-width: 60px;
+      font-size: 0.35rem;
+      max-width: 38px;
+      margin-top: 1px;
+      letter-spacing: 0.02em;
     }
 
     .production-flow__heading {
@@ -244,6 +313,26 @@
 
     .production-flow__intro {
       font-size: 0.88rem;
+    }
+
+    .production-flow__trust {
+      gap: 6px;
+      padding: 12px 8px 4px;
+    }
+
+    .production-flow__trust-icon {
+      width: 30px;
+      height: 30px;
+    }
+
+    .production-flow__trust-icon svg,
+    .production-flow__trust-img {
+      width: 22px;
+      height: 22px;
+    }
+
+    .production-flow__trust-label {
+      font-size: 0.55rem;
     }
   }
 </style>
@@ -365,9 +454,9 @@
           <span class="production-flow__label">Final Polish</span>
         </div>
 
-        <div class="production-flow__you" aria-label="You — higher price">
+        <div class="production-flow__you" aria-label="You — {{ outcome_industry }}">
           <span class="production-flow__you-label">YOU</span>
-          <span class="production-flow__you-sub">Higher Price</span>
+          <span class="production-flow__you-sub">{{ outcome_industry }}</span>
         </div>
       </div>
     </section>
@@ -484,12 +573,46 @@
           <span class="production-flow__label">Direct To You</span>
         </div>
 
-        <div class="production-flow__you" aria-label="You — better quality, better value">
+        <div class="production-flow__you" aria-label="You — {{ outcome_glam }}">
           <span class="production-flow__you-label">YOU</span>
-          <span class="production-flow__you-sub">Better Quality &middot; Better Value</span>
+          <span class="production-flow__you-sub">{{ outcome_glam }}</span>
         </div>
       </div>
     </section>
+
+    {%- comment -%} ===== Trust icon strip ===== {%- endcomment -%}
+    {%- assign has_trust = false -%}
+    {%- for i in (1..5) -%}
+      {%- assign tlabel_key = 'trust_label_' | append: i -%}
+      {%- assign ticon_key = 'trust_icon_' | append: i -%}
+      {%- if section.settings[tlabel_key] != blank or section.settings[ticon_key] != blank -%}
+        {%- assign has_trust = true -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if has_trust -%}
+      <div class="production-flow__trust" role="list">
+        {%- for i in (1..5) -%}
+          {%- assign tlabel_key = 'trust_label_' | append: i -%}
+          {%- assign ticon_key = 'trust_icon_' | append: i -%}
+          {%- assign tlabel = section.settings[tlabel_key] -%}
+          {%- assign ticon = section.settings[ticon_key] -%}
+          {%- if tlabel != blank or ticon != blank -%}
+            <div class="production-flow__trust-item" role="listitem">
+              <div class="production-flow__trust-icon" aria-hidden="true">
+                {%- if ticon != blank -%}
+                  {{ ticon | image_url: width: 64 | image_tag: alt: tlabel, class: 'production-flow__trust-img', loading: 'lazy' }}
+                {%- else -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>
+                {%- endif -%}
+              </div>
+              {%- if tlabel != blank -%}
+                <span class="production-flow__trust-label">{{ tlabel }}</span>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
 
   </div>
 </div>
@@ -520,7 +643,24 @@
     { "type": "image_picker", "id": "icon_inhouse_casting",        "label": "IN-HOUSE Casting" },
     { "type": "image_picker", "id": "icon_inhouse_stone_setting",  "label": "IN-HOUSE Stone Setting" },
     { "type": "image_picker", "id": "icon_inhouse_polish",         "label": "IN-HOUSE Polish" },
-    { "type": "image_picker", "id": "icon_direct_to_you",          "label": "Direct To You" }
+    { "type": "image_picker", "id": "icon_direct_to_you",          "label": "Direct To You" },
+
+    { "type": "header", "content": "YOU outcome labels" },
+    { "type": "text", "id": "outcome_industry_text", "label": "Industry Standard YOU label", "default": "Higher Price" },
+    { "type": "text", "id": "outcome_glam_text",     "label": "Glam & Gems YOU label",       "default": "Better Quality · Better Value" },
+
+    { "type": "header", "content": "Trust icon strip (under both rows)" },
+    { "type": "paragraph", "content": "Optional 5-icon strip rendered below the two production rows. Fill at least one label or icon to enable." },
+    { "type": "image_picker", "id": "trust_icon_1", "label": "Trust icon 1" },
+    { "type": "text",         "id": "trust_label_1","label": "Trust label 1", "default": "Direct From Source" },
+    { "type": "image_picker", "id": "trust_icon_2", "label": "Trust icon 2" },
+    { "type": "text",         "id": "trust_label_2","label": "Trust label 2", "default": "Expert Craftsmanship" },
+    { "type": "image_picker", "id": "trust_icon_3", "label": "Trust icon 3" },
+    { "type": "text",         "id": "trust_label_3","label": "Trust label 3", "default": "IGI Certified" },
+    { "type": "image_picker", "id": "trust_icon_4", "label": "Trust icon 4" },
+    { "type": "text",         "id": "trust_label_4","label": "Trust label 4", "default": "No Middlemen" },
+    { "type": "image_picker", "id": "trust_icon_5", "label": "Trust icon 5" },
+    { "type": "text",         "id": "trust_label_5","label": "Trust label 5", "default": "Made With Love" }
   ],
   "presets": [{ "name": "Production flow" }]
 }

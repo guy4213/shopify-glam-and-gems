@@ -10,7 +10,40 @@
       assign show_size_chart = true
     endif
   endif
+
+  assign gg_center_carat_label = ''
+  assign gg_center_weight = product.metafields.custom.center_stone_weight.value
+  if gg_center_weight != blank
+    assign gg_center_int = gg_center_weight | round: 0
+    assign gg_center_carat_label = gg_center_int | append: ' Carat'
+  endif
+
+  assign gg_center_variant_id = ''
+  if gg_center_carat_label != blank
+    for v in product.variants
+      if gg_center_variant_id != ''
+        break
+      endif
+      for ov in v.options
+        if ov == gg_center_carat_label
+          assign gg_center_variant_id = v.id
+          break
+        endif
+      endfor
+    endfor
+  endif
 %}
+
+{%- if is_product_page and gg_center_variant_id != '' and product.selected_variant == blank -%}
+  <script>
+    (function () {
+      if (window.location.search.indexOf('variant=') !== -1) return;
+      var url = new URL(window.location.href);
+      url.searchParams.set('variant', '{{ gg_center_variant_id }}');
+      window.location.replace(url.toString());
+    })();
+  </script>
+{%- endif -%}
 
 <style>
   /* Capsule option selectors */
@@ -20,9 +53,6 @@
   .gg-capsule-select { width:100%; padding:13px 36px 13px 16px !important; appearance:none; -webkit-appearance:none; background:transparent !important; border:none !important; box-shadow:none !important; font-size:13px; cursor:pointer; outline:none !important; }
   .gg-capsule-caret { position:absolute; top:50%; right:14px; transform:translateY(-50%); pointer-events:none; width:10px; }
   .gg-shown-with { font-size:11px; color:#9ca3af; font-style:italic; margin-top:5px; padding-left:4px; }
-  /* Diamond Details accordion */
-  .gg-accordion-header { display:flex; justify-content:space-between; align-items:center; padding:13px 0; cursor:pointer; font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; border-top:1px solid #EAEAEA; }
-  .gg-accordion-caret { width:10px; display:inline-block; transition:transform 300ms; }
   /* Free Gift row */
   .gg-free-gift-row { display:flex; align-items:center; gap:14px; padding:12px 0; border-top:1px solid #EAEAEA; border-bottom:1px solid #EAEAEA; margin-bottom:14px; }
   .gg-free-gift-icon { width:22px; height:22px; flex-shrink:0; opacity:0.45; }
@@ -74,68 +104,48 @@
 >
   <script type="application/json" data-selected-variant>{{ product.selected_or_first_available_variant | json }}</script>
 
-  {%- comment -%} Diamond Details accordion — contains Metal Type (and any future non-size options) {%- endcomment -%}
-  <div x-data="{ open: false }" class="gg-diamond-details col-span-2 w-full mb-3">
-    <button
-      type="button"
-      class="gg-accordion-header w-full text-left"
-      @click="open = !open"
-    >
-      <span>Diamond Details</span>
-      <span class="gg-accordion-caret" :class="open ? 'rotate-180' : ''">
-        {%- render 'icon-alls', icon: 'icon-caret' -%}
-      </span>
-    </button>
-    <div x-show="open" x-collapse class="pb-3 pt-2">
-      {%- for option in product.options_with_values -%}
-        {%- assign option_index = forloop.index0 -%}
-        {%- liquid
-          assign show_in_accordion = false
-          if option.name != 'Ring Size' and option.name != 'Carat Size'
-            assign show_in_accordion = true
-          endif
-        -%}
-        {%- if show_in_accordion -%}
-          <div
-            data-option-name="{{ option.name | handle }}"
-            data-option-index="{{ forloop.index0 }}"
-            class="col-span-2 w-full mb-4"
-            x-data="{ selectedVal: '{{ option.selected_value | escape }}' }"
-          >
-            <div class="gg-capsule">
-              <span class="gg-capsule-label">{{ option.name }}</span>
-              <div class="gg-capsule-right">
-                <select
-                  id="Option-{{ section.id }}-{{ forloop.index0 }}"
-                  class="gg-capsule-select product-form__input"
-                  name="{{ option.name }}"
-                  form="{{ product_form_id }}"
-                  @change="selectedVal = $event.target.value"
-                >
-                  {% render 'product-variant-options',
-                    product: product,
-                    option: option,
-                    option_index: option_index,
-                    product_form_id: product_form_id,
-                    input_type: 'select',
-                    enable_color_swatches: block.settings.enable_color_swatches,
-                    swatch_size: swatch_size
-                  %}
-                </select>
-                <div x-cloak x-show="loadingEls === 'Option-{{ section.id }}-{{ forloop.index0 }}'" class="gg-capsule-caret">
-                  <div class="animate-spin w-4 h-4 border-loading border-[rgba(var(--colors-text))]"></div>
-                </div>
-                <span x-cloak x-show="loadingEls !== 'Option-{{ section.id }}-{{ forloop.index0 }}'" class="gg-capsule-caret">
-                  {% render 'icon-alls', icon: 'icon-caret' %}
-                </span>
-              </div>
+  {%- comment -%} Non-size options (Metal Type, etc.) — standalone capsule dropdowns {%- endcomment -%}
+  {%- for option in product.options_with_values -%}
+    {%- assign option_index = forloop.index0 -%}
+    {%- if option.name != 'Ring Size' and option.name != 'Carat Size' -%}
+      <div
+        data-option-name="{{ option.name | handle }}"
+        data-option-index="{{ forloop.index0 }}"
+        class="col-span-2 w-full mb-4"
+        x-data="{ selectedVal: '{{ option.selected_value | escape }}' }"
+      >
+        <div class="gg-capsule">
+          <span class="gg-capsule-label">{{ option.name }}</span>
+          <div class="gg-capsule-right">
+            <select
+              id="Option-{{ section.id }}-{{ forloop.index0 }}"
+              class="gg-capsule-select product-form__input"
+              name="{{ option.name }}"
+              form="{{ product_form_id }}"
+              @change="selectedVal = $event.target.value"
+            >
+              {% render 'product-variant-options',
+                product: product,
+                option: option,
+                option_index: option_index,
+                product_form_id: product_form_id,
+                input_type: 'select',
+                enable_color_swatches: block.settings.enable_color_swatches,
+                swatch_size: swatch_size
+              %}
+            </select>
+            <div x-cloak x-show="loadingEls === 'Option-{{ section.id }}-{{ forloop.index0 }}'" class="gg-capsule-caret">
+              <div class="animate-spin w-4 h-4 border-loading border-[rgba(var(--colors-text))]"></div>
             </div>
-            <p class="gg-shown-with" x-text="'The product is shown with ' + selectedVal"></p>
+            <span x-cloak x-show="loadingEls !== 'Option-{{ section.id }}-{{ forloop.index0 }}'" class="gg-capsule-caret">
+              {% render 'icon-alls', icon: 'icon-caret' %}
+            </span>
           </div>
-        {%- endif -%}
-      {%- endfor -%}
-    </div>
-  </div>
+        </div>
+        <p class="gg-shown-with" x-text="'The product is shown with ' + selectedVal"></p>
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
 
   {%- comment -%} Carat Size — standalone capsule dropdown, only shown if isDiamond = yes {%- endcomment -%}
   {%- assign gg_is_diamond = product.metafields.custom.isDiamond.value -%}

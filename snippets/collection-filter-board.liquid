@@ -85,6 +85,14 @@
     --cfb-price-value-bg: {{ section.settings.cfb_price_value_bg | default: '#f0f0f0' }};
     --cfb-price-value-text: {{ section.settings.cfb_price_value_text | default: '#111111' }};
   }
+  @media (max-width: 767px) {
+    .collection-filter-board.cfb-board[data-section="{{ section.id | default: 'cfb-default' }}"] {
+      display: none !important;
+    }
+    .mfd-board-host .collection-filter-board.cfb-board[data-section="{{ section.id | default: 'cfb-default' }}"] {
+      display: block !important;
+    }
+  }
 </style>
 {%- endif -%}
 

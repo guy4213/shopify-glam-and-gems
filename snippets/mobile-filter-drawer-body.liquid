@@ -1,0 +1,537 @@
+{%- comment -%}
+  Mobile filter drawer body. Renders the FULL filter set shown in the ideal
+  mobile mockup, using the same data sources as snippets/collection-filter-board.liquid.
+
+  Accepts:
+  - results: {Object} collection or search
+
+  Contract:
+  - Every input emits form="FacetFiltersForm" and @change="onSubmit()" so the
+    existing Alpine handlers in xFiltersAndSortby pick up changes.
+  - Input name/value uses Shopify's filter param_name/value when a real filter
+    exists, falling back to known metafield param paths for metaobject-only
+    visual filters (mirrors collection-filter-board.liquid).
+{%- endcomment -%}
+
+{%- liquid
+  assign mfd_visual_options = collection.metafields.custom.filter_visual_options.value
+  assign mfd_l1 = collection.metafields.custom.visual_filter_label_1 | strip
+  assign mfd_l2 = collection.metafields.custom.visual_filter_label_2 | strip
+  assign mfd_l3 = collection.metafields.custom.visual_filter_label_3 | strip
+  assign mfd_l4 = collection.metafields.custom.visual_filter_label_4 | strip
+  assign mfd_q1 = collection.metafields.custom.quick_filter_1 | strip
+  assign mfd_q2 = collection.metafields.custom.quick_filter_2 | strip
+  assign mfd_q3 = collection.metafields.custom.quick_filter_3 | strip
+  assign mfd_q4 = collection.metafields.custom.quick_filter_4 | strip
+
+  assign mfd_price_filter = nil
+  for f in results.filters
+    if f.type == 'price_range'
+      assign mfd_price_filter = f
+      break
+    endif
+  endfor
+
+  assign mfd_handled_labels = ''
+
+  assign mfd_any_label = false
+  if mfd_l1 != blank or mfd_l2 != blank or mfd_l3 != blank or mfd_l4 != blank
+    assign mfd_any_label = true
+  endif
+
+  if mfd_any_label == false
+    assign mfd_l1 = 'Style'
+    assign mfd_l2 = 'Shape'
+    assign mfd_l3 = 'Metal'
+  endif
+-%}
+
+<div class="mfd">
+
+  {%- for mfd_slot in (1..4) -%}
+    {%- liquid
+      case mfd_slot
+        when 1
+          assign mfd_label = mfd_l1
+        when 2
+          assign mfd_label = mfd_l2
+        when 3
+          assign mfd_label = mfd_l3
+        when 4
+          assign mfd_label = mfd_l4
+      endcase
+    -%}
+    {%- if mfd_label != blank -%}
+      {%- liquid
+        assign mfd_label_lc = mfd_label | downcase
+        assign mfd_handled_labels = mfd_handled_labels | append: mfd_label | append: '|'
+
+        assign mfd_found_filter = nil
+        for f in results.filters
+          if f.label == mfd_label
+            assign mfd_found_filter = f
+            break
+          endif
+        endfor
+
+        assign mfd_has_mos = false
+        if mfd_visual_options != blank
+          for vo in mfd_visual_options
+            assign _vo_fl = vo.fields["filter_label"].value | strip
+            if _vo_fl == mfd_label
+              assign mfd_has_mos = true
+              break
+            endif
+          endfor
+        endif
+      -%}
+
+      {%- if mfd_label_lc contains 'price' -%}
+        {%- comment -%} Price is rendered separately below; skip the placeholder slot. {%- endcomment -%}
+
+      {%- elsif mfd_label_lc contains 'metal' -%}
+        <section class="mfd-section">
+          <p class="mfd-heading">{{ mfd_label | escape }}</p>
+          <div class="mfd-metal-grid">
+            {%- if mfd_has_mos -%}
+              {%- for vo in mfd_visual_options -%}
+                {%- assign _vo_fl = vo.fields["filter_label"].value | strip -%}
+                {%- if _vo_fl == mfd_label -%}
+                  {%- liquid
+                    assign vo_value_label = vo.fields["value_label"].value | strip
+                    assign vo_display_raw = vo.fields["display_label"].value | strip
+                    assign vo_color       = vo.fields["color"].value | strip
+                    assign vo_label_text  = vo_display_raw
+                    if vo_label_text == blank
+                      assign vo_label_text = vo_value_label
+                    endif
+
+                    assign vo_matched_fv = nil
+                    if mfd_found_filter != nil and mfd_found_filter.type != 'price_range'
+                      for fv in mfd_found_filter.values
+                        if fv.label == vo_value_label or fv.value == vo_value_label
+                          assign vo_matched_fv = fv
+                          break
+                        endif
+                      endfor
+                    endif
+
+                    if vo_matched_fv != nil
+                      assign m_param  = vo_matched_fv.param_name
+                      assign m_value  = vo_matched_fv.value
+                      assign m_active = vo_matched_fv.active
+                    else
+                      assign m_param  = 'filter.p.m.custom.metal_type'
+                      assign m_value  = vo_value_label
+                      assign m_active = false
+                    endif
+                    assign m_id = 'mfd-metal-' | append: vo_value_label | handle
+                  -%}
+                  <label for="{{ m_id }}" class="mfd-metal-tile{% if m_active %} is-active{% endif %}">
+                    <input type="checkbox" id="{{ m_id }}" class="mfd-vh" name="{{ m_param }}" value="{{ m_value }}" form="FacetFiltersForm" {% if m_active %}checked{% endif %} @change="onSubmit()">
+                    <span class="mfd-metal-swatch" style="background-color:{{ vo_color | default: '#cccccc' }}"></span>
+                    <span class="mfd-metal-name">{{ vo_label_text | escape }}</span>
+                  </label>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- else -%}
+              {%- assign _mfd_metal_list = 'White Gold|#E8E8E8,Yellow Gold|#D4AF37,Rose Gold|#B76E79,Platinum|#C5C7CE' | split: ',' -%}
+              {%- for _mp in _mfd_metal_list -%}
+                {%- assign _parts = _mp | split: '|' -%}
+                {%- assign _mname = _parts[0] -%}
+                {%- assign _mcolor = _parts[1] -%}
+                {%- liquid
+                  assign _m_fv = nil
+                  if mfd_found_filter != nil and mfd_found_filter.type != 'price_range'
+                    for fv in mfd_found_filter.values
+                      if fv.label == _mname or fv.value == _mname
+                        assign _m_fv = fv
+                        break
+                      endif
+                    endfor
+                  endif
+                  if _m_fv != nil
+                    assign _m_param  = _m_fv.param_name
+                    assign _m_value  = _m_fv.value
+                    assign _m_active = _m_fv.active
+                  else
+                    assign _m_param  = 'filter.p.m.custom.metal_type'
+                    assign _m_value  = _mname
+                    assign _m_active = false
+                  endif
+                  assign _m_id = 'mfd-metal-fb-' | append: _mname | handle
+                -%}
+                <label for="{{ _m_id }}" class="mfd-metal-tile{% if _m_active %} is-active{% endif %}">
+                  <input type="checkbox" id="{{ _m_id }}" class="mfd-vh" name="{{ _m_param }}" value="{{ _m_value }}" form="FacetFiltersForm" {% if _m_active %}checked{% endif %} @change="onSubmit()">
+                  <span class="mfd-metal-swatch" style="background-color:{{ _mcolor }}"></span>
+                  <span class="mfd-metal-name">{{ _mname }}</span>
+                </label>
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+        </section>
+
+      {%- else -%}
+        <section class="mfd-section">
+          <p class="mfd-heading">{{ mfd_label | escape }}</p>
+          <div class="mfd-scroll-row">
+            {%- if mfd_has_mos -%}
+              {%- for vo in mfd_visual_options -%}
+                {%- assign _vo_fl = vo.fields["filter_label"].value | strip -%}
+                {%- if _vo_fl == mfd_label -%}
+                  {%- liquid
+                    assign vo_value_label = vo.fields["value_label"].value | strip
+                    assign vo_display_raw = vo.fields["display_label"].value | strip
+                    assign vo_image       = vo.fields["image"].value
+                    assign vo_label_text  = vo_display_raw
+                    if vo_label_text == blank
+                      assign vo_label_text = vo_value_label
+                    endif
+
+                    assign vo_matched_fv = nil
+                    if mfd_found_filter != nil and mfd_found_filter.type != 'price_range'
+                      for fv in mfd_found_filter.values
+                        if fv.label == vo_value_label or fv.value == vo_value_label
+                          assign vo_matched_fv = fv
+                          break
+                        endif
+                      endfor
+                    endif
+
+                    if vo_matched_fv != nil
+                      assign t_param  = vo_matched_fv.param_name
+                      assign t_value  = vo_matched_fv.value
+                      assign t_active = vo_matched_fv.active
+                    else
+                      if mfd_label_lc contains 'shape'
+                        assign t_param = 'filter.p.m.custom.diamond_shape'
+                      elsif mfd_label_lc contains 'style'
+                        assign t_param = 'filter.p.m.custom.style'
+                      elsif mfd_label_lc contains 'category'
+                        assign t_param = 'filter.p.product_type'
+                      else
+                        assign t_param = 'filter.p.tag'
+                      endif
+                      assign t_value  = vo_value_label
+                      assign t_active = false
+                    endif
+                    assign t_id = 'mfd-' | append: mfd_slot | append: '-' | append: vo_value_label | handle
+                  -%}
+                  <label for="{{ t_id }}" class="mfd-tile{% if t_active %} is-active{% endif %}">
+                    <input type="checkbox" id="{{ t_id }}" class="mfd-vh" name="{{ t_param }}" value="{{ t_value }}" form="FacetFiltersForm" {% if t_active %}checked{% endif %} @change="onSubmit()">
+                    <span class="mfd-tile-box">
+                      {%- if mfd_label_lc contains 'shape' -%}
+                        {%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: vo_value_label, svg_snippet: 'cfb-shape-svg' -%}
+                      {%- elsif mfd_label_lc contains 'style' -%}
+                        {%- render 'cfb-icon-resolve', section: section, filter_group: 'style', value_name: vo_value_label, svg_snippet: 'cfb-style-svg' -%}
+                      {%- elsif mfd_label_lc contains 'category' -%}
+                        {%- render 'cfb-icon-resolve', section: section, filter_group: 'category', value_name: vo_value_label, svg_snippet: 'cfb-category-svg' -%}
+                      {%- elsif vo_image != blank -%}
+                        {{ vo_image | image_url: width: 120 | image_tag: class: 'mfd-tile-img', alt: vo_label_text, loading: 'lazy' }}
+                      {%- endif -%}
+                    </span>
+                    <span class="mfd-tile-name">{{ vo_label_text | escape }}</span>
+                  </label>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- elsif mfd_found_filter != nil and mfd_found_filter.type != 'price_range' -%}
+              {%- for value in mfd_found_filter.values -%}
+                {%- assign t_id = 'mfd-fv-' | append: mfd_slot | append: '-' | append: forloop.index -%}
+                <label for="{{ t_id }}" class="mfd-tile{% if value.active %} is-active{% endif %}{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
+                  <input type="checkbox" id="{{ t_id }}" class="mfd-vh" name="{{ value.param_name }}" value="{{ value.value }}" form="FacetFiltersForm" {% if value.active %}checked{% endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %} @change="onSubmit()">
+                  <span class="mfd-tile-box">
+                    {%- if value.image != blank -%}
+                      {{ value.image | image_url: width: 120 | image_tag: class: 'mfd-tile-img', alt: value.label, loading: 'lazy' }}
+                    {%- else -%}
+                      <span class="mfd-tile-initial">{{ value.label | slice: 0, 1 | upcase }}</span>
+                    {%- endif -%}
+                  </span>
+                  <span class="mfd-tile-name">{{ value.label | escape }}</span>
+                </label>
+              {%- endfor -%}
+            {%- elsif mfd_label_lc contains 'shape' -%}
+              {%- assign _fb_shapes = 'Round|Oval|Radiant|Pear|Emerald|Cushion|Marquise|Princess|Heart|Asscher' | split: '|' -%}
+              {%- for _s in _fb_shapes -%}
+                {%- liquid
+                  assign _sfv = nil
+                  for _sf in results.filters
+                    if _sf.type != 'price_range'
+                      for _sfv2 in _sf.values
+                        if _sfv2.value == _s or _sfv2.label == _s
+                          assign _sfv = _sfv2
+                          break
+                        endif
+                      endfor
+                    endif
+                    if _sfv != nil
+                      break
+                    endif
+                  endfor
+                  if _sfv != nil
+                    assign _sp = _sfv.param_name
+                    assign _sv = _sfv.value
+                    assign _sa = _sfv.active
+                  else
+                    assign _sp = 'filter.p.m.custom.diamond_shape'
+                    assign _sv = _s
+                    assign _sa = false
+                  endif
+                -%}
+                <label for="mfd-fbs-{{ _s | handle }}" class="mfd-tile{% if _sa %} is-active{% endif %}">
+                  <input type="checkbox" id="mfd-fbs-{{ _s | handle }}" class="mfd-vh" name="{{ _sp }}" value="{{ _sv }}" form="FacetFiltersForm" {% if _sa %}checked{% endif %} @change="onSubmit()">
+                  <span class="mfd-tile-box">{%- render 'cfb-icon-resolve', section: section, filter_group: 'shape', value_name: _s, svg_snippet: 'cfb-shape-svg' -%}</span>
+                  <span class="mfd-tile-name">{{ _s }}</span>
+                </label>
+              {%- endfor -%}
+            {%- elsif mfd_label_lc contains 'style' -%}
+              {%- assign _fb_styles = 'Three Stone|Solitaire|Side Stone|Hidden Halo|Halo|Double Halo|Bridal Sets' | split: '|' -%}
+              {%- for _s in _fb_styles -%}
+                <label for="mfd-fbst-{{ _s | handle }}" class="mfd-tile">
+                  <input type="checkbox" id="mfd-fbst-{{ _s | handle }}" class="mfd-vh" name="filter.p.m.custom.style" value="{{ _s }}" form="FacetFiltersForm" @change="onSubmit()">
+                  <span class="mfd-tile-box">{%- render 'cfb-icon-resolve', section: section, filter_group: 'style', value_name: _s, svg_snippet: 'cfb-style-svg' -%}</span>
+                  <span class="mfd-tile-name">{{ _s }}</span>
+                </label>
+              {%- endfor -%}
+            {%- elsif mfd_label_lc contains 'category' -%}
+              {%- assign _fb_cats = 'Engagement Rings|Wedding Rings|Necklaces|Earrings|Bracelets' | split: '|' -%}
+              {%- for _c in _fb_cats -%}
+                <label for="mfd-fbc-{{ _c | handle }}" class="mfd-tile">
+                  <input type="checkbox" id="mfd-fbc-{{ _c | handle }}" class="mfd-vh" name="filter.p.product_type" value="{{ _c }}" form="FacetFiltersForm" @change="onSubmit()">
+                  <span class="mfd-tile-box">{%- render 'cfb-icon-resolve', section: section, filter_group: 'category', value_name: _c, svg_snippet: 'cfb-category-svg' -%}</span>
+                  <span class="mfd-tile-name">{{ _c }}</span>
+                </label>
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+        </section>
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- comment -%} Price ── always render. Use real filter values when available, otherwise default placeholders. {%- endcomment -%}
+  {%- liquid
+    if mfd_price_filter
+      assign mfd_price_min_name = mfd_price_filter.min_value.param_name
+      assign mfd_price_max_name = mfd_price_filter.max_value.param_name
+      assign mfd_price_max_placeholder = mfd_price_filter.range_max | money_without_currency | replace: ',', ''
+    else
+      assign mfd_price_min_name = 'filter.v.price.gte'
+      assign mfd_price_max_name = 'filter.v.price.lte'
+      assign mfd_price_max_placeholder = '5555'
+    endif
+  -%}
+  <section class="mfd-section">
+    <p class="mfd-heading">Price Range</p>
+    <div class="mfd-price">
+      <div class="mfd-price-track" aria-hidden="true"></div>
+      <div class="mfd-price-inputs">
+        <label class="mfd-price-field">
+          <span class="mfd-vh">From</span>
+          <input
+            type="number"
+            inputmode="numeric"
+            min="0"
+            step="1"
+            form="FacetFiltersForm"
+            name="{{ mfd_price_min_name }}"
+            {%- if mfd_price_filter and mfd_price_filter.min_value.value -%} value="{{ mfd_price_filter.min_value.value | money_without_currency | replace: ',', '' }}"{%- endif %}
+            placeholder="$ 0"
+            aria-label="Minimum price"
+            @change="onSubmit()"
+          >
+        </label>
+        <label class="mfd-price-field">
+          <span class="mfd-vh">To</span>
+          <input
+            type="number"
+            inputmode="numeric"
+            min="0"
+            step="1"
+            form="FacetFiltersForm"
+            name="{{ mfd_price_max_name }}"
+            {%- if mfd_price_filter and mfd_price_filter.max_value.value -%} value="{{ mfd_price_filter.max_value.value | money_without_currency | replace: ',', '' }}"{%- endif %}
+            placeholder="$ {{ mfd_price_max_placeholder }}"
+            aria-label="Maximum price"
+            @change="onSubmit()"
+          >
+        </label>
+      </div>
+    </div>
+  </section>
+
+  {%- comment -%} Quick filters / Ready-to-ship style toggles {%- endcomment -%}
+  {%- for mfd_qslot in (1..4) -%}
+    {%- liquid
+      case mfd_qslot
+        when 1
+          assign mfd_q = mfd_q1
+        when 2
+          assign mfd_q = mfd_q2
+        when 3
+          assign mfd_q = mfd_q3
+        when 4
+          assign mfd_q = mfd_q4
+      endcase
+    -%}
+    {%- if mfd_q != blank -%}
+      {%- liquid
+        assign mfd_q_fv = nil
+        for f in results.filters
+          if f.type == 'boolean'
+            for fv in f.values
+              if fv.label == mfd_q or f.label == mfd_q
+                assign mfd_q_fv = fv
+                break
+              endif
+            endfor
+          endif
+          if mfd_q_fv != nil
+            break
+          endif
+          for fv in f.values
+            if fv.label == mfd_q or fv.value == mfd_q
+              assign mfd_q_fv = fv
+              break
+            endif
+          endfor
+          if mfd_q_fv != nil
+            break
+          endif
+        endfor
+
+        if mfd_q_fv != nil
+          assign mfd_q_param  = mfd_q_fv.param_name
+          assign mfd_q_value  = mfd_q_fv.value
+          assign mfd_q_active = mfd_q_fv.active
+        else
+          assign mfd_q_param  = 'filter.p.tag'
+          assign mfd_q_value  = mfd_q
+          assign mfd_q_active = false
+        endif
+        assign mfd_q_id = 'mfd-q-' | append: mfd_qslot
+      -%}
+      <section class="mfd-section mfd-section--bool">
+        <label for="{{ mfd_q_id }}" class="mfd-bool-row">
+          <input
+            type="checkbox"
+            id="{{ mfd_q_id }}"
+            class="mfd-bool-checkbox"
+            form="FacetFiltersForm"
+            name="{{ mfd_q_param }}"
+            value="{{ mfd_q_value }}"
+            {% if mfd_q_active %}checked{% endif %}
+            @change="onSubmit()"
+          >
+          <span class="mfd-bool-label">{{ mfd_q | upcase | escape }}</span>
+        </label>
+      </section>
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- if mfd_q1 == blank and mfd_q2 == blank and mfd_q3 == blank and mfd_q4 == blank -%}
+    <section class="mfd-section mfd-section--bool">
+      <label for="mfd-q-rts" class="mfd-bool-row">
+        <input
+          type="checkbox"
+          id="mfd-q-rts"
+          class="mfd-bool-checkbox"
+          form="FacetFiltersForm"
+          name="filter.p.tag"
+          value="ready-to-ship"
+          @change="onSubmit()"
+        >
+        <span class="mfd-bool-label">READY TO SHIP</span>
+      </label>
+    </section>
+  {%- endif -%}
+
+  {%- comment -%} Any leftover real Shopify filters (vendor / type / etc.) that weren't already handled {%- endcomment -%}
+  {%- for filter in results.filters -%}
+    {%- if filter.type == 'price_range' -%}{%- continue -%}{%- endif -%}
+    {%- if mfd_handled_labels contains filter.label -%}{%- continue -%}{%- endif -%}
+    {%- assign _flc = filter.label | downcase -%}
+    {%- if _flc contains 'metal' -%}{%- continue -%}{%- endif -%}
+
+    <section class="mfd-section">
+      <p class="mfd-heading">{{ filter.label | escape }}</p>
+      <ul class="mfd-list" role="list">
+        {%- for value in filter.values -%}
+          {%- assign _id = 'mfd-list-' | append: forloop.parentloop.index | append: '-' | append: forloop.index -%}
+          {%- assign _disabled = false -%}
+          {%- if value.count == 0 and value.active == false -%}{%- assign _disabled = true -%}{%- endif -%}
+          <li>
+            <label for="{{ _id }}" class="mfd-list-row{% if _disabled %} is-disabled{% endif %}">
+              <input
+                type="checkbox"
+                id="{{ _id }}"
+                class="mfd-list-checkbox"
+                form="FacetFiltersForm"
+                name="{{ value.param_name }}"
+                value="{{ value.value }}"
+                {% if value.active %}checked{% endif %}
+                {% if _disabled %}disabled{% endif %}
+                @change="onSubmit()"
+              >
+              <span class="mfd-list-label">{{ value.label | escape }}</span>
+              {%- if value.count -%}<span class="mfd-list-count">({{ value.count }})</span>{%- endif -%}
+            </label>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </section>
+  {%- endfor -%}
+
+</div>
+
+<style>
+  .mfd { padding: 0.5rem 0 1.5rem; }
+  .mfd .mfd-vh { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
+  .mfd-section { padding: 1.1rem 0; border-bottom: 1px solid #ececec; }
+  .mfd-section:last-child { border-bottom: none; }
+  .mfd-heading { font-size: 0.95rem; font-weight: 600; color: #111; margin: 0 0 0.85rem; }
+
+  .mfd-scroll-row { display: flex; gap: 0.85rem; overflow-x: auto; overflow-y: hidden; margin: 0 -1.25rem; padding: 0.25rem 1.25rem 0.6rem; -webkit-overflow-scrolling: touch; scrollbar-width: none; scroll-snap-type: x proximity; }
+  .mfd-scroll-row::-webkit-scrollbar { display: none; }
+  .mfd-tile { display: inline-flex; flex-direction: column; align-items: center; gap: 0.45rem; flex: 0 0 auto; min-width: 70px; cursor: pointer; scroll-snap-align: start; }
+  .mfd-tile-box { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #d8d8d8; border-radius: 6px; overflow: hidden; transition: border-color .15s ease; }
+  .mfd-tile-box svg, .mfd-tile-box img { width: 78%; height: 78%; object-fit: contain; display: block; }
+  .mfd-tile-img { width: 78%; height: 78%; object-fit: contain; }
+  .mfd-tile-initial { font-size: 1.15rem; font-weight: 600; color: #555; }
+  .mfd-tile-name { font-size: 0.72rem; color: #555; text-align: center; max-width: 80px; line-height: 1.2; }
+  .mfd-tile.is-active .mfd-tile-box { border-color: #111; border-width: 2px; }
+  .mfd-tile.is-active .mfd-tile-name { color: #111; font-weight: 700; }
+  .mfd-tile.is-disabled { opacity: 0.35; pointer-events: none; }
+
+  .mfd-metal-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem 0.9rem; }
+  .mfd-metal-tile { display: inline-flex; flex-direction: column; align-items: center; gap: 0.4rem; cursor: pointer; min-height: 44px; }
+  .mfd-metal-swatch { display: block; width: 60px; height: 60px; border-radius: 6px; border: 1px solid #c8c8c8; transition: box-shadow .15s ease, border-color .15s ease; }
+  .mfd-metal-name { font-size: 0.72rem; color: #555; text-align: center; line-height: 1.2; }
+  .mfd-metal-tile.is-active .mfd-metal-swatch { border-color: #111; box-shadow: 0 0 0 2px #111; }
+  .mfd-metal-tile.is-active .mfd-metal-name { color: #111; font-weight: 700; }
+
+  .mfd-price { display: flex; flex-direction: column; gap: 0.85rem; }
+  .mfd-price-track { height: 2px; background: #111; opacity: 0.85; border-radius: 2px; margin: 0.25rem 0.25rem 0.15rem; position: relative; }
+  .mfd-price-track::before, .mfd-price-track::after { content: ''; position: absolute; top: 50%; width: 10px; height: 10px; border-radius: 50%; background: #111; transform: translateY(-50%); }
+  .mfd-price-track::before { left: -2px; }
+  .mfd-price-track::after  { right: -2px; }
+  .mfd-price-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  .mfd-price-field input { width: 100%; min-height: 44px; padding: 0.55rem 0.8rem; border: 1px solid #d0d0d0; border-radius: 4px; background: #fff; color: #111; font-size: 0.95rem; -webkit-appearance: none; -moz-appearance: textfield; }
+  .mfd-price-field input:focus { outline: none; border-color: #111; box-shadow: 0 0 0 2px rgba(0,0,0,0.08); }
+  .mfd-price-field input::-webkit-outer-spin-button, .mfd-price-field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .mfd-section--bool { padding: 0.6rem 0; }
+  .mfd-bool-row { display: flex; align-items: center; gap: 0.85rem; padding: 0.4rem 0; min-height: 44px; cursor: pointer; }
+  .mfd-bool-checkbox { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; min-width: 22px; border: 1.5px solid #111; border-radius: 3px; background: #fff; cursor: pointer; position: relative; margin: 0; flex-shrink: 0; }
+  .mfd-bool-checkbox:checked { background: #111; }
+  .mfd-bool-checkbox:checked::after { content: ''; position: absolute; left: 6px; top: 2px; width: 6px; height: 11px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .mfd-bool-label { font-size: 0.9rem; font-weight: 600; letter-spacing: 0.05em; color: #111; }
+
+  .mfd-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+  .mfd-list-row { display: flex; align-items: center; gap: 0.7rem; padding: 0.55rem 0; min-height: 44px; cursor: pointer; }
+  .mfd-list-checkbox { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; min-width: 20px; border: 1.5px solid #888; border-radius: 3px; background: #fff; cursor: pointer; position: relative; margin: 0; flex-shrink: 0; }
+  .mfd-list-checkbox:checked { background: #111; border-color: #111; }
+  .mfd-list-checkbox:checked::after { content: ''; position: absolute; left: 5px; top: 1px; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .mfd-list-label { font-size: 0.9rem; color: #222; flex: 1; }
+  .mfd-list-count { font-size: 0.8rem; color: #888; }
+  .mfd-list-row.is-disabled { opacity: 0.4; pointer-events: none; }
+</style>

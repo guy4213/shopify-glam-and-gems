@@ -1,0 +1,186 @@
+{%- liquid
+  assign heading = section.settings.heading | default: 'Recommended Matching Band'
+  assign section_bg = section.settings.section_bg
+  assign card_bg = section.settings.card_bg
+  assign accent_color = section.settings.accent_color
+  assign sale_color = section.settings.sale_color
+  assign bands = product.metafields.custom.matching_bands.value
+  assign band_count = 0
+  if bands
+    assign band_count = bands.size
+  endif
+-%}
+
+{%- if product and band_count > 0 -%}
+<section id="rmb-{{ section.id }}" class="recommended-matching-band">
+  <style>
+    #rmb-{{ section.id }} {
+      background: {{ section_bg }};
+      padding: 18px 16px 24px;
+      box-sizing: border-box;
+    }
+    #rmb-{{ section.id }} .rmb-card {
+      background: {{ card_bg }};
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      padding: 14px 14px 16px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    #rmb-{{ section.id }} .rmb-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      width: 100%;
+      padding: 4px 0 12px;
+      color: {{ accent_color }};
+      font: inherit;
+      text-align: left;
+    }
+    #rmb-{{ section.id }} .rmb-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    #rmb-{{ section.id }} .rmb-chevron {
+      transition: transform 0.2s ease;
+      width: 14px;
+      height: 14px;
+    }
+    #rmb-{{ section.id }} .rmb-header[aria-expanded="false"] .rmb-chevron {
+      transform: rotate(-90deg);
+    }
+    #rmb-{{ section.id }} .rmb-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    #rmb-{{ section.id }} .rmb-item {
+      display: block;
+      color: {{ accent_color }};
+      text-decoration: none;
+      position: relative;
+      background: #fff;
+      border: 1px solid #efefef;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    #rmb-{{ section.id }} .rmb-item:hover {
+      border-color: #ccc;
+    }
+    #rmb-{{ section.id }} .rmb-thumb {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+      background: #fafafa;
+    }
+    #rmb-{{ section.id }} .rmb-meta {
+      padding: 8px 10px 10px;
+    }
+    #rmb-{{ section.id }} .rmb-name {
+      font-size: 11px;
+      line-height: 1.3;
+      color: #444;
+      margin: 0 0 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 28px;
+    }
+    #rmb-{{ section.id }} .rmb-prices {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    #rmb-{{ section.id }} .rmb-compare {
+      color: #999;
+      text-decoration: line-through;
+      font-size: 11px;
+    }
+    #rmb-{{ section.id }} .rmb-price {
+      color: {{ accent_color }};
+      font-weight: 700;
+      font-size: 13px;
+    }
+    #rmb-{{ section.id }} .rmb-sale-chip {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: {{ sale_color }};
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+    #rmb-{{ section.id }} .rmb-body[hidden] {
+      display: none;
+    }
+  </style>
+
+  <div class="rmb-card">
+    <button class="rmb-header" type="button" aria-expanded="true" aria-controls="rmb-body-{{ section.id }}" onclick="var b=document.getElementById('rmb-body-{{ section.id }}');var open=this.getAttribute('aria-expanded')==='true';this.setAttribute('aria-expanded',!open);b.hidden=open;">
+      <span class="rmb-title">{{ heading }}</span>
+      <svg class="rmb-chevron" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l4 4 4-4"/></svg>
+    </button>
+    <div class="rmb-body" id="rmb-body-{{ section.id }}">
+      <div class="rmb-grid">
+        {%- assign render_count = 0 -%}
+        {%- for band in bands -%}
+          {%- if render_count >= 2 -%}{%- break -%}{%- endif -%}
+          {%- assign render_count = render_count | plus: 1 -%}
+          {%- assign is_on_sale = false -%}
+          {%- if band.compare_at_price and band.compare_at_price > band.price -%}
+            {%- assign is_on_sale = true -%}
+          {%- endif -%}
+          <a class="rmb-item" href="{{ band.url }}">
+            {%- if is_on_sale -%}
+              <span class="rmb-sale-chip">Sale</span>
+            {%- endif -%}
+            {%- if band.featured_image -%}
+              {{ band.featured_image | image_url: width: 400 | image_tag: alt: band.title, class: 'rmb-thumb', loading: 'lazy', widths: '200,400,600' }}
+            {%- else -%}
+              <div class="rmb-thumb"></div>
+            {%- endif -%}
+            <div class="rmb-meta">
+              <p class="rmb-name">{{ band.title }}</p>
+              <div class="rmb-prices">
+                {%- if is_on_sale -%}
+                  <span class="rmb-compare">{{ band.compare_at_price | money }}</span>
+                {%- endif -%}
+                <span class="rmb-price">{{ band.price | money }}</span>
+              </div>
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Recommended Matching Band",
+  "settings": [
+    { "type": "paragraph", "content": "Reads up to 2 products from product metafield custom.matching_bands (List of product references). Hidden when the metafield is empty or undefined." },
+    { "type": "text",  "id": "heading",       "label": "Heading", "default": "Recommended Matching Band" },
+    { "type": "color", "id": "section_bg",    "label": "Section background", "default": "#fffef3" },
+    { "type": "color", "id": "card_bg",       "label": "Card background",    "default": "#ffffff" },
+    { "type": "color", "id": "accent_color",  "label": "Text / accent",      "default": "#111111" },
+    { "type": "color", "id": "sale_color",    "label": "Sale chip color",    "default": "#c0392b" }
+  ],
+  "presets": [
+    { "name": "Recommended Matching Band" }
+  ]
+}
+{% endschema %}
